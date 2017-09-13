@@ -1,0 +1,170 @@
+
+[options]
+#allow_bold = true
+#audible_bell = false
+#clickable_url = true
+#dynamic_title = true
+font = Inconsolata Nerd Font Bold  16 
+#fullscreen = true
+#geometry = 640x480
+#icon_name = terminal
+#mouse_autohide = false
+#scroll_on_output = false
+#scroll_on_keystroke = true
+# Length of the scrollback buffer, 0 disabled the scrollback buffer
+# and setting it to a negative value means "infinite scrollback"
+scrollback_lines = 10000
+#search_wrap = true
+#urgent_on_bell = true
+
+# $BROWSER is used by default if set, with xdg-open as a fallback
+#browser = xdg-open
+
+# "system", "on" or "off"
+#cursor_blink = system
+
+# "block", "underline" or "ibeam"
+#cursor_shape = block
+
+# Hide links that are no longer valid in url select overlay mode
+#filter_unmatched_urls = true
+
+# Emit escape sequences for extra modified keys
+#modify_other_keys = false
+
+# set size hints for the window
+#size_hints = false
+
+# "off", "left" or "right"
+#scrollbar = off
+
+
+[colors]
+
+# special
+foreground      = #c5c8c6
+foreground_bold = #c5c8c6
+cursor          = #c5c8c6
+background      = #1d1f21
+
+# black
+color0  = #1d1f21
+color8  = #969896
+
+# red
+color1  = #cc342b
+color9  = #cc342b
+
+# green
+color2  = #198844
+color10 = #198844
+
+# yellow
+color3  = #fba922
+color11 = #fba922
+
+# blue
+color4  = #3971ed
+color12 = #3971ed
+
+# magenta
+color5  = #a36ac7
+color13 = #a36ac7
+
+# cyan
+color6  = #3971ed
+color14 = #3971ed
+
+# white
+color7  = #c5c8c6
+color15 = #ffffff
+#[colors]
+## solarized
+## special
+#foreground      = #93a1a1
+#foreground_bold = #93a1a1
+#cursor          = #93a1a1
+#background      = #002b36
+
+## black
+#color0  = #002b36
+#color8  = #657b83
+
+## red
+#color1  = #dc322f
+#color9  = #dc322f
+
+## green
+#color2  = #859900
+#color10 = #859900
+
+## yellow
+#color3  = #b58900
+#color11 = #b58900
+
+## blue
+#color4  = #268bd2
+#color12 = #268bd2
+
+## magenta
+#color5  = #6c71c4
+#color13 = #6c71c4
+
+## cyan
+#color6  = #2aa198
+#color14 = #2aa198
+
+## white
+#color7  = #93a1a1
+#color15 = #fdf6e3
+#[colors]
+##gotham
+## special
+#foreground      = #98d1ce
+#foreground_bold = #98d1ce
+#cursor          = #98d1ce
+#background      = #0a0f14
+
+## black
+#color0  = #0a0f14
+#color8  = #10151b
+
+## red
+#color1  = #c33027
+#color9  = #d26939
+
+## green
+#color2  = #26a98b
+#color10 = #081f2d
+
+## yellow
+#color3  = #edb54b
+#color11 = #245361
+
+## blue
+#color4  = #195465
+#color12 = #093748
+
+## magenta
+#color5  = #4e5165
+#color13 = #888ba5
+
+## cyan
+#color6  = #33859d
+#color14 = #599caa
+
+## white
+#color7  = #98d1ce
+#color15 = #d3ebe9
+[hints]
+#font = Monospace 12
+#foreground = #dcdccc
+#background = #3f3f3f
+#active_foreground = #e68080
+#active_background = #3f3f3f
+#padding = 2
+#border = #3f3f3f
+#border_width = 0.5
+#roundness = 2.0
+
+# vim: ft=conf cms=#%s
