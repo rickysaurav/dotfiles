@@ -160,6 +160,7 @@ bindsym $mod+r mode "resize"
 
 
 ##########PERSONAL##########
+exec --no-startup-id compton --config $HOME/.compton.conf -b
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 bindsym $mod+Shift+x exec $HOME/.config/i3/my_lock.sh
 # Pulse Audio controls
@@ -239,8 +240,6 @@ client.placeholder      $bg     $bg     $fg  $bg       $bg
 
 client.background       $bg
 
-# PROTIP: You can also dynamically set dmenu's colors this way:
-#bindsym $mod+d exec dmenu_run -nb "$fg" -nf "$bg" -sb "$bg" -sf "$fg"
 bindsym $mod+d exec rofi -show run
 exec $HOME/.config/i3/my_lock.sh
 ##########PERSONAL##########
