@@ -1,11 +1,12 @@
 # Created by newuser for 5.4.1
+export EDITOR=nvim
 (wal -t -r &)
 export PATH=$PATH:/usr/bin/core_perl:$HOME/.rvm/bin:/usr/lib/w3m
 export ZSH=~/.zplug/repos/robbyrussell/oh-my-zsh 
 source $ZSH/oh-my-zsh.sh
 source /usr/share/zsh/scripts/zplug/init.zsh 
 ulimit -s 524144
-#export TERM=xterm-256color
+export TERM=xterm-256color
 #export LC_ALL=en_US.UTF-8
 #export LANG=en_US.UTF-8
 . /usr/share/zsh/site-contrib/powerline.zsh

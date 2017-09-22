@@ -37,6 +37,7 @@ Plug 'frankier/neovim-colors-solarized-truecolor-only'
 Plug 'chriskempson/base16-vim'
 Plug 'flazz/vim-colorschemes'
 Plug 'benekastah/neomake'
+Plug 'edkolev/tmuxline.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'Raimondi/delimitMate'
 Plug 'vim-airline/vim-airline-themes'
@@ -61,19 +62,26 @@ Plug 'zchee/deoplete-jedi'
 call plug#end()
 filetype plugin indent on
 syntax on
+
 "Airline
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
-"let g:airline_theme ='gotham'
-"let g:airline_theme ='base16_google'
 let g:airline_theme ='wal'
-"let g:airline_left_sep = "\u2588\uE0C0"
-let g:airline_left_sep = "\uE0C0"
-"let g:airline_right_sep = "\uE0C2\u2595"
-let g:airline_right_sep = "\uE0C2"
-let g:airline_left_alt_sep = "\uE0C1"
-let g:airline_right_alt_sep = "\uE0C3 "
+let g:airline_left_sep =  ""
+let g:airline_right_sep = ""
+let g:airline_left_alt_sep = ""
+let g:airline_right_alt_sep = ""
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+let g:airline#extensions#tmuxline#enabled = 0
+
+"Tmuxline
+let g:tmuxline_separators = {
+			\ 'left' : '',
+			\ 'left_alt': '>',
+			\ 'right' : '',
+			\ 'right_alt' : '<',
+			\ 'space' : ' '}
+
 "deoplete
 call deoplete#custom#set('clang','max_pattern_length',0)
 call deoplete#custom#set('file','min_pattern_length',0)
@@ -81,9 +89,9 @@ let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
 let g:deoplete#sources#clang#clang_header = '/lib/clang'
 let g:deoplete#sources#clang#std = {'cpp':'c++11'}
 let g:deoplete#enable_at_startup = 1
-autocmd CompleteDone * pclose!
-"inoremap <expr> <C-Space> deoplete#mappings#manual_complete()
-inoremap <expr> <C-@> deoplete#mappings#manual_complete()
+set completeopt-=preview
+"autocmd CompleteDone * pclose!
+inoremap <expr> <C-Space> deoplete#mappings#manual_complete()
 
 "chromatica
 

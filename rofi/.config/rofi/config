@@ -1,0 +1,17 @@
+rofi.modi: window,drun,run
+
+rofi.fullscreen: true
+rofi.padding: 300
+
+rofi.font: Iosevka 32
+
+rofi.separator-style: solid
+rofi.hide-scrollbar: true
+rofi.bw: 0
+
+rofi.display-drun: Run
+rofi.display-run: Exec
+
+rofi.terminal: urxvt
+
+rofi.color-enabled: true

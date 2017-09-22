@@ -11,6 +11,9 @@ secondary = #e60053
 alert = #bd2c40
 
 
+;[global/wm]
+;margin-top = 100 
+;margin-bottom = 100
 
 [bar/top]
 monitor = eDP-1
@@ -36,11 +39,10 @@ font-0 = NotoSans-Regular:size=10;-1
 font-1 = MaterialIcons:size=12;0
 font-2 = Termsynu:size=10:antialias=false;-2
 font-3 = FontAwesome:size=12;0
-font-4 = "DejaVuSansMono Nerd Font:size=12;0"
 
 modules-left = powermenu i3
 modules-centre = mpd
-modules-right =  memory cpu volume backlight wireless-network wired-network battery date
+modules-right = volume backlight wireless-network wired-network battery date
 [bar/bottom]
 monitor = eDP-1
 bottom = true
@@ -58,6 +60,7 @@ padding-right = 4
 module-margin-left = 0
 module-margin-right = 6
 
+font-0 = NotoSans-Regular:size=8;0
 font-1 = unifont:size=6;-3
 font-2 = FontAwesome:size=8;-2
 font-3 = NotoSans-Regular:size=8;-1
@@ -77,7 +80,7 @@ bar-indicator-font = 3
 bar-indicator-foreground = #ff
 bar-fill = ─
 bar-fill-font = 3
-bar-fill-foreground = #aaff77
+bar-fill-foreground = #c9665e
 bar-empty = ─
 bar-empty-font = 3
 bar-empty-foreground = #44
@@ -137,40 +140,32 @@ type = internal/i3
 format = <label-state> <label-mode>
 index-sort = true
 wrapping-scroll = false
-;customize workspace names
- 
-ws-icon-0 = "1;"
-ws-icon-1 = "2;"
-ws-icon-2 = "3;"
-ws-icon-3 = "4;"
-ws-icon-4 = "5;"
-ws-icon-5 = "6;"
-ws-icon-6 = "7;"
-ws-icon-default =""
-;Only show workspaces on the same output as the bar
+
+; Only show workspaces on the same output as the bar
 ;pin-workspaces = true
+
 label-mode-padding = 2
 label-mode-foreground = #000
 label-mode-background = ${colors.primary}
 
 ; focused = Active workspace on focused monitor
-label-focused = %icon%
+label-focused = %index%
 label-focused-background = ${module/bspwm.label-focused-background}
 label-focused-underline = ${module/bspwm.label-focused-underline}
 label-focused-padding = ${module/bspwm.label-focused-padding}
 
 ; unfocused = Inactive workspace on any monitor
-label-unfocused = %icon%
+label-unfocused = %index%
 label-unfocused-padding = ${module/bspwm.label-occupied-padding}
 
 ; visible = Active workspace on unfocused monitor
-label-visible = %icon%
+label-visible = %index%
 label-visible-background = ${self.label-focused-background}
 label-visible-underline = ${self.label-focused-underline}
 label-visible-padding = ${self.label-focused-padding}
 
 ; urgent = Workspace with urgency hint set
-label-urgent = %icon%
+label-urgent = %index%
 label-urgent-background = ${module/bspwm.label-urgent-background}
 label-urgent-padding = ${module/bspwm.label-urgent-padding}
 [module/cpu]
@@ -214,7 +209,7 @@ type = internal/memory
 format = <label> <bar-used>
 label = RAM
 
-bar-used-width = 10
+bar-used-width = 30
 bar-used-foreground-0 = #aaff77
 bar-used-foreground-1 = #aaff77
 bar-used-foreground-2 = #fba922
@@ -226,7 +221,7 @@ bar-used-fill = ─
 bar-used-fill-font = 6
 bar-used-empty = ─
 bar-used-empty-font = 6
-bar-used-empty-foreground = #44
+bar-used-empty-foreground = #444444
 
 [module/mpd]
 type = internal/mpd
