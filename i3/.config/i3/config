@@ -168,6 +168,10 @@ bindsym $mod+r mode "resize"
 
 ##########PERSONAL##########
 
+set $stoprec --no-startup-id killall ffmpeg & killall screenkey
+set $screencast --no-startup-id screenkey & bash ~/scripts/screencast.sh
+
+
 
 # Pulse Audio controls
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5% #increase sound volume
@@ -189,7 +193,7 @@ bindsym XF86AudioPrev exec playerctl previous
 
 #####gaps########
 #border
-for_window [class="^.*"] border pixel 0
+for_window [class="^.*"] border pixel 3
 #gaps
 gaps inner 18
 gaps outer 18 
@@ -247,7 +251,7 @@ set_from_resource $bg i3wm.color2 #f0f0f0
 client.focused          $bg     $bg     $fg  $bg       $bg
 client.focused_inactive $bg     $bg     $fg  $bg       $bg
 client.unfocused        $bg     $bg     $fg  $bg       $bg
-client.urgent           $bg     $bg     $fg  $bg       $bg
+client.urgent           $bg     $bg     $fg  $bg       $jg
 client.placeholder      $bg     $bg     $fg  $bg       $bg
 
 client.background       $bg
@@ -260,26 +264,33 @@ bindsym $mod+u [instance="dropdown"] scratchpad show; move position center
 
 ####assignment####
 for_window [class="Firefox"] move to workspace $ws1
-for_window [class="Spotify"] move to workspace $ws4
-for_window [class="Wps"] move to workspace $ws5
-for_window [class="Wpp"] move to workspace $ws5
-for_window [class="libreoffice"] move to workspace $ws5
-for_window [class="Zathura"] move to workspace $ws5
-for_window [class="Thunar"] move to workspace $ws7
+for_window [instance="ranger_start"] move to workspace $ws3
+for_window [class="Thunar"] move to workspace $ws3
+for_window [class="Wps"] move to workspace $ws4
+for_window [class="Wpp"] move to workspace $ws4
+for_window [class="libreoffice"] move to workspace $ws4
+for_window [class="Zathura"] move to workspace $ws4
+for_window [class="Spotify"] move to workspace $ws5
 for_window [class="Pavucontrol"] floating enable 
 for_window [class="Lxappearance"] floating enable 
 
 ####shortcuts#####
 bindsym $mod+Shift+x exec $HOME/.config/i3/my_lock.sh
 bindsym $mod+d exec rofi -show run -matching fuzzy
+bindsym $mod+shift+d exec rofi -show window -matching fuzzy
 bindsym $mod+t split toggle
-
+bindsym Print	exec --no-startup-id scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
+bindsym Shift+Print exec --no-startup-id scrot -u '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
+#bindsym $mod+Insert exec $screencast
+#bindsym $mod+Delete exec $stoprec
 ####autostart####
-exec $HOME/.config/i3/my_lock.sh
-exec --no-startup-id firefox 
+#exec --no-startup-id xrdb -merge ~/.Xresources
+exec --no-startup-id $HOME/.config/i3/my_lock.sh
+exec --no-startup-id firefox-nightly
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
 exec --no-startup-id compton -b --config $HOME/.compton.conf 
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id termite --name dropdown
 exec --no-startup-id libinput-gestures-setup start
+exec --no-startup-id xrdb -merge ~/.Xresources && urxvt -name ranger_start -e ranger
 ##########PERSONAL##########

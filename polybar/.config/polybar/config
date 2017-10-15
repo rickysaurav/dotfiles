@@ -1,10 +1,8 @@
 
 [colors]
 background = ${xrdb:color2:#222}
-;background = #222
 background-alt = #444
 foreground = ${xrdb:color7:#222}
-;foreground = #dfdfdf
 foreground-alt = #555
 primary = #0000000
 secondary = #e60053
@@ -16,7 +14,6 @@ alert = #bd2c40
 monitor = eDP-1
 width = 100% 
 height = 4%
-
 ;border-right-size = 100
 ;border-left-size = 100 
 ;border-top-size  = 15
@@ -32,15 +29,16 @@ spacing = 2
 padding-right = 5
 module-margin = 4
 
-font-0 = NotoSans-Regular:size=10;-1
-font-1 = MaterialIcons:size=12;0
-font-2 = Termsynu:size=10:antialias=false;-2
-font-3 = FontAwesome:size=12;0
-font-4 = "DejaVuSansMono Nerd Font:size=12;0"
+font-4 = MaterialIcons:size=12;0
+font-1 = Termsynu:size=10:antialias=false;-2
+font-0 = FontAwesome:size=12;0
+font-2 = "DejaVuSansMono Nerd Font:size=12;0"
+font-3 = NotoSans-Regular:size=10;-1
 
 modules-left = powermenu i3
-modules-centre = mpd
+modules-center = music mpd
 modules-right =  memory cpu volume backlight wireless-network wired-network battery date
+
 [bar/bottom]
 monitor = eDP-1
 bottom = true
@@ -58,11 +56,13 @@ padding-right = 4
 module-margin-left = 0
 module-margin-right = 6
 
+font-0 = NotoSans-Regular:size=8;0
 font-1 = unifont:size=6;-3
 font-2 = FontAwesome:size=8;-2
 font-3 = NotoSans-Regular:size=8;-1
 font-4 = MaterialIcons:size=10;-1
 font-5 = Termsynu:size=8:antialias=false;0
+
 [module/backlight]
 type = internal/xbacklight
 format = <ramp> <bar>
@@ -141,11 +141,10 @@ wrapping-scroll = false
  
 ws-icon-0 = "1;"
 ws-icon-1 = "2;"
-ws-icon-2 = "3;"
-ws-icon-3 = "4;"
-ws-icon-4 = "5;"
+ws-icon-2 = "3;"
+ws-icon-3 = "4;"
+ws-icon-4 = "5;"
 ws-icon-5 = "6;"
-ws-icon-6 = "7;"
 ws-icon-default =""
 ;Only show workspaces on the same output as the bar
 ;pin-workspaces = true
@@ -308,34 +307,32 @@ format-padding = 5
 
 label-open = 
 label-close = 
+label-separator = "  "
 
-menu-0-0 = Terminate WM
-menu-0-0-foreground = #fba922
-menu-0-0-exec = bspc quit -1
-menu-0-1 = Reboot
-menu-0-1-foreground = #fba922
-menu-0-1-exec = menu_open-1
-menu-0-2 = Power off
-menu-0-2-foreground = #fba922
-menu-0-2-exec = menu_open-2
-
-menu-1-0 = Cancel
-menu-1-0-foreground = #fba922
-menu-1-0-exec = menu_open-0
-menu-1-1 = Reboot
-menu-1-1-foreground = #fba922
-menu-1-1-exec = sudo reboot
-
-menu-2-0 = Power off
-menu-2-0-foreground = #fba922
-menu-2-0-exec = sudo poweroff
-menu-2-1 = Cancel
-menu-2-1-foreground = #fba922
-menu-2-1-exec = menu_open-0
+menu-0-0 = ""
+menu-0-0-foreground = colors.foreground
+menu-0-0-exec = i3-msg exit 
+menu-0-1 = ""
+menu-0-1-foreground = colors.foreground
+;menu-0-1-exec = menu_open-1
+menu-0-1-exec = systemctl reboot -i 
+menu-0-2 = ""
+menu-0-2-foreground = colors.foreground
+menu-0-2-exec = systemctl poweroff -i
+menu-0-3 = ""
+menu-0-3-foreground = colors.foreground
+menu-0-3-exec = systemctl suspend -i
 
 [module/clock]
 type = internal/date
 interval = 2
 date = %%{F#999}%Y-%m-%d%%{F-}  %%{F#fff}%H:%M%%{F-}
 
-; vim:ft=dosini
+[module/music]
+type = custom/script
+interval = 2
+label = %output:0:45:...%
+exec = "~/.config/polybar/mpris.sh"
+click-left = playerctl previous
+click-middle = playerctl play-pause
+click-right = playerctl next

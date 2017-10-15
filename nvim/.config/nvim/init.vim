@@ -246,6 +246,6 @@ au FocusLost,WinLeave * :silent! wa
 au FocusGained,BufEnter * :silent! !
 map <Leader>r :exe "%s/".expand("<cword>")."/
 "colorscheme gotham
-colorscheme base16-google-dark
-"colorschem wal
+"colorscheme base16-google-dark
+colorschem wal
 
