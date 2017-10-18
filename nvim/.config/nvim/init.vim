@@ -83,8 +83,8 @@ let g:tmuxline_separators = {
 			\ 'space' : ' '}
 
 "deoplete
-call deoplete#custom#set('clang','max_pattern_length',0)
-call deoplete#custom#set('file','min_pattern_length',0)
+call deoplete#custom#source('clang','max_pattern_length',0)
+call deoplete#custom#source('file','min_pattern_length',0)
 let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
 let g:deoplete#sources#clang#clang_header = '/lib/clang'
 let g:deoplete#sources#clang#std = {'cpp':'c++11'}

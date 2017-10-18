@@ -11,7 +11,8 @@ alert = #bd2c40
 
 
 [bar/top]
-monitor = eDP-1
+;monitor = eDP-1
+monitor = ${env:MONITOR:} 
 width = 100% 
 height = 4%
 ;border-right-size = 100
@@ -40,7 +41,7 @@ modules-center = music mpd
 modules-right =  memory cpu volume backlight wireless-network wired-network battery date
 
 [bar/bottom]
-monitor = eDP-1
+monitor = DP-1
 bottom = true
 width = 100%
 height = 27
@@ -55,7 +56,6 @@ spacing = 3
 padding-right = 4
 module-margin-left = 0
 module-margin-right = 6
-
 font-0 = NotoSans-Regular:size=8;0
 font-1 = unifont:size=6;-3
 font-2 = FontAwesome:size=8;-2
@@ -144,7 +144,11 @@ ws-icon-1 = "2;"
 ws-icon-2 = "3;"
 ws-icon-3 = "4;"
 ws-icon-4 = "5;"
-ws-icon-5 = "6;"
+ws-icon-5 = "6;"
+ws-icon-6 = "7;"
+ws-icon-7 = "8;"
+ws-icon-8 = "9;"
+ws-icon-9 = "10;"
 ws-icon-default =""
 ;Only show workspaces on the same output as the bar
 ;pin-workspaces = true

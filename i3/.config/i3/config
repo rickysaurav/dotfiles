@@ -271,6 +271,9 @@ for_window [class="Wpp"] move to workspace $ws4
 for_window [class="libreoffice"] move to workspace $ws4
 for_window [class="Zathura"] move to workspace $ws4
 for_window [class="Spotify"] move to workspace $ws5
+for_window [class="Vlc"] move to workspace $ws10
+for_window [class="mpv"] move to workspace $ws10
+for_window [class="Baka Mplayer"] move to workspace $ws10
 for_window [class="Pavucontrol"] floating enable 
 for_window [class="Lxappearance"] floating enable 
 
@@ -280,11 +283,11 @@ bindsym $mod+d exec rofi -show run -matching fuzzy
 bindsym $mod+shift+d exec rofi -show window -matching fuzzy
 bindsym $mod+t split toggle
 bindsym Print	exec --no-startup-id scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
+bindsym $mod+m exec i3-msg move workspace to output right
 bindsym Shift+Print exec --no-startup-id scrot -u '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
 #bindsym $mod+Insert exec $screencast
 #bindsym $mod+Delete exec $stoprec
 ####autostart####
-#exec --no-startup-id xrdb -merge ~/.Xresources
 exec --no-startup-id $HOME/.config/i3/my_lock.sh
 exec --no-startup-id firefox-nightly
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
@@ -292,5 +295,5 @@ exec --no-startup-id compton -b --config $HOME/.compton.conf
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id termite --name dropdown
 exec --no-startup-id libinput-gestures-setup start
-exec --no-startup-id xrdb -merge ~/.Xresources && urxvt -name ranger_start -e ranger
+exec --no-startup-id xrdb -merge ~/.Xresources && urxvt -name ranger_start -e zsh -i -c ranger 
 ##########PERSONAL##########
