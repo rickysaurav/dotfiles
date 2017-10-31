@@ -46,7 +46,7 @@ Plug 'shougo/echodoc.vim'
 Plug 'xolox/vim-session'
 Plug 'xolox/vim-misc'
 Plug 'Chiel92/vim-autoformat'
-"Plug 'takac/vim-hardtime'
+Plug 'takac/vim-hardtime'
 Plug 'easymotion/vim-easymotion'
 Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/incsearch-easymotion.vim'
@@ -58,6 +58,9 @@ Plug 'tpope/vim-fugitive'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'floobits/floobits-neovim', { 'do': function('DoRemote') }
 Plug 'zchee/deoplete-jedi'
+Plug 'fatih/vim-go'
+Plug 'zchee/deoplete-go', {'build': {'unix': 'make'}}
+Plug 'jodosha/vim-godebug' " Debugger integration via delve
 " Add plugins to &runtimepath
 call plug#end()
 filetype plugin indent on
@@ -82,36 +85,49 @@ let g:tmuxline_separators = {
 			\ 'right_alt' : '<',
 			\ 'space' : ' '}
 
-"deoplete
-call deoplete#custom#source('clang','max_pattern_length',0)
+"Neoterm - terminal functionality
+let g:neoterm_position = "vertical"
+
+
+"deoplete - autocompletion
 call deoplete#custom#source('file','min_pattern_length',0)
 let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
 let g:deoplete#sources#clang#clang_header = '/lib/clang'
 let g:deoplete#sources#clang#std = {'cpp':'c++11'}
 let g:deoplete#enable_at_startup = 1
-set completeopt-=preview
-"autocmd CompleteDone * pclose!
 inoremap <expr> <C-Space> deoplete#mappings#manual_complete()
+set completeopt-=preview
 
-"chromatica
+"golang - settings for vim-go
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_types = 1
+let g:go_fmt_command = "goimports"
+let g:go_auto_type_info = 1
+let g:go_doc_keywordprg_enabled = 0 "important : remove 'K' mapping,lifesaver
+let g:go_fmt_fail_silently = 1
 
+"chromatica - dynamic syntax highlighting clang
 let g:chromatica#enable_at_startup = 1
-"let g:chromatica#highlight_feature_level = 1
 let g:chromatica#libclang_path = '/usr/lib'
 
-"neomake
+"neomake - async linting
 
 let g:neomake_cpp_enabled_makers=['clang']
 let g:neomake_cpp_clang_args = ["-std=c++11"]
 autocmd! BufWritePost * Neomake
 
-"neosnippet
+"neosnippet - snippet engine
 
 let g:neosnippet#snippets_directory='~/.config/nvim/snippets'
 let g:neosnippet#enable_snipmate_compatibility=1
-let g:neosnippet#enable_completed_snippet =1
 
-"session
+"session - saving and restoring work sessions
 
 let g:session_directory = '~/.config/nvim/sessions'
 let g:session_autosave = 'yes'
@@ -119,29 +135,26 @@ let g:session_autoload ='yes'
 let g:session_autosave_periodic = 1
 let g:session_autosave_silent =1
 
-"delimitMate
+"delimitMate - bracket autocompletion
 let delimitMate_expand_cr = 1
 
-"hardtime
+"hardtime - vim training
 
-let g:hardtime_default_on = 1
+let g:hardtime_default_on = 0
 
-"gutentags
+"gutentags - tag management
 
 let g:gutentags_project_root = ['.myfile']
 
 
-"easymotion
+"easymotion -
 map  / <Plug>(easymotion-sn)
 omap / <Plug>(easymotion-tn)
-nmap <Leader>s <Plug>(easymotion-overwin-f2)
 
 " Turn on case insensitive feature
 let g:EasyMotion_smartcase = 1
 
-" JK motions: Line motions
-"map <Leader>j <Plug>(easymotion-j)
-"map <Leader>k <Plug>(easymotion-k)
+"Fuzzy easymotion search
 function! s:config_easyfuzzymotion(...) abort
 	return extend(copy({
 				\   'converters': [incsearch#config#fuzzyword#converter()],
@@ -175,7 +188,7 @@ au BufWrite *.nvim :Autoformat
 "let g:formatdef_clang ="'clang-format -lines='.a:firstline.':'.a:lastline.' --assume-filename=\"'.expand('%:p').'\" -style=file'"
 "let g:formatters_cpp = ['clang','clangformat','astyle_cpp']
 
-"echodoc
+"echodoc-function signatures in statusbar
 set noshowmode
 let g:echodoc_enable_at_startup = 1
 
@@ -193,6 +206,7 @@ vnoremap <Leader>P "+P
 "terminal easy exit
 tnoremap II <C-\><C-n>
 nnoremap <Leader>tc :Tclose<CR>
+
 "easy split navigation
 
 nnoremap <C-h> <C-w>h
@@ -201,8 +215,8 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
 "insert mode bindings for navigation
-
 inoremap <C-h>  <Left>
+
 inoremap <C-j>  <Down>
 inoremap <C-k>  <Up>
 inoremap <C-l>  <Right>
@@ -211,9 +225,13 @@ inoremap <C-l>  <Right>
 inoremap II <Esc>
 vnoremap v <Esc>
 
-"execute c++ program
-nnoremap <Leader>te w<CR>:execute 'T g++ '.shellescape(expand('%:p')).' -std=c++11 -D LOCAL_SYS -o '.shellescape(expand('%:p:r')).' && time '.shellescape(expand('%:p:r'))
-"fzf bindings
+"filetype based execution
+au FileType python :nmap <buffer> <Leader>te w<CR>:execute 'T python '.shellescape(expand('%:p'))<CR>
+au FileType go :nmap <buffer> <Leader>te w<CR>:execute 'T go run '.shellescape(expand('%:p'))<CR>
+au FileType go :nmap <buffer> <Leader>k  :GoDoc<CR>
+au FileType cpp :nmap <buffer> <Leader>te w<CR>:execute 'T g++ '.shellescape(expand('%:p')).' -std=c++11 -D LOCAL_SYS -o '.shellescape(expand('%:p:r')).' && time '.shellescape(expand('%:p:r'))<CR>
+
+"fzf bindings - search
 nnoremap <Leader>hf :History<CR>
 nnoremap <Leader>fo :FZF<CR>
 nnoremap <A-x> :Commands<CR>
@@ -230,6 +248,8 @@ nnoremap <Leader>fh :FZF $HOME<CR>
 nnoremap J :tabprevious<CR>
 nnoremap K :tabnext<CR>
 
+" open file in a new tab
+nnoremap <Leader>tn :tabedit % <CR>
 " topcoder greed open probem statement using links in new terminal
 function Open_statement(filname)
 	let a:tempfil = fnameescape(a:filname)
@@ -245,6 +265,9 @@ au FocusLost,WinLeave * :silent! wa
 " Trigger autoread when changing buffers or coming back to vim.
 au FocusGained,BufEnter * :silent! !
 map <Leader>r :exe "%s/".expand("<cword>")."/
+
+
+"colorschemes
 "colorscheme gotham
 "colorscheme base16-google-dark
 colorschem wal

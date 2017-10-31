@@ -170,6 +170,7 @@ bindsym $mod+r mode "resize"
 
 set $stoprec --no-startup-id killall ffmpeg & killall screenkey
 set $screencast --no-startup-id screenkey & bash ~/scripts/screencast.sh
+set $browser firefox-nightly
 
 
 
@@ -262,8 +263,14 @@ for_window [instance="dropdown"] floating enable
 for_window [instance="dropdown"] move scratchpad
 bindsym $mod+u [instance="dropdown"] scratchpad show; move position center
 
+###lyricfier###
+for_window [class="lyricfier"] floating enable 
+for_window [class="lyricfier"] move scratchpad
+bindsym $mod+m [class="lyricfier"] scratchpad show; move position center
+
 ####assignment####
 for_window [class="Firefox"] move to workspace $ws1
+for_window [class="qutebrowser"] move to workspace $ws1
 for_window [instance="ranger_start"] move to workspace $ws3
 for_window [class="Thunar"] move to workspace $ws3
 for_window [class="Wps"] move to workspace $ws4
@@ -273,7 +280,7 @@ for_window [class="Zathura"] move to workspace $ws4
 for_window [class="Spotify"] move to workspace $ws5
 for_window [class="Vlc"] move to workspace $ws10
 for_window [class="mpv"] move to workspace $ws10
-for_window [class="Baka Mplayer"] move to workspace $ws10
+for_window [class="baka-mplayer"] move to workspace $ws10
 for_window [class="Pavucontrol"] floating enable 
 for_window [class="Lxappearance"] floating enable 
 
@@ -281,19 +288,22 @@ for_window [class="Lxappearance"] floating enable
 bindsym $mod+Shift+x exec $HOME/.config/i3/my_lock.sh
 bindsym $mod+d exec rofi -show run -matching fuzzy
 bindsym $mod+shift+d exec rofi -show window -matching fuzzy
+bindsym $mod+c exec rofi -rofi -modi "clipboard:greenclip print" -show clipboard
 bindsym $mod+t split toggle
 bindsym Print	exec --no-startup-id scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
-bindsym $mod+m exec i3-msg move workspace to output right
+bindsym $mod+shift+s exec i3-msg move workspace to output right
 bindsym Shift+Print exec --no-startup-id scrot -u '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
 #bindsym $mod+Insert exec $screencast
 #bindsym $mod+Delete exec $stoprec
 ####autostart####
 exec --no-startup-id $HOME/.config/i3/my_lock.sh
-exec --no-startup-id firefox-nightly
+exec --no-startup-id $browser 
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
 exec --no-startup-id compton -b --config $HOME/.compton.conf 
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id termite --name dropdown
 exec --no-startup-id libinput-gestures-setup start
 exec --no-startup-id xrdb -merge ~/.Xresources && urxvt -name ranger_start -e zsh -i -c ranger 
+exec --no-startup-id greenclip daemon
+exec --no-startup-id udiskie 
 ##########PERSONAL##########

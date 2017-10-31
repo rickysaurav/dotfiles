@@ -1,7 +1,8 @@
 # Created by newuser for 5.4.1
 (wal -t -r &)
+export GOPATH=~/go
 export EDITOR=nvim
-export PATH=$PATH:/usr/bin/core_perl:$HOME/.rvm/bin:/usr/lib/w3m
+export PATH=$PATH:/usr/bin/core_perl:$HOME/.rvm/bin:/usr/lib/w3m:$GOPATH/bin
 export TERM=xterm-256color
 export FZF_TMUX=1
 ulimit -s 524144
@@ -49,7 +50,7 @@ zplug load
 
 #####FZF########
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_COMMAND='rg --files --no-ignore --ignore-case --hidden --follow --glob "!.git/*"'
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore --ignore-case --hidden --follow --glob "!.git/*" --glob "!.cache/*"'
 if zplug check b4b4r07/enhancd; then
     # setting if enhancd is available
     export ENHANCD_FILTER=fzf
