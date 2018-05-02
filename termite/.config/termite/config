@@ -4,7 +4,7 @@
 #audible_bell = false
 #clickable_url = true
 #dynamic_title = true
-font = Inconsolata Nerd Font Bold  16 
+font = Inconsolata Nerd Font 16 
 #fullscreen = true
 #geometry = 640x480
 #icon_name = terminal

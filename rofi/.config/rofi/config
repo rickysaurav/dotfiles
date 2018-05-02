@@ -1,17 +1,18 @@
+rofi.theme: ~/.cache/wal/colors-rofi-dark.rasi
 rofi.modi: window,drun,run
+rofi.color-enabled: true
 
-rofi.fullscreen: true
-rofi.padding: 300
+#rofi.fullscreen: true
+#rofi.padding: 300
 
-rofi.font: Iosevka 32
+rofi.font: Iosevka 20 
 
-rofi.separator-style: solid
-rofi.hide-scrollbar: true
-rofi.bw: 0
-
-rofi.display-drun: Run
-rofi.display-run: Exec
+rofi.display-drun: Run 
+rofi.display-run: Exec 
 
 rofi.terminal: urxvt
 
-rofi.color-enabled: true
+#rofi.separator-style: solid
+#rofi.hide-scrollbar: true
+#rofi.bw: 0
+#rofi.color-enabled: true

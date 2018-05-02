@@ -1,8 +1,8 @@
 # Created by newuser for 5.4.1
-(wal -t -r &)
+cat /home/ricky_saurav/.cache/wal/sequences
 export GOPATH=~/go
 export EDITOR=nvim
-export PATH=$PATH:/usr/bin/core_perl:$HOME/.rvm/bin:/usr/lib/w3m:$GOPATH/bin
+export PATH=$PATH:/usr/bin/core_perl:$HOME/.rvm/bin:/usr/lib/w3m:$GOPATH/bin:$HOME/bin:$HOME/.local/bin
 export TERM=xterm-256color
 export FZF_TMUX=1
 ulimit -s 524144
@@ -34,8 +34,7 @@ zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
 
 #####THEME SETTINGS####
 POWERLEVEL9K_MODE='nerdfont-complete'
-#POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir rbenv vcs)
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir dir_writable vcs)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir dir_writable virtualenv vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs battery os_icon time)
 POWERLEVEL9K_BATTERY_STAGES="▁▂▃▄▅▆▇█"
 #POWERLEVEL9K_BATTERY_STAGES=(
@@ -89,4 +88,3 @@ ftpane() {
   fi
 }
 
-##export PATH="$PATH:$HOME/.rvm/bin:$HOME/psiphon-psiphon-circumvention-system-d03bb2db3683/pyclient" # Add RVM to PATH for scripting

@@ -1358,8 +1358,8 @@ c.tabs.background = True
 # config.bind('F', 'hint all tab')
 # config.bind('G', 'scroll-to-perc')
 # config.bind('H', 'back')
-config.bind('K', 'tab-next')
-config.bind('J', 'tab-prev')
+# config.bind('J', 'tab-next')
+# config.bind('K', 'tab-prev')
 # config.bind('L', 'forward')
 # config.bind('M', 'bookmark-add')
 # config.bind('N', 'search-prev')
@@ -1546,3 +1546,10 @@ config.bind('J', 'tab-prev')
 
 ## Bindings for register mode
 # config.bind('<Escape>', 'leave-mode', mode='register')
+
+###PERSONAL##
+config.bind('K', 'tab-next')
+config.bind('J', 'tab-prev')
+config.bind('<Alt-Left>', 'back')
+config.bind('<Alt-Right>', 'forward')
+

@@ -14,57 +14,75 @@ set relativenumber
 set number
 set background=dark
 set splitright
-autocmd BufEnter * silent! lcd %:p:h "change working directory to filename's directory
+"autocmd BufEnter * silent! lcd %:p:h "change working directory to filename's directory
+
+"wrapper to update remote python plugins
+function! DoRemote(arg)
+	UpdateRemotePlugins
+endfunction
+
+
 call plug#begin('~/.config/nvim/plugged')
 " Make sure you use single quotes
 " Group dependencies, vim-snippets depends on ultisnips
 "Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 " On-demand loading
-Plug  'Shougo/neosnippet'| Plug 'shougo/neosnippet-snippets'|Plug 'honza/vim-snippets'
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-Plug 'scrooloose/nerdcommenter'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-function! DoRemote(arg)
-	UpdateRemotePlugins
-endfunction
-Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
-Plug 'zchee/deoplete-clang' "dependencies deoplete and libclang python3.
+
+" colorscheme plugins start
 Plug 'kristijanhusak/vim-hybrid-material'
 Plug 'whatyouhide/vim-gotham'
 Plug 'dylanaraps/wal.vim'
 Plug 'frankier/neovim-colors-solarized-truecolor-only'
 Plug 'chriskempson/base16-vim'
 Plug 'flazz/vim-colorschemes'
-Plug 'benekastah/neomake'
-Plug 'edkolev/tmuxline.vim'
-Plug 'vim-airline/vim-airline'
+" colorscheme plugins end
+
+
 Plug 'Raimondi/delimitMate'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'kassio/neoterm'
-Plug 'shougo/echodoc.vim'
-Plug 'xolox/vim-session'
-Plug 'xolox/vim-misc'
-Plug 'Chiel92/vim-autoformat'
-Plug 'takac/vim-hardtime'
+Plug 'mhinz/vim-startify'
+Plug 'dylanaraps/root.vim'
+Plug 'tpope/vim-surround'
+Plug 'autozimu/LanguageClient-neovim', {
+			\ 'branch': 'next',
+			\ 'do': 'bash install.sh',
+			\ }
+Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
+Plug 'Shougo/neosnippet'| Plug 'shougo/neosnippet-snippets'|Plug 'honza/vim-snippets'
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'scrooloose/nerdcommenter'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/incsearch-easymotion.vim'
 Plug 'haya14busa/incsearch-fuzzy.vim'
+Plug 'w0rp/ale'
+Plug 'kassio/neoterm'
+Plug 'Chiel92/vim-autoformat'
+Plug 'takac/vim-hardtime'
+Plug 'zchee/deoplete-clang' "dependencies deoplete and libclang python3.
+Plug 'zchee/deoplete-go', {'build': {'unix': 'make'}}
+Plug 'zchee/deoplete-jedi'
+Plug 'fatih/vim-go'
+Plug 'jodosha/vim-godebug' " Debugger integration via delve
+Plug 'shougo/echodoc.vim'
+Plug 'edkolev/tmuxline.vim'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'arakashic/chromatica.nvim'
-Plug 'tpope/vim-surround'
 Plug 'ryanoasis/vim-devicons'
 Plug 'tpope/vim-fugitive'
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'floobits/floobits-neovim', { 'do': function('DoRemote') }
-Plug 'zchee/deoplete-jedi'
-Plug 'fatih/vim-go'
-Plug 'zchee/deoplete-go', {'build': {'unix': 'make'}}
-Plug 'jodosha/vim-godebug' " Debugger integration via delve
 " Add plugins to &runtimepath
 call plug#end()
 filetype plugin indent on
 syntax on
+
+
+"root.vim
+let g:root#patterns += ['.myfile','.mmt','pom.xml','.sass-cache', 'Readme.md', 'gulpfile.coffee']
+let g:root#echo = 0
+let g:root#auto = 1
 
 "Airline
 let g:airline_powerline_fonts = 1
@@ -86,17 +104,19 @@ let g:tmuxline_separators = {
 			\ 'space' : ' '}
 
 "Neoterm - terminal functionality
-let g:neoterm_position = "vertical"
+let g:neoterm_default_mod = "vertical"
 
 
 "deoplete - autocompletion
 call deoplete#custom#source('file','min_pattern_length',0)
-let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
-let g:deoplete#sources#clang#clang_header = '/lib/clang'
-let g:deoplete#sources#clang#std = {'cpp':'c++11'}
 let g:deoplete#enable_at_startup = 1
 inoremap <expr> <C-Space> deoplete#mappings#manual_complete()
 set completeopt-=preview
+
+"deoplete-clang setup
+let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
+let g:deoplete#sources#clang#clang_header = '/lib/clang'
+let g:deoplete#sources#clang#std = {'cpp':'c++11'}
 
 "golang - settings for vim-go
 let g:go_highlight_build_constraints = 1
@@ -116,34 +136,53 @@ let g:go_fmt_fail_silently = 1
 let g:chromatica#enable_at_startup = 1
 let g:chromatica#libclang_path = '/usr/lib'
 
-"neomake - async linting
-
-let g:neomake_cpp_enabled_makers=['clang']
-let g:neomake_cpp_clang_args = ["-std=c++11"]
-autocmd! BufWritePost * Neomake
+"ALE- async linting neomake alternate
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_linters = {
+			\   'cpp': ['clang'],
+			\}
+"nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+"nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
 "neosnippet - snippet engine
 
 let g:neosnippet#snippets_directory='~/.config/nvim/snippets'
 let g:neosnippet#enable_snipmate_compatibility=1
+"let g:neosnippet#enable_completed_snippet = 1
 
-"session - saving and restoring work sessions
 
-let g:session_directory = '~/.config/nvim/sessions'
-let g:session_autosave = 'yes'
-let g:session_autoload ='yes'
-let g:session_autosave_periodic = 1
-let g:session_autosave_silent =1
+"startify - start screen and session management
+let g:startify_session_dir = '~/.config/nvim/sessions'
+"let g:startify_list_order = ['sessions','files', 'dir', 'bookmarks','commands']
+let g:startify_list_order = [
+			\ ['   sessions:'],
+			\ 'sessions',
+			\ ['   MRU:   '],
+			\ 'files',
+			\ ['   MRU directory'],
+			\ 'dir',
+			\ ['  bookmarks:'],
+			\ 'bookmarks',
+			\ ['   commands:'],
+			\ 'commands',
+			\ ]
+let g:startify_update_oldfiles = 1
+let g:startify_session_persistence = 1
+let g:startify_session_delete_buffers = 1
+let g:startify_session_sort = 1
+
+
+"nerdtree
+let NERDTreeHijackNetrw = 0
+
 
 "delimitMate - bracket autocompletion
 let delimitMate_expand_cr = 1
 
 "hardtime - vim training
-
 let g:hardtime_default_on = 0
 
 "gutentags - tag management
-
 let g:gutentags_project_root = ['.myfile']
 
 
@@ -185,8 +224,9 @@ imap <expr><s-TAB>
 au BufWrite *.cpp :Autoformat
 au BufWrite *.vim :Autoformat
 au BufWrite *.nvim :Autoformat
-"let g:formatdef_clang ="'clang-format -lines='.a:firstline.':'.a:lastline.' --assume-filename=\"'.expand('%:p').'\" -style=file'"
-"let g:formatters_cpp = ['clang','clangformat','astyle_cpp']
+"let g:autoformat_verbosemode=1
+let g:formatdef_clang ="'clang-format -lines='.a:firstline.':'.a:lastline.' --assume-filename=\"'.expand('%:p').'\" -style=file'"
+let g:formatters_cpp = ['clang','clangformat','astyle_cpp']
 
 "echodoc-function signatures in statusbar
 set noshowmode
@@ -254,7 +294,7 @@ nnoremap <Leader>tn :tabedit % <CR>
 function Open_statement(filname)
 	let a:tempfil = fnameescape(a:filname)
 	execute 'tabnew'
-	execute 'terminal links2 '.a:tempfil.'.html'
+	execute 'terminal elinks '.a:tempfil.'.html'
 endfunction
 nnoremap <Leader>os :call Open_statement(expand('%:p:r'))<CR>
 
@@ -272,3 +312,9 @@ map <Leader>r :exe "%s/".expand("<cword>")."/
 "colorscheme base16-google-dark
 colorschem wal
 
+"languageclient-neovim
+" 'java': ['jdtls', '-data', getcwd()],
+let g:LanguageClient_serverCommands = {
+			\'java': ['jdtls'],
+			\ }
+let g:LanguageClient_loggingLevel = 'DEBUG'

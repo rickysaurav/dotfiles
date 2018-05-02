@@ -1,0 +1,261 @@
+* Emacs Configuration
+This is an Emacs configuration file written in Org mode. It is an attempt to keep my ~/.emacs.d tidy, but still be able to keep it all in one file. I aim to briefly explain all my configurations as I go along!
+I would not recommend using this configuration as-is, because it probably contains a lot you don’t really need. I do, however, hope people find some golden nuggets that they can smuggle into their own configs.
+* Bootstrap
+** Initialise and add melpa 
+    #+BEGIN_SRC emacs-lisp
+    (require 'package)
+    (setq package-enable-at-startup nil)
+    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+    (package-initialize)
+    #+END_SRC
+** Bootstrap use-package
+#+BEGIN_SRC emacs-lisp
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (eval-when-compile
+    (require 'use-package))
+#+END_SRC
+* Interface Tweaks
+** Autosave and Backups
+    #+BEGIN_SRC emacs-lisp
+    (setq auto-save-default nil)
+    (setq make-backup-files nil)
+    #+END_SRC
+** Misc
+#+BEGIN_SRC emacs-lisp
+  (setq ring-bell-function 'ignore)
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (setq inhibit-startup-screen t)
+#+END_SRC
+** Some interface tweaks
+    #+BEGIN_SRC emacs-lisp
+    (display-battery-mode t)
+    (display-time-mode t)
+    (menu-bar-mode -1)
+    (scroll-bar-mode -1)
+    (tool-bar-mode -1)
+    #+END_SRC
+** Save locations on buffers 
+    #+BEGIN_SRC emacs-lisp
+    (save-place-mode t)
+    #+END_SRC
+   
+** Set UTF-8 encoding 
+    #+BEGIN_SRC emacs-lisp
+    (setq locale-coding-system 'utf-8)
+    (set-terminal-coding-system 'utf-8)
+    (set-keyboard-coding-system 'utf-8)
+    (set-selection-coding-system 'utf-8)
+    (prefer-coding-system 'utf-8)
+    #+END_SRC
+** Font settings
+#+BEGIN_SRC emacs-lisp
+  (set-face-attribute 'default nil :font "Iosevka Nerd Font-14" )
+#+END_SRC 
+* Org-bullets
+  UTF-8 bullets for org mode 
+** Config 
+Enable it on entering org-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+END_SRC
+* Config edit & reload
+** Edit config.org
+   #+BEGIN_SRC emacs-lisp
+     (defun config-visit ()
+       (interactive)
+       (find-file "~/.emacs.d/config.org"))
+     (global-set-key (kbd "C-c e") 'config-visit)
+   #+END_SRC
+** Reload config
+#+BEGIN_SRC emacs-lisp
+  (defun config-reload ()
+  "Reloads ~/.emacs.d/config.org at runtime"
+  (interactive)
+  (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (global-set-key (kbd "C-c r") 'config-reload)
+#+END_SRC
+* Which-key
+  Display available keybindings in a popup
+** Config
+enable which-key mode
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :ensure t
+    :diminish which-key-mode
+    :config
+    (which-key-mode))
+#+END_SRC
+* Evil-mode
+  Vim bindings for emacs
+** Init
+Use C-U to scroll in buffer like vim
+** Config 
+*** Enable evil-mode 
+*** minibuffer-keyboard-quit 
+Function to quit all minibuffers
+*** Map [escape] to quit all minibuffers
+#+BEGIN_SRC emacs-lisp
+    (use-package evil
+      :ensure t
+      :init
+      ;use C-U to scroll in normal mode
+      (setq evil-want-C-u-scroll t)
+      :config
+      (evil-mode 1)
+      (defun minibuffer-keyboard-quit ()
+        "Abort recursive edit.
+      In Delete Selection mode, if the mark is active, just deactivate it;
+      then it takes a second \\[keyboard-quit] to abort the minibuffer."
+        (interactive)
+        (if (and delete-selection-mode transient-mark-mode mark-active)
+            (setq deactivate-mark  t)
+          (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+          (abort-recursive-edit)))
+      (define-key evil-normal-state-map [escape] 'keyboard-quit)
+      (define-key evil-visual-state-map [escape] 'keyboard-quit)
+      (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit))
+#+END_SRC
+* Relative-number
+Enable vim-like relative number in emacs
+** Init
+*** Set linum-relative-current-symbol to empty string to show current line-number
+** Config
+*** Enable relative numbering
+#+BEGIN_SRC emacs-lisp
+  (use-package linum-relative
+    :ensure t
+    :init
+    ;empty string shows current line-number,default 0
+    (setq linum-relative-current-symbol "")
+    :diminish linum-relative-mode
+    :config
+    (linum-relative-global-mode))
+#+END_SRC
+
+* Smart-parens
+Package for bracket-pair matching
+** Config 
+*** Enable smartparens mode
+*** Enable smartparens show matching bracket mode
+*** NewLine and Indent for C/C++ programming
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens-config
+    :ensure smartparens
+    :diminish smartparens-mode
+    :config
+    (smartparens-global-mode 1)
+    (show-smartparens-global-mode 1)
+    (sp-local-pair 'c++-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
+    (defun my-create-newline-and-enter-sexp (&rest _ignored)
+      "Open a new brace or bracket expression, with relevant newlines and indent. "
+      (newline)
+      (indent-according-to-mode)
+      (forward-line -1)
+      (indent-according-to-mode)))
+#+END_SRC
+* Helm
+Interface autocompletion for emacs
+** Init
+   Enable fuzzy matching wherever possible
+** Config 
+*** Enable helm-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package helm
+    :ensure t
+    :bind (("M-x" . helm-M-x)
+           ("C-x C-f" . helm-find-files))
+    :init
+    (setq helm-semantic-fuzzy-match t
+          helm-imenu-fuzzy-match    t
+          helm-locate-fuzzy-match t
+          helm-apropos-fuzzy-match t
+          helm-M-x-fuzzy-match t
+          helm-buffers-fuzzy-matching t
+          helm-recentf-fuzzy-match    t
+          helm-mode-fuzzy-match t
+          helm-completion-in-region-fuzzy-match t)
+    :diminish helm-mode
+    :config
+    (helm-mode 1))
+#+END_SRC
+* Flycheck
+Asynchronous linting
+** Config 
+*** Enable flycheck mode
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :ensure t
+  :config
+  (global-flycheck-mode 1))
+#+END_SRC
+* Spacemacs-theme
+** Init 
+*** Defer to delay loading
+*** load dark theme
+#+BEGIN_SRC emacs-lisp
+(use-package spacemacs-theme
+  :ensure t
+  :defer t
+  :init (load-theme 'spacemacs-dark t))
+#+END_SRC
+* Telephone-line
+Modern mode-line for emacs
+** Init
+*** Set lhs,lhs-center,rhs-center,rhs segments
+*** Set the separator values 
+*** Set line height
+*** Short values for evil-state
+** Config
+*** Enable telephone-line
+#+BEGIN_SRC emacs-lisp
+(use-package telephone-line
+:ensure t
+:init
+    (setq telephone-line-lhs
+    '((evil   . (telephone-line-evil-tag-segment))
+	(accent . (telephone-line-vc-segment telephone-line-process-segment telephone-line-projectile-segment))
+	(nil    . (telephone-line-minor-mode-segment))))
+    (setq telephone-line-center-lhs
+	'((nil .())
+	    (evil   . (telephone-line-buffer-segment))))
+    (setq telephone-line-center-rhs
+	'((evil   . (telephone-line-major-mode-segment))
+	    (nil .())))
+    (setq telephone-line-rhs
+    '((nil    . (telephone-line-flycheck-segment))
+    (accent . (telephone-line-misc-info-segment))
+	(evil   . (telephone-line-airline-position-segment))))
+    (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+	telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
+	telephone-line-primary-right-separator 'telephone-line-cubed-right
+	telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
+    (setq telephone-line-height 24
+	telephone-line-evil-use-short-tag t)
+:config
+(telephone-line-mode 1))
+#+END_SRC
+
+* Diminish
+Reduce modeline clutter by diminishing minor modes
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+    :ensure t
+    :init
+    (diminish 'undo-tree-mode))
+#+END_SRC
+* avy
+ Vim-easymotion alternative for emacs
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t)
+#+END_SRC

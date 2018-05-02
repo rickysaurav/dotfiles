@@ -1,5 +1,6 @@
-URxvt.font: xft:InconsolataGo Nerd Font Mono:style=Bold:size=16,\
+URxvt.font: xft:InconsolataGo Nerd Font:size=16,\
 			xft:DejaVuSansMono Nerd Font:size=16
 URxvt.saveLines: 4095
+URxvt.letterSpace: 1
 URxvt*depth: 32
 URxvt.scrollBar: false

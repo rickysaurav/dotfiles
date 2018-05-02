@@ -264,12 +264,13 @@ for_window [instance="dropdown"] move scratchpad
 bindsym $mod+u [instance="dropdown"] scratchpad show; move position center
 
 ###lyricfier###
-for_window [class="lyricfier"] floating enable 
-for_window [class="lyricfier"] move scratchpad
-bindsym $mod+m [class="lyricfier"] scratchpad show; move position center
+for_window [class="Musixmatch"] floating enable 
+for_window [class="Musixmatch"] move scratchpad
+bindsym $mod+m [class="Musixmatch"] scratchpad show; move position center
 
 ####assignment####
 for_window [class="Firefox"] move to workspace $ws1
+for_window [class="Nightly"] move to workspace $ws1
 for_window [class="qutebrowser"] move to workspace $ws1
 for_window [instance="ranger_start"] move to workspace $ws3
 for_window [class="Thunar"] move to workspace $ws3
