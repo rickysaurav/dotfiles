@@ -29,6 +29,7 @@ call plug#begin('~/.config/nvim/plugged')
 " On-demand loading
 
 " colorscheme plugins start
+Plug 'liuchengxu/space-vim-dark'
 Plug 'kristijanhusak/vim-hybrid-material'
 Plug 'whatyouhide/vim-gotham'
 Plug 'dylanaraps/wal.vim'
@@ -256,7 +257,6 @@ nnoremap <C-l> <C-w>l
 
 "insert mode bindings for navigation
 inoremap <C-h>  <Left>
-
 inoremap <C-j>  <Down>
 inoremap <C-k>  <Up>
 inoremap <C-l>  <Right>

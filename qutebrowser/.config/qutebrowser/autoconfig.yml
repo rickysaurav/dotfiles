@@ -23,5 +23,12 @@ settings:
     global: top
   tabs.show:
     global: always
+  url.default_page:
+    global: https://www.google.com
+  url.searchengines:
+    global:
+      DEFAULT: https://www.google.com/search?hl=en&q={}
+  url.start_pages:
+    global: https://www.google.com
   zoom.default:
     global: '125'

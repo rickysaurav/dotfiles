@@ -1552,4 +1552,3 @@ config.bind('K', 'tab-next')
 config.bind('J', 'tab-prev')
 config.bind('<Alt-Left>', 'back')
 config.bind('<Alt-Right>', 'forward')
-
