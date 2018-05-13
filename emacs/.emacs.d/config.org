@@ -26,9 +26,10 @@ I would not recommend using this configuration as-is, because it probably contai
     #+END_SRC
 ** Misc
     #+BEGIN_SRC emacs-lisp
-    (setq ring-bell-function 'ignore)
-    (defalias 'yes-or-no-p 'y-or-n-p)
-    (setq inhibit-startup-screen t)
+      (setq vc-follow-symlinks t)
+      (setq ring-bell-function 'ignore)
+      (defalias 'yes-or-no-p 'y-or-n-p)
+      (setq inhibit-startup-screen t)
     #+END_SRC
 ** Some interface tweaks
     #+BEGIN_SRC emacs-lisp
@@ -100,6 +101,18 @@ Enable it on entering org-mode
 	:config
 	(which-key-mode))
     #+END_SRC
+* General
+  Keybinding on steroids
+** Config 
+   1. General evil setup for simpler evil-keybinding
+** Elisp 
+   #+BEGIN_SRC emacs-lisp
+     (use-package general
+       :ensure t
+       :demand t
+       :config
+       (general-evil-setup))
+   #+END_SRC
 * Evil-mode
   Vim bindings for emacs
 ** Init
@@ -111,29 +124,35 @@ Use C-U to scroll in buffer like vim
    4. Map [escape] to quit all minibuffers
 ** Elisp
     #+BEGIN_SRC emacs-lisp
-	(use-package evil
-	:ensure t
-	:init
-	;use C-U to scroll in normal mode
-	(setq evil-want-C-u-scroll t)
-	:config
-	(evil-mode 1)
-	(defun minibuffer-keyboard-quit ()
-	    "Abort recursive edit.
-	In Delete Selection mode, if the mark is active, just deactivate it;
-	then it takes a second \\[keyboard-quit] to abort the minibuffer."
-	    (interactive)
-	    (if (and delete-selection-mode transient-mark-mode mark-active)
-		(setq deactivate-mark  t)
-	    (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
-	    (abort-recursive-edit)))
-	(define-key evil-normal-state-map [escape] 'keyboard-quit)
-	(define-key evil-visual-state-map [escape] 'keyboard-quit)
-	(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-	(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-	(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-	(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-	(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit))
+      (use-package evil
+      :after general
+      :ensure t
+      :demand t
+      ;; :general
+      ;; ('insert
+      ;;  "C-n" 'evil-next-line
+      ;;  "C-p" 'evil-previous-line)
+      :init
+      ;use C-U to scroll in normal mode
+      (setq evil-want-C-u-scroll t)
+      :config
+      (evil-mode 1)
+      (defun minibuffer-keyboard-quit ()
+          "Abort recursive edit.
+      In Delete Selection mode, if the mark is active, just deactivate it;
+      then it takes a second \\[keyboard-quit] to abort the minibuffer."
+          (interactive)
+          (if (and delete-selection-mode transient-mark-mode mark-active)
+              (setq deactivate-mark  t)
+          (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+          (abort-recursive-edit)))
+      (define-key evil-normal-state-map [escape] 'keyboard-quit)
+      (define-key evil-visual-state-map [escape] 'keyboard-quit)
+      (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit))
     #+END_SRC
 * Sudo-edit 
   Tramp wrapper to edit files as root 
@@ -143,17 +162,6 @@ Use C-U to scroll in buffer like vim
       :ensure t
       :defer t)
   #+END_SRC
-* General
-  Keybinding on steroids
-** Config 
-   1. General evil setup for simpler evil-keybinding
-** Elisp 
-   #+BEGIN_SRC emacs-lisp
-     (use-package general
-       :ensure t
-       :config
-       (general-evil-setup))
-   #+END_SRC
 * Unbind Space
   Unbind Space in evil-states to use it as prefix
 ** Elisp
@@ -220,24 +228,26 @@ Copied from spacemacs https://github.com/syl20bnr/spacemacs/blob/master/layers/%
     #+END_SRC
 ** Elisp
     #+BEGIN_SRC emacs-lisp
-	(general-def '(normal motion)
-	:prefix "SPC f"
-	"" '(:ignore t :which-key "file-prefix")
-	"l" 'helm-locate
-	"e" 'sudo-edit
-	"s" 'save-buffer
-	"S" 'evil-write-all
-	"c" 'gnus-copy-file
-	"y" 'show-and-copy-buffer-filename
-	"v" 'config-visit
-	"r" 'config-reload)
+      (general-def '(normal motion)
+      :prefix "SPC f"
+      "" '(:ignore t :which-key "file-prefix")
+      "l" 'helm-locate
+      "e" 'sudo-edit
+      "s" 'save-buffer
+      "S" 'evil-write-all
+      "c" 'gnus-copy-file
+      "y" 'show-and-copy-buffer-filename
+      "v" 'config-visit
+      "r" 'config-reload
+      "f" 'helm-find-files)
     #+END_SRC
 * Help shortcuts
 ** Elisp 
     #+BEGIN_SRC emacs-lisp
-    (general-def '(normal motion)
-	:prefix "SPC h"
-	"" '(:ignore t :which-key "help-prefix")
+          (general-def '(normal motion)
+              :prefix "SPC h"
+              "" '(:ignore t :which-key "help-prefix")
+              "h" 'helm-apropos)
     #+END_SRC
 * Relative-number
   Enable vim-like relative number in emacs
@@ -307,10 +317,17 @@ Copied from spacemacs https://github.com/syl20bnr/spacemacs/blob/master/layers/%
   Asynchronous linting
 ** Elisp
 #+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :ensure t
-  :config
-  (global-flycheck-mode 1))
+  (use-package flycheck
+    :ensure t
+    :general
+    ('(normal motion) "SPC e"(general-simulate-key "C-c !"
+                               :name evil-flycheck
+                               :docstring "Simulate flycheck prefix in evil modes"
+                               :which-key "flycheck-errors"))
+    :init
+    (setq flycheck-navigation-minimum-level 'error)
+    :config
+    (global-flycheck-mode 1))
 #+END_SRC
 * Spacemacs-theme
 ** Init 
@@ -375,15 +392,19 @@ Vim-easymotion alternative for emacs
    2. bind <SPC-/> to got-char as work-around for previous.(unbind SPC befor binding <SPC-/>)
 ** Elisp
     #+BEGIN_SRC emacs-lisp
-    (use-package avy
-	:ensure t
-	:general
-	(isearch-mode-map
-	"<return>" 'avy-isearch)
-	('(normal motion)
-	"SPC /" 'evil-avy-goto-char-timer)
-	:config
-	(avy-setup-default))
+      (use-package avy
+          :ensure t
+          :demand t
+          :general
+          (isearch-mode-map
+          "<return>" 'avy-isearch)
+          ('(normal motion)
+          "SPC /" 'evil-avy-goto-char-timer)
+          ('(normal motion)
+           :prefix "SPC SPC"
+           "" '(:ignore t :which-key "easymotion-prefix"))
+          :config
+          (avy-setup-default))
     #+END_SRC
 * Evil-Easymotion
 Vim-easymotion emacs bindings
@@ -391,19 +412,105 @@ Vim-easymotion emacs bindings
    Unbind SPC before assigning <SPC-SPC> as easymotion-prefix
 ** Elisp
     #+BEGIN_SRC emacs-lisp
-    (use-package evil-easymotion
-	:ensure t
-	:after avy
-	:config
-	(evilem-default-keybindings "SPC SPC"))
+      (use-package evil-easymotion
+          :ensure t
+          :after avy
+          :general
+          ('(normal motion)
+           :prefix "SPC SPC"
+            "" '(:ignore t :which-key "easy-motion prefix"))
+          :config
+          (evilem-default-keybindings "SPC SPC"))
     #+END_SRC
-* Ranger 
-Ranger file manager for emacs
+* Try 
+  Try emacs packages 
+** Elisp
+#+BEGIN_SRC emacs-lisp
+  (use-package try
+    :ensure t
+    :defer t)
+#+END_SRC
+* Evil-nerd-commenter
+  Vim nerd-commenter for emacs 
+** Elisp
+   #+BEGIN_SRC emacs-lisp
+     (use-package evil-nerd-commenter
+       :ensure t
+       :general
+       ('(normal motion)
+        :prefix "SPC c"
+        "" '(:ignore t :which-key "comment-prefix")
+        "i" 'evilnc-comment-or-uncomment-lines
+        "l" 'evilnc-quick-comment-or-uncomment-to-the-line
+        "c" 'evilnc-copy-and-comment-lines
+        "p" 'evilnc-comment-or-uncomment-paragraphs
+        "r" 'comment-or-uncomment-region
+        "v" 'evilnc-toggle-invert-comment-line-by-line
+        "."  'evilnc-copy-and-comment-operator
+        "\\" 'evilnc-comment-operator ; if you prefer backslash key
+        ))
+   #+END_SRC
+* Company
+  Code completion package 
+** Elisp
+   #+BEGIN_SRC emacs-lisp
+     (use-package company
+       :ensure t
+       :defer t
+       :general
+       (company-active-map
+        "C-n" (lambda () (interactive) (company-complete-common-or-cycle 1))
+        "C-p" (lambda () (interactive) (company-complete-common-or-cycle -1))
+        ;; "<tab>" (lambda () (interactive) (company-complete-common-or-cycle 1))
+        ;; "<backtab>" (lambda () (interactive) (company-complete-common-or-cycle -1))
+        )
+       :hook 
+       (after-init . global-company-mode)
+       :init 
+       (setq company-clang-insert-arguments nil)
+       (setq company-show-numbers t)
+       (setq company-idle-delay 0))
+   #+END_SRC
+* Company quickhelp
+  Company mode completion documentation
 ** Elisp 
     #+BEGIN_SRC emacs-lisp
-    (use-package ranger
-	:ensure t
-	:init
-	(setq ranger-show-literal t)
-	(setq ranger-show-hidden t))
+      (use-package company-quickhelp
+        :ensure t
+        :init
+        (setq company-quickhelp-delay 0.3)
+        :after (company)
+        :config
+        (company-quickhelp-mode))
     #+END_SRC
+* Irony
+Libclang server based completion 
+** Elisp
+   #+BEGIN_SRC emacs-lisp
+     (use-package irony
+       :ensure t
+       :hook
+       ((c++-mode c-mode objc-mode) . irony-mode)
+       (irony-mode . irony-cdb-autosetup-compile-options))
+   #+END_SRC
+* Company-irony
+Company backend for irony
+** Elisp
+   #+BEGIN_SRC emacs-lisp
+     (use-package company-irony
+       :ensure t
+       :after (company irony)
+       :config
+       ;; (delete 'company-backends 'company-clang)
+       (delete 'company-clang 'company-backends)
+       (add-to-list 'company-backends 'company-irony))
+   #+END_SRC
+* Yasnippet 
+Snippet engine for emacs 
+** Elisp 
+   #+BEGIN_SRC emacs-lisp
+     (use-package yasnippet
+       :ensure yasnippet-snippets
+       :config
+       (yas-global-mode 1))
+   #+END_SRC

@@ -1,0 +1,23 @@
+# -*- mode: snippet -*-
+# name: template
+# key: norm
+# --
+#include<bits/stdc++.h>
+using namespace std;
+#define NL "\n"
+#define fillm(a,val) memset(a,val,sizeof(a))
+typedef long long ll;
+typedef pair<ll,ll> pll;
+const ll mod = 1000000007;
+const ll inf = 1ll<<50;
+const ll maxn = ${1:100005};
+int main()
+{
+#ifdef LOCAL_SYS
+freopen("input.txt","r",stdin);
+#endif
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    $0
+    return 0;
+}
