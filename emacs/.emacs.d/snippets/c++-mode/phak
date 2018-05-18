@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: phak
+# key: phak
+# --
+cout<<"phak"<<endl;

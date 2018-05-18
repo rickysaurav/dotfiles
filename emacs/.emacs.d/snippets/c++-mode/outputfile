@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: output
+# key: outp
+# --
+freopen("output.txt","w",stdout);

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: case-template
+# key: case
+# --
+cout<<"Case #"<<tt<<": "<<${1:ans}<<NL;$0

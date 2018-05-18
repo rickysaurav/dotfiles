@@ -196,8 +196,8 @@ bindsym XF86AudioPrev exec playerctl previous
 #border
 for_window [class="^.*"] border pixel 3
 #gaps
-gaps inner 18
-gaps outer 18 
+gaps inner 10
+gaps outer 10 
 set $mode_gaps Gaps: (o) outer, (i) inner
 set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
 set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
@@ -237,8 +237,6 @@ mode "$mode_gaps_outer" {
 smart_gaps on 
 
 
-
-
 ######colors#######
 # Set colors from Xresources
 # Change 'color7' and 'color2' to whatever colors you want i3 to use 
@@ -246,7 +244,7 @@ smart_gaps on
 # NOTE: The '#f0f0f0' in the lines below is the color i3 will use if
 # it fails to get colors from Xresources.
 set_from_resource $fg i3wm.color7 #f0f0f0
-set_from_resource $bg i3wm.color2 #f0f0f0
+set_from_resource $bg i3wm.color0 #f0f0f0
 
 # class                 border  backgr. text indicator child_border
 client.focused          $bg     $bg     $fg  $bg       $bg

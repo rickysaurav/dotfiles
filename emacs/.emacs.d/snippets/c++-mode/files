@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: files
+# key: files
+# --
+#ifdef LOCAL_SYS
+freopen("input.txt","r",stdin);
+#endif
