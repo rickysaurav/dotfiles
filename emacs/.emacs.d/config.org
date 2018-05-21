@@ -1,4 +1,3 @@
-
 * Emacs Configuration
 This is an Emacs configuration file written in Org mode. It is an attempt to keep my ~/.emacs.d tidy, but still be able to keep it all in one file. I aim to briefly explain all my configurations as I go along!
 I would not recommend using this configuration as-is, because it probably contains a lot you don’t really need. I do, however, hope people find some golden nuggets that they can smuggle into their own configs.
@@ -24,8 +23,8 @@ I would not recommend using this configuration as-is, because it probably contai
    Save to existing file name(no swapfiles or backups),lower character inputs and idle time limits before autosave.
     #+BEGIN_SRC emacs-lisp
       (setq auto-save-visited-file-name t
-            auto-save-interval 1
-            auto-save-timeout 15
+            ;; auto-save-interval 100
+            ;; auto-save-timeout 30
             make-backup-files nil)
     #+END_SRC
 ** Misc
@@ -229,14 +228,16 @@ Enable it on entering org-mode
   Spacemacs like buffer manipulation 
 ** Elisp 
     #+BEGIN_SRC emacs-lisp
-    (general-def '(normal motion)
-	:prefix "SPC b"
-	"" '(:ignore t :which-key "buffer-prefix")
-	"b" 'helm-mini
-	"d" 'kill-this-buffer
-	"k" 'kill-buffer
-	"n" 'next-buffer
-	"p" 'previous-buffer)
+      (general-def '(normal motion)
+          :prefix "SPC b"
+          "" '(:ignore t :which-key "buffer-prefix")
+          "b" 'helm-mini
+          "d" 'kill-this-buffer
+          "k" 'kill-buffer
+          "n" 'next-buffer
+          "p" 'previous-buffer
+          "c" (lambda() (interactive) (switch-to-buffer nil))
+          "s" (lambda() (interactive) (switch-to-buffer "*scratch*")))
     #+END_SRC
 * File manipulation 
   File manipulation shortcuts 
@@ -253,7 +254,18 @@ Enable it on entering org-mode
 #+END_SRC 
 ** Elisp
  #+BEGIN_SRC emacs-lisp
- (general-def '(normal motion) :prefix "SPC f" "" '(:ignore t :which-key "file-prefix") "l" 'helm-locate "e" 'sudo-edit "s" 'save-buffer "S" 'evil-write-all "c" 'gnus-copy-file "y" 'show-and-copy-buffer-filename "v" 'config-visit "r" 'config-reload "f" 'helm-find-files)
+   (general-def '(normal motion)
+     :prefix "SPC f"
+     "" '(:ignore t :which-key "file-prefix")
+     "l" 'helm-locate
+     "e" 'sudo-edit
+     "s" 'save-buffer
+     "S" 'evil-write-all
+     "c" 'gnus-copy-file
+     "y" 'show-and-copy-buffer-filename
+     "v" 'config-visit
+     "r" 'config-reload
+     "f" 'helm-find-files)
  #+END_SRC
 * Help shortcuts
 ** Elisp 
@@ -359,7 +371,6 @@ Enable it on entering org-mode
 #+END_SRC
 * Projectile
   Project management for emacs 
-  Project management package emacs 
 ** Init 
    Enable caching and set completion system to helm.
 ** General keybindings 
@@ -370,15 +381,18 @@ Enable it on entering org-mode
   (use-package projectile
     :ensure t
     :after helm
+    :defer 2
     :init
     (setq projectile-enable-caching t
           projectile-completion-system 'helm)
     :diminish projectile-mode
+    :ghook
+    ('prog-mode-hook #'projectile-mode 1)
     :general
     ('(normal motion)
-      "SPC p" '(:keymap projectile-command-map :package projectile :which-key "projectie-prefix"))
+      "SPC p" '(:keymap projectile-command-map :package projectile :which-key "projectile-prefix"))
     (:keymaps 'projectile-mode-map
-     "C-c p <escape>" '(keyboard-quit :which-key "quit"))
+              "C-c p <escape>" '(keyboard-quit :which-key "quit"))
     :config
     (projectile-mode 1))
 #+END_SRC
@@ -532,7 +546,7 @@ Enable it on entering org-mode
    #+BEGIN_SRC emacs-lisp
      (use-package company
        :ensure t
-       :defer 2
+       :defer 3
        :general
        (company-active-map
         "C-n" (lambda () (interactive) (company-complete-common-or-cycle 1))
@@ -568,7 +582,7 @@ Snippet engine for emacs
    #+BEGIN_SRC emacs-lisp
      (use-package yasnippet
        :ensure yasnippet-snippets
-       :defer 2
+       :defer 3
        :config
        (yas-global-mode 1)
        (general-def 'yas-minor-mode-map
@@ -599,7 +613,7 @@ Libclang server based completion
        ('irony-mode-hook  #'irony-cdb-autosetup-compile-options))
    #+END_SRC
 * Company-irony
-Company backend for irony
+  Company backend for irony
 ** Elisp
    #+BEGIN_SRC emacs-lisp
      (use-package company-irony
@@ -616,7 +630,7 @@ Eldoc integration for irony-mode
      (use-package irony-eldoc
        :ensure t
        :after irony
-       :ghooks
+       :ghook
        ('irony-mode-hook #'irony-eldoc))    
    #+END_SRC
 * Company-flx 
@@ -628,4 +642,58 @@ Eldoc integration for irony-mode
     :after company
     :config
     (company-flx-mode +1))
+#+END_SRC
+* JDecomp
+Java Decompiler support emacs
+** Elisp 
+   #+BEGIN_SRC emacs-lisp
+     (use-package jdecomp
+       :ensure t
+       :defer 10
+       :init
+       (setq jdecomp-decompiler-paths
+             '((cfr . "/usr/share/java/cfr/cfr.jar")))
+       :config
+       (jdecomp-mode 1))
+   #+END_SRC
+* LSP-Mode 
+Language Server Client for Emacs 
+** Elisp 
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :init
+    (setq lsp-inhibit-message t)
+    :ensure t)
+#+END_SRC
+* LSP-UI 
+Higher level UI modules for LSP-mode 
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-ui
+    :ensure t
+    :after lsp-mode
+    :ghook
+    ('lsp-mode-hook 'lsp-ui-mode))
+#+END_SRC
+* Company-lsp 
+  Company backend for lsp 
+#+BEGIN_SRC emacs-lisp 
+  (use-package company-lsp
+    :ensure t
+    :ghook
+    ('lsp-mode-hook (lambda() (add-to-list 'company-backends (company-mode/backend-with-yas 'company-lsp)))))
+#+END_SRC
+* lsp-java
+  Eclipse JDT-LS client for emacs 
+** Init 
+   1. Specify the installation directory for the lsp server.
+   2. Specify the each and every project individually.
+** Elisp 
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-java
+    :ensure t
+    :ghook
+    ('java-mode-hook #'lsp-java-enable)
+    :init
+    (setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
+          lsp-java--workspace-folders (list "~/java/test")))
 #+END_SRC
