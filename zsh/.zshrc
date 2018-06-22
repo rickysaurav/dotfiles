@@ -1,7 +1,9 @@
 # Created by newuser for 5.4.1
 cat /home/ricky_saurav/.cache/wal/sequences
 export GOPATH=~/go
-export EDITOR=nvim
+export EDITOR="emacsclient -c -a \"\""
+export VISUAL=$EDITOR
+export ALTERNATE_EDITOR=nvim
 export PATH=$PATH:/usr/bin/core_perl:$HOME/.rvm/bin:/usr/lib/w3m:$GOPATH/bin:$HOME/bin:$HOME/.local/bin
 export TERM=xterm-256color
 export FZF_TMUX=1

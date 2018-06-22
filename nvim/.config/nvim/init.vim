@@ -149,7 +149,7 @@ let g:ale_linters = {
 
 let g:neosnippet#snippets_directory='~/.config/nvim/snippets'
 let g:neosnippet#enable_snipmate_compatibility=1
-let G:neosnippet#enable_completed_snippet = 1
+let g:neosnippet#enable_completed_snippet = 1
 
 
 "startify - start screen and session management

@@ -261,10 +261,10 @@ for_window [instance="dropdown"] floating enable
 for_window [instance="dropdown"] move scratchpad
 bindsym $mod+u [instance="dropdown"] scratchpad show; move position center
 
-###lyricfier###
+###musixmatch###
 for_window [class="Musixmatch"] floating enable 
 for_window [class="Musixmatch"] move scratchpad
-bindsym $mod+m [class="Musixmatch"] scratchpad show; move position center
+bindsym $mod+shift+m [class="Musixmatch"] scratchpad show; move position center
 
 ####assignment####
 for_window [class="Firefox"] move to workspace $ws1
@@ -276,8 +276,8 @@ for_window [class="Wps"] move to workspace $ws4
 for_window [class="Wpp"] move to workspace $ws4
 for_window [class="libreoffice"] move to workspace $ws4
 for_window [class="Zathura"] move to workspace $ws4
-for_window [class="Spotify"] move to workspace $ws5
-for_window [class="Vlc"] move to workspace $ws10
+for_window [class="Spotify"] move to workspace $ws9
+for_window [class="vlc"] move to workspace $ws10
 for_window [class="mpv"] move to workspace $ws10
 for_window [class="baka-mplayer"] move to workspace $ws10
 for_window [class="Pavucontrol"] floating enable 
@@ -287,8 +287,9 @@ for_window [class="Lxappearance"] floating enable
 bindsym $mod+Shift+x exec $HOME/.config/i3/my_lock.sh
 bindsym $mod+d exec rofi -show run -matching fuzzy
 bindsym $mod+shift+d exec rofi -show window -matching fuzzy
+bindsym $mod+m exec bash $HOME/scripts/rofi_layouts.sh
 bindsym $mod+c exec rofi -rofi -modi "clipboard:greenclip print" -show clipboard
-bindsym $mod+t split toggle
+bindsym $mod+t split togle
 bindsym Print	exec --no-startup-id scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
 bindsym $mod+shift+s exec i3-msg move workspace to output right
 bindsym Shift+Print exec --no-startup-id scrot -u '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
