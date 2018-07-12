@@ -5,7 +5,8 @@ export EDITOR="emacsclient -c -a \"\""
 export VISUAL=$EDITOR
 export ALTERNATE_EDITOR=nvim
 export PATH=$PATH:/usr/bin/core_perl:$HOME/.rvm/bin:/usr/lib/w3m:$GOPATH/bin:$HOME/bin:$HOME/.local/bin
-export TERM=xterm-256color
+# export TERM=xterm-256color
+export TERM=eterm-color
 export FZF_TMUX=1
 ulimit -s 524144
 
@@ -32,19 +33,24 @@ zplug "plugins/npm", from:oh-my-zsh
 #zplug "zakaziko99/agnosterzak-ohmyzsh-theme", use:agnosterzak.zsh-theme
 #zplug mafredri/zsh-async, from:github
 #zplug sindresorhus/pure, use:pure.zsh, from:github, as:theme
-zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
+# zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
+zplug "denysdovhan/spaceship-prompt", use:spaceship.zsh, from:github, as:theme
 
-#####THEME SETTINGS####
+#####POWERLEVEL9K THEME SETTINGS####
 POWERLEVEL9K_MODE='nerdfont-complete'
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir dir_writable virtualenv vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs battery os_icon time)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir dir_writable virtualenv vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status background_jobs battery time)
+POWERLEVEL9K_TIME_FORMAT='%D{%H:%M}'
+POWERLEVEL9K_USER_ICON="\uF415" # 
+POWERLEVEL9K_ROOT_ICON="#"
 POWERLEVEL9K_BATTERY_STAGES="▁▂▃▄▅▆▇█"
-#POWERLEVEL9K_BATTERY_STAGES=(
-   #$'▏    ▏' $'▎    ▏' $'▍    ▏' $'▌    ▏' $'▋    ▏' $'▊    ▏' $'▉    ▏' $'█    ▏'
-   #$'█▏   ▏' $'█▎   ▏' $'█▍   ▏' $'█▌   ▏' $'█▋   ▏' $'█▊   ▏' $'█▉   ▏' $'██   ▏'
-   #$'██   ▏' $'██▎  ▏' $'██▍  ▏' $'██▌  ▏' $'██▋  ▏' $'██▊  ▏' $'██▉  ▏' $'███  ▏'
-   #$'███  ▏' $'███▎ ▏' $'███▍ ▏' $'███▌ ▏' $'███▋ ▏' $'███▊ ▏' $'███▉ ▏' $'████ ▏'
-   #$'████ ▏' $'████▎▏' $'████▍▏' $'████▌▏' $'████▋▏' $'████▊▏' $'████▉▏' $'█████▏' )
+
+#####SPACESHIP-PROMPT THEME SETTINGS####
+SPACESHIP_TIME_SHOW='true'
+SPACESHIP_BATTERY_SHOW='always'
+SPACESHIP_BATTERY_THRESHOLD=90
+SPACESHIP_TIME_FORMAT='%D{%H:%M}'
+
 #####LOAD ######
 zplug load
 

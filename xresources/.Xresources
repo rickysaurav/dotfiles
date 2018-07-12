@@ -4,3 +4,10 @@ URxvt.saveLines: 4095
 URxvt.letterSpace: 1
 URxvt*depth: 32
 URxvt.scrollBar: false
+URxvt.iso14755: true
+URxvt.iso14755_52: false
+URxvt.keysym.Shift-Control-V: eval:paste_clipboard
+URxvt.keysym.Shift-Control-C: eval:selection_to_clipboard
+
+Emacs.font: Iosevka Nerd Font-16 
+emacs.verticalScrollBars: false

@@ -67,7 +67,8 @@
 	#+END_SRC
 ** Font settings
 	#+BEGIN_SRC emacs-lisp
-	(set-face-attribute 'default nil :font "Iosevka Nerd Font-16" )
+	  ;; (set-face-attribute 'default nil :font "Iosevka Nerd Font-16" )
+	  (setq default-frame-alist '((font . "Iosevka Nerd Font-16")))
 	#+END_SRC
 ** Indentation settings
 	#+BEGIN_SRC emacs-lisp
@@ -285,6 +286,7 @@ Vim surround on emacs
 		:ensure t
 		:demand t
 		:init
+		(setq avy-all-windows nil)
 		(defvar ricky//avy-isearch-point nil "value for storing last avy-isearch point ")
 		;; (make-variable-buffer-local ricky//avy-isearch-point)
 		(defun ricky//avy-isearch ()
@@ -339,10 +341,17 @@ Vim surround on emacs
 * Spacemacs-theme
 ** Elisp
 	#+BEGIN_SRC emacs-lisp
-	(use-package spacemacs-theme
-	:ensure t
-	:defer t
-	:init (load-theme 'spacemacs-dark t))
+	  (use-package spacemacs-theme
+	  :ensure t
+	  :no-require t
+	  :config
+	  ;; (if (daemonp) 
+	  ;; 		(add-hook 'after-make-frame-functions 
+	  ;; 			  (lambda (frame) 
+	  ;; 			(with-selected-frame frame (load-theme 'spacemacs-dark t)))) 
+	  ;; 	  (load-theme 'spacemacs-dark t))
+			(load-theme 'spacemacs-dark t)
+	   )
 	#+END_SRC
 * Telephone-line
   Modern mode-line for emacs
@@ -355,6 +364,8 @@ Vim surround on emacs
 	#+BEGIN_SRC emacs-lisp
 	  (use-package telephone-line
 	  :ensure t
+	  :ghook 
+	  ('after-init-hook 'telephone-line-mode)
 	  :init
 	  (setq telephone-line-lhs
 	  '((evil   . (telephone-line-evil-tag-segment))
@@ -376,8 +387,7 @@ Vim surround on emacs
 		  telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
 	  (setq telephone-line-height 24
 		  telephone-line-evil-use-short-tag t)
-	  :config
-	  (telephone-line-mode 1))
+		  )
 	#+END_SRC
 * Window manipulation
 ** Toggle maximize
@@ -490,6 +500,21 @@ Use <SPC-w> as evil window prefix along with <C-w>
 		:non-normal-prefix "M-SPC H"
 		"" '(:keymap help-map :package help :which-key "help-prefix"))
 #+END_SRC
+* Feature toggle shortcuts 
+** Elisp 
+#+BEGIN_SRC emacs-lisp 
+  (general-def
+	:keymaps '(normal motion insert emacs)
+	:prefix "SPC T"
+	:non-normal-prefix "M-SPC T"
+	:prefix-map 'ricky//toggle-prefix-map
+	"" '(:ignore t :which-key "toggle-prefix")
+	"m" 'toggle-menu-bar-mode-from-frame
+	"f" 'toggle-frame-fullscreen
+	"s" 'toggle-scroll-bar
+	"t" 'toggle-tool-bar-mode-from-frame
+	"l" 'hide-mode-line-mode)
+#+END_SRC
 * Helm
   Interface autocompletion for emacs
 ** Init
@@ -526,26 +551,29 @@ Use <SPC-w> as evil window prefix along with <C-w>
       mini-buffer.
 ** Elisp
 #+BEGIN_SRC emacs-lisp
-  (use-package projectile
-	:ensure t
-	:after helm
-	:init
-	(setq projectile-enable-caching t
-		  projectile-completion-system 'helm)
-	:diminish projectile-mode
-	:defer t
-	:ghook
-	('prog-mode-hook #'projectile-mode)
-	:general
-	(:keymaps 'projectile-command-map
-			  "<escape>" '(keyboard-quit :which-key "quit")
-			  "ESC" nil)
-	(:keymaps '(normal motion insert emacs)
-	 :prefix "SPC p"
-	 :non-normal-prefix "M-SPC p"
-	 "" '(:keymap projectile-command-map :package projectile :which-key "projectile-prefix"))
-	:config
-	(projectile-mode 1))
+	(use-package projectile
+	  :ensure t
+	  :ensure helm-rg
+	  :ensure-system-package 
+	  (rg . ripgrep)
+	  :after helm
+	  :init
+	  (setq projectile-enable-caching t
+			projectile-completion-system 'helm)
+	  :diminish projectile-mode
+	  :defer t
+	  :ghook
+	  ('prog-mode-hook #'projectile-mode)
+	  :general
+	  (:keymaps 'projectile-command-map
+				"<escape>" '(keyboard-quit :which-key "quit")
+				"ESC" nil)
+	  (:keymaps '(normal motion insert emacs)
+	   :prefix "SPC p"
+	   :non-normal-prefix "M-SPC p"
+	   "" '(:keymap projectile-command-map :package projectile :which-key "projectile-prefix"))
+	  :config
+	  (projectile-mode 1))
 #+END_SRC
 * Helm-projectile
   Helm interface for projectile
@@ -803,6 +831,26 @@ NerdTree like project explorer for emacs.
 	  :ensure t
 	  :defer t)
   #+END_SRC
+* Hide-mode-line 
+** Elisp 
+	#+BEGIN_SRC emacs-lisp
+	(use-package hide-mode-line
+		:ensure t)
+	#+END_SRC
+* VLFI 
+Emacs package for handling large files 
+#+BEGIN_SRC emacs-lisp 
+  (use-package vlf-setup
+	:ensure vlf
+	:init
+	(setq vlf-application 'dont-ask)
+	:general
+	(:keymaps '(normal motion insert emacs)
+			  :prefix "SPC v"
+			  :non-normal-prefix "M-SPC v"
+			  ""'(:keymap vlf-mode-map :package vlf :which-key "vlf-prefix")
+			  ))
+#+END_SRC
 * Org-bullets
   UTF-8 bullets for org mode
 ** Config
@@ -814,6 +862,24 @@ Enable it on entering org-mode
 		  :ghook
 		  ('org-mode-hook #'org-bullets-mode))
 	#+END_SRC
+* Origami 
+Code folding in emacs 
+** Elisp 
+#+BEGIN_SRC emacs-lisp
+  (use-package origami
+	:ensure t
+	:ghook
+	('prog-mode-hook 'origami-mode))
+#+END_SRC
+
+#+END_SRC
+* Webpaste
+Online pastebin service integration 
+** ELisp 
+#+BEGIN_SRC emacs-lisp 
+  (use-package webpaste
+	:ensure t)
+#+END_SRC
 * PDF-tools
  PDF plugin for emacs 
  #+BEGIN_SRC emacs-lisp
@@ -886,7 +952,6 @@ Language Server Client for Emacs
 	:defer t
 	:init
 	(setq lsp-inhibit-message t)
-	:diminish (lsp-mode . "lsp")
 	:ensure t)
 #+END_SRC
 * LSP-UI
@@ -1002,4 +1067,24 @@ Higher level UI modules for LSP-mode
 				   '(save idle-change new-line mode-enabled))
 			 (flycheck-mode 1)
 			 (flycheck-select-checker 'xml-xmllint))))
+#+END_SRC
+* Magit 
+Git interface for emacs on steroids
+** Elisp 
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+	:ensure t)
+#+END_SRC
+* Evil-magit
+Evil interface to magit 
+** Elisp 
+#+BEGIN_SRC emacs-lisp
+	(use-package evil-magit
+	  :ensure t
+	  :after magit
+	  :init
+	  (setq evil-magit-want-horizontal-movement t)
+	  :config
+	  (general-unbind '(magit-mode-map) "SPC")
+	  )
 #+END_SRC

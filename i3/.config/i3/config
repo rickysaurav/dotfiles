@@ -32,7 +32,8 @@ floating_modifier $mod
 
 # start a terminal
 #bindsym $mod+Return exec i3-sensible-terminal
-bindsym $mod+Return exec termite 
+# bindsym $mod+Return exec termite 
+bindsym $mod+Return exec urxvtc 
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -170,7 +171,7 @@ bindsym $mod+r mode "resize"
 
 set $stoprec --no-startup-id killall ffmpeg & killall screenkey
 set $screencast --no-startup-id screenkey & bash ~/scripts/screencast.sh
-set $browser firefox-nightly
+set $browser qutebrowser
 
 
 
@@ -272,10 +273,10 @@ for_window [class="Nightly"] move to workspace $ws1
 for_window [class="qutebrowser"] move to workspace $ws1
 for_window [instance="ranger_start"] move to workspace $ws3
 for_window [class="Thunar"] move to workspace $ws3
-for_window [class="Wps"] move to workspace $ws4
-for_window [class="Wpp"] move to workspace $ws4
-for_window [class="libreoffice"] move to workspace $ws4
-for_window [class="Zathura"] move to workspace $ws4
+for_window [class="Wps"] move to workspace $ws8
+for_window [class="Wpp"] move to workspace $ws8
+for_window [class="libreoffice"] move to workspace $ws8
+for_window [class="Zathura"] move to workspace $ws8
 for_window [class="Spotify"] move to workspace $ws9
 for_window [class="vlc"] move to workspace $ws10
 for_window [class="mpv"] move to workspace $ws10
@@ -301,9 +302,10 @@ exec --no-startup-id $browser
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
 exec --no-startup-id compton -b --config $HOME/.compton.conf 
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-exec --no-startup-id termite --name dropdown
+# exec --no-startup-id termite --name dropdown
+exec --no-startup-id urxvtc -name dropdown
 exec --no-startup-id libinput-gestures-setup start
-exec --no-startup-id xrdb -merge ~/.Xresources && urxvt -name ranger_start -e zsh -i -c ranger 
+exec --no-startup-id urxvt -name ranger_start -e zsh -i -c ranger 
 exec --no-startup-id greenclip daemon
 exec --no-startup-id udiskie 
 ##########PERSONAL##########

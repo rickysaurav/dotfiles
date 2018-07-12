@@ -14,7 +14,6 @@ set relativenumber
 set number
 set background=dark
 set splitright
-"autocmd BufEnter * silent! lcd %:p:h "change working directory to filename's directory
 
 "wrapper to update remote python plugins
 function! DoRemote(arg)
@@ -70,10 +69,11 @@ Plug 'shougo/echodoc.vim'
 Plug 'edkolev/tmuxline.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'arakashic/chromatica.nvim'
+Plug 'sheerun/vim-polyglot'
 Plug 'ryanoasis/vim-devicons'
 Plug 'tpope/vim-fugitive'
 Plug 'ludovicchabant/vim-gutentags'
+Plug 'junegunn/goyo.vim'
 " Add plugins to &runtimepath
 call plug#end()
 filetype plugin indent on
@@ -89,20 +89,8 @@ let g:root#auto = 1
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_theme ='wal'
-let g:airline_left_sep =  ""
-let g:airline_right_sep = ""
-let g:airline_left_alt_sep = ""
-let g:airline_right_alt_sep = ""
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 let g:airline#extensions#tmuxline#enabled = 0
-
-"Tmuxline
-let g:tmuxline_separators = {
-			\ 'left' : '',
-			\ 'left_alt': '>',
-			\ 'right' : '',
-			\ 'right_alt' : '<',
-			\ 'space' : ' '}
 
 "Neoterm - terminal functionality
 let g:neoterm_default_mod = "vertical"
@@ -132,10 +120,6 @@ let g:go_fmt_command = "goimports"
 let g:go_auto_type_info = 1
 let g:go_doc_keywordprg_enabled = 0 "important : remove 'K' mapping,lifesaver
 let g:go_fmt_fail_silently = 1
-
-"chromatica - dynamic syntax highlighting clang
-let g:chromatica#enable_at_startup = 1
-let g:chromatica#libclang_path = '/usr/lib'
 
 "ALE- async linting neomake alternate
 let g:ale_lint_on_text_changed = 'never'
@@ -318,3 +302,23 @@ let g:LanguageClient_serverCommands = {
 			\'java': ['jdtls'],
 			\ }
 let g:LanguageClient_loggingLevel = 'DEBUG'
+
+let s:hidden_all = 0
+function! ToggleHiddenAll()
+	if s:hidden_all  == 0
+		let s:hidden_all = 1
+		set laststatus=0
+		set noshowcmd
+		set showtabline=0
+	else
+		let s:hidden_all = 0
+		set laststatus=2
+		set showcmd
+		set showtabline=2
+	endif
+endfunction
+
+nnoremap <Leader>T :call ToggleHiddenAll()<CR>
+
+
+
