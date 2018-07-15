@@ -10,13 +10,18 @@ export TERM=eterm-color
 export FZF_TMUX=1
 ulimit -s 524144
 
+
+####ZPLUG####
+# Check if zplug is installed
+if [[ ! -d ~/.zplug ]]; then
+  git clone https://github.com/zplug/zplug ~/.zplug
+  source ~/.zplug/init.zsh && zplug update --self
+fi
+
 ####source  oh-my-zsh  and zplug ######
 export ZSH=~/.zplug/repos/robbyrussell/oh-my-zsh 
 source $ZSH/oh-my-zsh.sh
-source /usr/share/zsh/scripts/zplug/init.zsh 
-
-
-#. /usr/share/zsh/site-contrib/powerline.zsh
+source ~/.zplug/init.zsh
 
 ####PLUGINS#####
 zplug "zsh-users/zsh-history-substring-search", defer:3
@@ -33,8 +38,18 @@ zplug "plugins/npm", from:oh-my-zsh
 #zplug "zakaziko99/agnosterzak-ohmyzsh-theme", use:agnosterzak.zsh-theme
 #zplug mafredri/zsh-async, from:github
 #zplug sindresorhus/pure, use:pure.zsh, from:github, as:theme
-# zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
+#zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
 zplug "denysdovhan/spaceship-prompt", use:spaceship.zsh, from:github, as:theme
+
+# Install packages that have not been installed yet
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    else
+        echo
+    fi
+fi
 
 #####POWERLEVEL9K THEME SETTINGS####
 POWERLEVEL9K_MODE='nerdfont-complete'
@@ -75,24 +90,3 @@ tm() {
   fi
   session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --exit-0) &&  tmux $change -t "$session" || echo "No sessions found."
 }
-
-# ftpane - switch pane (@george-b)
-ftpane() {
-  local panes current_window current_pane target target_window target_pane
-  panes=$(tmux list-panes -s -F '#I:#P - #{pane_current_path} #{pane_current_command}')
-  current_pane=$(tmux display-message -p '#I:#P')
-  current_window=$(tmux display-message -p '#I')
-
-  target=$(echo "$panes" | grep -v "$current_pane" | fzf +m --reverse) || return
-
-  target_window=$(echo $target | awk 'BEGIN{FS=":|-"} {print$1}')
-  target_pane=$(echo $target | awk 'BEGIN{FS=":|-"} {print$2}' | cut -c 1)
-
-  if [[ $current_window -eq $target_window ]]; then
-    tmux select-pane -t ${target_window}.${target_pane}
-  else
-    tmux select-pane -t ${target_window}.${target_pane} &&
-    tmux select-window -t $target_window
-  fi
-}
-

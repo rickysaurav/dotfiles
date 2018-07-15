@@ -1079,12 +1079,12 @@ Git interface for emacs on steroids
 Evil interface to magit 
 ** Elisp 
 #+BEGIN_SRC emacs-lisp
-	(use-package evil-magit
-	  :ensure t
-	  :after magit
-	  :init
-	  (setq evil-magit-want-horizontal-movement t)
-	  :config
-	  (general-unbind '(magit-mode-map) "SPC")
-	  )
+  (use-package evil-magit
+	:ensure t
+	:after magit
+	:init
+	(setq evil-magit-want-horizontal-movement t)
+	:config
+	(general-unbind '(magit-mode-map magit-diff-mode-map) "SPC")
+	)
 #+END_SRC
