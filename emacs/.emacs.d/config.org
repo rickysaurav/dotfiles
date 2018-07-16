@@ -1068,6 +1068,21 @@ Higher level UI modules for LSP-mode
 			 (flycheck-mode 1)
 			 (flycheck-select-checker 'xml-xmllint))))
 #+END_SRC
+* LSP-Javascript-Typescript
+Javascript Typescript language client for emacs 
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-javascript-typescript
+	:ensure t
+	:ensure-system-package javascript-typescript-langserver
+	:ghook
+	('(js-mode-hook typescript-mode-hook js3-mode-hook rjsx-mode-hook) #'lsp-javascript-typescript-enable))
+#+END_SRC
+* Indium
+Javascript ide support 
+#+BEGIN_SRC emacs-lisp
+  (use-package indium
+	:ensure t)
+#+END_SRC
 * Magit 
 Git interface for emacs on steroids
 ** Elisp 
