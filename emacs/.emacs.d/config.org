@@ -1030,7 +1030,7 @@ Higher level UI modules for LSP-mode
 		  (lsp-cquery-enable)
 		(user-error nil)))
 	:ghook
-	('c-mode-common-hook #'cquery//enable))
+	('c++-mode-hook #'cquery//enable))
 #+END_SRC
 
 * Lsp-java
