@@ -23,7 +23,7 @@
 	("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-	(indium lsp-javascript-typescript evil-magit magit helm-rg helm-ag webpaste origami hide-mode-line format-all pdf-tools ripgrep evil-surround treemacs-projectile multi-compile treemacs-evil htmlize lsp-java jdecomp rainbow-delimeters company-flx rainbow-mode hungry-delete irony-eldoc yasnippet company-quickhelp irony company evil-nerd-commenter try general evil-easymotion dashboard avy diminish which-key use-package telephone-line spacemacs-theme smartparens rainbow-delimiters org-bullets helm-projectile flycheck evil))))
+	(exec-path-from-shell lsp-python ox-ioslide indium lsp-javascript-typescript evil-magit magit helm-rg helm-ag webpaste origami hide-mode-line format-all pdf-tools ripgrep evil-surround treemacs-projectile multi-compile treemacs-evil htmlize lsp-java jdecomp rainbow-delimeters company-flx rainbow-mode hungry-delete irony-eldoc yasnippet company-quickhelp irony company evil-nerd-commenter try general evil-easymotion dashboard avy diminish which-key use-package telephone-line spacemacs-theme smartparens rainbow-delimiters org-bullets helm-projectile flycheck evil))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

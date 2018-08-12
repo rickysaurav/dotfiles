@@ -716,9 +716,10 @@ NerdTree like project explorer for emacs.
 	  (pcase (cons (not (null (executable-find "git")))
 				   (not (null (executable-find "python3"))))
 		(`(t . t)
-		 (treemacs-git-mode 'extended))
+		 (treemacs-git-mode 'deferred))
 		(`(t . _)
-		 (treemacs-git-mode 'simple))))
+		 (treemacs-git-mode 'simple)))
+	  )
 	:general
 	(:keymaps '(normal motion insert emacs)
 	 :prefix "SPC t"
@@ -743,9 +744,12 @@ NerdTree like project explorer for emacs.
    #+END_SRC
 ** Treemacs-projectile
    #+BEGIN_SRC emacs-lisp
-  (use-package treemacs-projectile
-	:after treemacs projectile
-	:ensure t)
+	 (use-package treemacs-projectile
+	   :after treemacs projectile
+	   :ensure t
+	   :general
+	   (:keymaps 'ricky//treemacs-mode-map
+				 "p" 'treemacs-projectile))
    #+END_SRC
 * Smart-parens
   Package for bracket-pair matching
@@ -896,30 +900,32 @@ Online pastebin service integration
 	Override multi-compile-run to run commands in interactive compile mode buffer.
 ** Elisp
   #+BEGIN_SRC emacs-lisp 
-		(use-package multi-compile
-		  :ensure t
-		  :general
-		  ('(normal motion)
-		   :prefix "SPC c"
-		   "r" 'multi-compile-run
-		   )
-		  :init
-		  (setq multi-compile-completion-system 'helm)
-		  (setq multi-compile-alist '(
-									  (c++-mode . (
-	("c++-thread_run" . "g++ %file-name -pthread -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")
-	("c++-run" . "g++ %file-name -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")))
-									  ))
-		  :config
-		  (defun multi-compile-run ()
-			"Choice target and start compile."
-			(interactive)
-			(let* ((template (multi-compile--get-command-template))
-				   (command (or (car-safe template) template))
-				   (default-directory (if (listp template) (eval-expression (cadr template)) default-directory)))
-			  (compilation-start
-			   (multi-compile--fill-template command) t)))
-		  )
+	(use-package multi-compile
+	  :ensure t
+	  :general
+	  ('(normal motion)
+	   :prefix "SPC c"
+	   "r" 'multi-compile-run
+	   )
+	  :init
+	  (setq multi-compile-completion-system 'helm)
+	  (setq multi-compile-alist '(
+			(c++-mode . (("c++-thread_run" . "g++ %file-name -pthread -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")
+						 ("c++-run" . "g++ %file-name -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")))
+			(java-mode . (("java-maven-exec" "mvn exec:java -q -Dexec.mainClass=\"%cname\"" (multi-compile-locate-file-dir "pom.xml"))))
+			))
+	  :config
+	  (add-to-list 'multi-compile-template
+		'("%cname" . (ricky//get-fully-qualified-class-name)))
+	  (defun multi-compile-run ()
+		"Choice target and start compile."
+		(interactive)
+		(let* ((template (multi-compile--get-command-template))
+			   (command (or (car-safe template) template))
+			   (default-directory (if (listp template) (eval-expression (cadr template)) default-directory)))
+		  (compilation-start
+		   (multi-compile--fill-template command) t)))
+	  )
   #+END_SRC
   
 * Format-all 
@@ -1041,32 +1047,51 @@ Higher level UI modules for LSP-mode
       lsp-java--workspace-folders.
 ** Elisp
 #+BEGIN_SRC emacs-lisp
-  (use-package lsp-java
+	(use-package lsp-java
+	  :ensure t
+	  :ghook
+	  ('java-mode-hook #'my-java-mode)
+	  ('nxml-mode-hook #'my-xml-mode)
+	  :init
+	  (setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
+			lsp-java--workspace-folders (list "~/java/test")
+			lsp-ui-sideline-update-mode 'point)
+	  (defun ricky//get-java-package-name ()
+		"get package name for the current buffer"
+		(let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
+		  (if (and (listp packages) (eq (length packages) 1))
+			  (semantic-tag-name (car packages)))))
+	  (defun ricky//get-fully-qualified-class-name ()
+		"returns the fully qualified classname for the current buffer"
+		(interactive "")
+			  (concat (ricky//get-java-package-name) "."
+				  (file-name-sans-extension
+				   (file-name-nondirectory (buffer-file-name)))))
+	  :config
+	  (defun my-java-mode()
+		"enable lsp-java on .java files and pom.xml"
+		(interactive)
+		(if (or(equal (file-name-nondirectory buffer-file-name) "pom.xml")(equal (file-name-extension buffer-file-name) "java"))
+			(progn
+			  (lsp-java-enable)
+			  (semantic-mode 1)
+			  (general-add-hook 'before-save-hook #'lsp-format-buffer nil t))))
+	  (defun my-xml-mode()
+		"enable lsp-java on .java files and pom.xml"
+		(interactive)
+		(progn (my-java-mode)
+			   (setq flycheck-check-syntax-automatically
+					 '(save idle-change new-line mode-enabled))
+			   (flycheck-mode 1)
+			   (flycheck-select-checker 'xml-xmllint))))
+#+END_SRC
+* LSP-python 
+** Elisp 
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-python
 	:ensure t
 	:ghook
-	('java-mode-hook #'my-java-mode)
-	('nxml-mode-hook #'my-xml-mode)
-	:init
-	(setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
-		  lsp-java--workspace-folders (list "~/java/test")
-		  lsp-ui-sideline-update-mode 'point
-		  lsp-java-trace-server 'verbose)
-	:config
-	(defun my-java-mode()
-	  "enable lsp-java on .java files and pom.xml"
-	  (interactive)
-	  (if (or(equal (file-name-nondirectory buffer-file-name) "pom.xml")(equal (file-name-extension buffer-file-name) "java"))
-		  (progn
-			(lsp-java-enable)
-			(general-add-hook 'before-save-hook #'lsp-format-buffer nil t))))
-	(defun my-xml-mode()
-	  "enable lsp-java on .java files and pom.xml"
-	  (interactive)
-	  (progn (my-java-mode)
-			 (setq flycheck-check-syntax-automatically
-				   '(save idle-change new-line mode-enabled))
-			 (flycheck-mode 1)
-			 (flycheck-select-checker 'xml-xmllint))))
+	('python-mode-hook #'lsp-python-enable))
 #+END_SRC
 * LSP-Javascript-Typescript
 Javascript Typescript language client for emacs 
@@ -1103,3 +1128,14 @@ Evil interface to magit
 	(general-unbind '(magit-mode-map magit-diff-mode-map) "SPC")
 	)
 #+END_SRC
+* Exec-path-from shell
+Makes emacs path coherent with shell path 
+** Elisp 
+#+BEGIN_SRC emacs-lisp
+  (use-package exec-path-from-shell
+	:if (memq window-system '(mac ns x))
+	:ensure t
+	:config
+	(exec-path-from-shell-initialize))
+#+END_SRC
+

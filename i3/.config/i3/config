@@ -290,7 +290,7 @@ bindsym $mod+d exec rofi -show run -matching fuzzy
 bindsym $mod+shift+d exec rofi -show window -matching fuzzy
 bindsym $mod+m exec bash $HOME/scripts/rofi_layouts.sh
 bindsym $mod+c exec rofi -rofi -modi "clipboard:greenclip print" -show clipboard
-bindsym $mod+t split togle
+bindsym $mod+t split toggle
 bindsym Print	exec --no-startup-id scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
 bindsym $mod+shift+s exec i3-msg move workspace to output right
 bindsym Shift+Print exec --no-startup-id scrot -u '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
@@ -305,7 +305,7 @@ exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 # exec --no-startup-id termite --name dropdown
 exec --no-startup-id urxvtc -name dropdown
 exec --no-startup-id libinput-gestures-setup start
-exec --no-startup-id urxvt -name ranger_start -e zsh -i -c ranger 
+exec --no-startup-id urxvtc -name ranger_start -e zsh -i -c ranger 
 exec --no-startup-id greenclip daemon
 exec --no-startup-id udiskie 
 ##########PERSONAL##########
