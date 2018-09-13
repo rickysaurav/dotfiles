@@ -307,6 +307,7 @@ colorschem wal
 " 'java': ['jdtls', '-data', getcwd()],
 let g:LanguageClient_serverCommands = {
 			\'java': ['jdtls'],
+			\'python':['pyls']
 			\ }
 let g:LanguageClient_loggingLevel = 'DEBUG'
 

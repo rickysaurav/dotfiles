@@ -24,6 +24,70 @@
 	(setq use-package-verbose t)
 	(require 'use-package))
 	#+END_SRC
+* Exec-path-from shell
+Makes emacs path coherent with shell path 
+#+BEGIN_SRC emacs-lisp
+  (use-package exec-path-from-shell
+	:if (memq window-system '(mac ns x))
+	:ensure t
+	:config
+	(exec-path-from-shell-initialize))
+#+END_SRC
+* System-package 
+  Emacs integration with system package manager 
+** Config 
+Add yay package manager config and make it the default for my arch-linux system.
+#+BEGIN_SRC emacs-lisp 
+  (use-package system-packages
+	:ensure t
+	:defer t
+	:config
+	(add-to-list 'system-packages-supported-package-managers
+				 '(yay .
+					   ((default-sudo . nil)
+						(install . "yay -S")
+						(search . "yay -Ss")
+						(uninstall . "yay -Rns")
+						(update . "yay -Syu")
+						(clean-cache . "yay -Sc")
+						(log . "cat /var/log/pacman.log")
+						(get-info . "yay -Qi")
+						(get-info-remote . "yay -Si")
+						(list-files-provided-by . "yay -Ql")
+						(verify-all-packages . "yay -Qkk")
+						(verify-all-dependencies . "yay -Dk")
+						(remove-orphaned . "yay -Rns $(yay -Qtdq)")
+						(list-installed-packages . "yay -Qe")
+						(list-installed-packages-all . "yay -Q")
+						(list-dependencies-of . "yay -Qi")
+						(noconfirm . "--noconfirm"))))
+	(setq system-packages-use-sudo nil
+	system-packages-package-manager 'yay))
+
+#+END_SRC
+* Use-package-ensure-system-package
+  Use package :ensure for system-packages
+	#+BEGIN_SRC emacs-lisp
+	(use-package use-package-ensure-system-package
+		:ensure t
+		:defer t
+		:after (system-packages use-package ))
+	#+END_SRC
+* Quelpa 
+  Download repos as emacs packages 
+	#+BEGIN_SRC emacs-lisp
+	  (use-package quelpa
+		  :defer t
+		  :ensure t)
+	#+END_SRC
+* Quelpa-use-package 
+  Use-package interface to quelpa
+	#+BEGIN_SRC emacs-lisp
+	  (use-package quelpa-use-package
+		:ensure t
+		:init
+		(setq quelpa-use-package-inhibit-loading-quelpa t))
+	#+END_SRC
 * Interface Tweaks
 ** Line-numbers
 	#+BEGIN_SRC emacs-lisp
@@ -119,7 +183,8 @@
 	#+END_SRC
 * General
   Keybinding on steroids
-** Elisp
+** Config 
+A lot of packages depend on this package.Load this first.
    #+BEGIN_SRC emacs-lisp
 	 (use-package general
 	   :ensure t
@@ -127,50 +192,8 @@
 	   :config
 	   (general-evil-setup))
    #+END_SRC
-* System-package 
-  Emacs integration with system package manager 
-** Config 
-Add yay package manager config and make it the default for my arch-linux system.
-** Elisp 
-#+BEGIN_SRC emacs-lisp 
-  (use-package system-packages
-	:ensure t
-	:defer t
-	:config
-	(add-to-list 'system-packages-supported-package-managers
-				 '(yay .
-					   ((default-sudo . nil)
-						(install . "yay -S")
-						(search . "yay -Ss")
-						(uninstall . "yay -Rns")
-						(update . "yay -Syu")
-						(clean-cache . "yay -Sc")
-						(log . "cat /var/log/pacman.log")
-						(get-info . "yay -Qi")
-						(get-info-remote . "yay -Si")
-						(list-files-provided-by . "yay -Ql")
-						(verify-all-packages . "yay -Qkk")
-						(verify-all-dependencies . "yay -Dk")
-						(remove-orphaned . "yay -Rns $(yay -Qtdq)")
-						(list-installed-packages . "yay -Qe")
-						(list-installed-packages-all . "yay -Q")
-						(list-dependencies-of . "yay -Qi")
-						(noconfirm . "--noconfirm"))))
-	(setq system-packages-use-sudo nil
-	system-packages-package-manager 'yay))
-
-#+END_SRC
-* Use-package-ensure-system-package
-  Use package :ensure for system-packages
-** Elisp 
-#+BEGIN_SRC emacs-lisp
-  (use-package use-package-ensure-system-package
-	:ensure t
-	:after (use-package system-packages))
-#+END_SRC
 * Dashboard
   Vim startify attempt for emacs
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	(use-package dashboard
 	:ensure t
@@ -179,7 +202,6 @@ Add yay package manager config and make it the default for my arch-linux system.
 	#+END_SRC
 * Which-key
   Display available keybindings in a popup
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (use-package which-key
 		  :ensure t
@@ -192,7 +214,6 @@ Add yay package manager config and make it the default for my arch-linux system.
 ** Config
    1. minibuffer-keyboard-quit to quit all minibuffers
    2. Map [escape] to quit all minibuffers
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (use-package evil
 		:after general
@@ -227,7 +248,6 @@ Add yay package manager config and make it the default for my arch-linux system.
 	#+END_SRC
 * Unbind Space
   Unbind Space in evil-states to use it as prefix
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (general-unbind '(normal motion operator visual)
 		"SPC")
@@ -235,8 +255,7 @@ Add yay package manager config and make it the default for my arch-linux system.
 		"SPC")
 	#+END_SRC
 * Info mode 
-Info mode is really finicky with evil mode,standalone configuration for it 
-** Elisp 
+  Info mode is really finicky with evil mode,standalone configuration for it 
 #+BEGIN_SRC emacs-lisp
   (general-unbind 'motion 'Info-mode-map "SPC")
   (general-unbind 'Info-mode-map "SPC")
@@ -244,7 +263,6 @@ Info mode is really finicky with evil mode,standalone configuration for it
 #+END_SRC
 * Evil-surround
 Vim surround on emacs 
-** Elisp 
    #+BEGIN_SRC emacs-lisp
 	 (use-package evil-surround
 	   :ensure t
@@ -254,7 +272,6 @@ Vim surround on emacs
    #+END_SRC
 * Evil-nerd-commenter
   Vim nerd-commenter for emacs
-** Elisp
    #+BEGIN_SRC emacs-lisp
 	 (use-package evil-nerd-commenter
 	   :ensure t
@@ -277,10 +294,9 @@ Vim surround on emacs
    #+END_SRC
 * Avy
   Vim-easymotion alternative for emacs
-** General-keybindings
+** Config 
    1. map <return> to avy-isearch,for vim-easymotion n-char search(does not work well with evil-search).
    2. bind <SPC-/> to got-char as work-around for previous.(unbind SPC befor binding <SPC-/>)
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (use-package avy
 		:ensure t
@@ -321,7 +337,6 @@ Vim surround on emacs
   Vim-easymotion emacs bindings
 ** Config
    Two different prefixes for easymotion commands "," and "SPC m".
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (use-package evil-easymotion
 		:ensure t
@@ -339,28 +354,20 @@ Vim surround on emacs
 		(evilem-default-keybindings "SPC m"))
 	#+END_SRC
 * Spacemacs-theme
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (use-package spacemacs-theme
-	  :ensure t
-	  :no-require t
-	  :config
-	  ;; (if (daemonp) 
-	  ;; 		(add-hook 'after-make-frame-functions 
-	  ;; 			  (lambda (frame) 
-	  ;; 			(with-selected-frame frame (load-theme 'spacemacs-dark t)))) 
-	  ;; 	  (load-theme 'spacemacs-dark t))
-			(load-theme 'spacemacs-dark t)
-	   )
+		:ensure t
+		:no-require t
+		:config
+		(load-theme 'spacemacs-dark t))
 	#+END_SRC
 * Telephone-line
   Modern mode-line for emacs
-** Init
+** Config
    1. Set lhs,lhs-center,rhs-center,rhs segments
    2. Set the separator values
    3. Set line height
    4. Short values for evil-state
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (use-package telephone-line
 	  :ensure t
@@ -404,7 +411,7 @@ Vim surround on emacs
 		(window-configuration-to-register ?_)
 		(delete-other-windows))))
 	#+END_SRC
-** Elisp
+** Config
 Use <SPC-w> as evil window prefix along with <C-w>
   #+BEGIN_SRC emacs-lisp
 	(general-def
@@ -421,7 +428,6 @@ Use <SPC-w> as evil window prefix along with <C-w>
   #+END_SRC
 * Buffer manipulation
    Personal Spacemacs like buffer manipulation shortcuts
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (general-def 
 		:keymaps '(normal motion insert emacs)
@@ -458,7 +464,7 @@ Use <SPC-w> as evil window prefix along with <C-w>
 	  (if file-name (message (kill-new file-name))
 		(error "Buffer not visiting a file"))))
 #+END_SRC
-** Elisp
+** Config
  #+BEGIN_SRC emacs-lisp
    (general-def
 	 :keymaps '(normal motion insert emacs)
@@ -478,7 +484,6 @@ Use <SPC-w> as evil window prefix along with <C-w>
 	 "b" 'eww-open-file)
  #+END_SRC
 * Helm shortcuts
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (general-def
 		:keymaps '(normal motion insert emacs)
@@ -492,7 +497,6 @@ Use <SPC-w> as evil window prefix along with <C-w>
 		)
 	#+END_SRC
 * Help shortcuts
-** Elisp 
 #+BEGIN_SRC emacs-lisp
   (general-def
 		:states '(normal motion insert emacs)
@@ -501,7 +505,6 @@ Use <SPC-w> as evil window prefix along with <C-w>
 		"" '(:keymap help-map :package help :which-key "help-prefix"))
 #+END_SRC
 * Feature toggle shortcuts 
-** Elisp 
 #+BEGIN_SRC emacs-lisp 
   (general-def
 	:keymaps '(normal motion insert emacs)
@@ -517,9 +520,8 @@ Use <SPC-w> as evil window prefix along with <C-w>
 #+END_SRC
 * Helm
   Interface autocompletion for emacs
-** Init
+** Config
    Enable fuzzy matching wherever possible
-** Elisp
 #+BEGIN_SRC emacs-lisp
   (use-package helm
 	:ensure t
@@ -544,12 +546,11 @@ Use <SPC-w> as evil window prefix along with <C-w>
 #+END_SRC
 * Projectile
   Project management for emacs
-** General keybindings
+** Config
    1. Make <SPC-p> projectile-prefix by binding it to the
       projectile-command-keymap
    2. Bind escape in projectile-mode-map to quit,to avoid getting stuck in
       mini-buffer.
-** Elisp
 #+BEGIN_SRC emacs-lisp
 	(use-package projectile
 	  :ensure t
@@ -577,7 +578,6 @@ Use <SPC-w> as evil window prefix along with <C-w>
 #+END_SRC
 * Helm-projectile
   Helm interface for projectile
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	(use-package helm-projectile
 		:ensure t
@@ -587,9 +587,8 @@ Use <SPC-w> as evil window prefix along with <C-w>
 	#+END_SRC
 * Flycheck
   Asynchronous linting
-** General keybinding
+** Config
    Make <SPC-e> the flycheck prefix by binding it to flycheck-command-map.
-** Elisp
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
 	:ensure t
@@ -619,15 +618,12 @@ Use <SPC-w> as evil window prefix along with <C-w>
 #+END_SRC
 * Company
   Code completion package
-** Init
+** Config
    1. Show numbers for completion selection using M-[0-9]
    2. Set 0 idle-delay for quick completion
    3. Function to group backends with company-yasnippet
-** Config
-   1. Map C-[0-9] for numbered completion
-** General-keybindings
-   1. <C-p> and <C-n> , <tab>and <s-tab> completion navigation
-** Elisp
+   4. Map C-[0-9] for numbered completion
+   5. <C-p> and <C-n> , <tab>and <s-tab> completion navigation
    #+BEGIN_SRC emacs-lisp
 		  (use-package company
 			:ensure t
@@ -668,7 +664,6 @@ Snippet engine for emacs
    Rebind <CR> or <return> to complete snippet where it exists.
    Using general-def instead of :general since yas-maybe-expand is a variable
    which is defined only after autoload.
-** Elisp
    #+BEGIN_SRC emacs-lisp
 	 (use-package yasnippet
 	   :ensure yasnippet-snippets
@@ -681,7 +676,6 @@ Snippet engine for emacs
    #+END_SRC
 * Company quickhelp
   Company mode completion documentation
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (use-package company-quickhelp
 		:ensure t
@@ -693,7 +687,6 @@ Snippet engine for emacs
 	#+END_SRC
 * Company-flx
   Fuzzy matching for company-capf only.
-** Elisp
 #+BEGIN_SRC emacs-lisp
   (use-package company-flx
 	:ensure t
@@ -703,7 +696,6 @@ Snippet engine for emacs
 #+END_SRC
 * Treemacs 
 NerdTree like project explorer for emacs.
-** Elisp
 #+BEGIN_SRC emacs-lisp
   (use-package treemacs
 	:ensure t
@@ -755,7 +747,6 @@ NerdTree like project explorer for emacs.
   Package for bracket-pair matching
 ** Config
    1. NewLine and Indent for C/C++ programming
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (use-package smartparens-config
 		:ensure smartparens
@@ -778,7 +769,6 @@ NerdTree like project explorer for emacs.
   Remove all preceding whitespace
 ** Config 
    Add advice to hungry-delete-backward to play along with smartparens
-** Elisp
    #+BEGIN_SRC emacs-lisp
 	 (use-package hungry-delete
 	   :ensure t
@@ -789,7 +779,6 @@ NerdTree like project explorer for emacs.
    #+END_SRC
 * Rainbow-delimeters
   Rainbow delimeters
-** Elisp
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-delimiters
 	:ensure t
@@ -798,7 +787,6 @@ NerdTree like project explorer for emacs.
 #+END_SRC
 * Rainbow-mode
   colorize color hex values
-** Elisp
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
 	:defer t
@@ -807,7 +795,6 @@ NerdTree like project explorer for emacs.
 #+END_SRC
 * Diminish
   Reduce modeline clutter by diminishing minor modes
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	  (use-package diminish
 		:ensure t
@@ -821,7 +808,6 @@ NerdTree like project explorer for emacs.
 	#+END_SRC
 * Try
   Try emacs packages
-** Elisp
 #+BEGIN_SRC emacs-lisp
   (use-package try
 	:ensure t
@@ -829,14 +815,12 @@ NerdTree like project explorer for emacs.
 #+END_SRC
 * Sudo-edit
   Tramp wrapper to edit files as root
-** Elisp
   #+BEGIN_SRC emacs-lisp
 	(use-package sudo-edit
 	  :ensure t
 	  :defer t)
   #+END_SRC
 * Hide-mode-line 
-** Elisp 
 	#+BEGIN_SRC emacs-lisp
 	(use-package hide-mode-line
 		:ensure t)
@@ -859,7 +843,6 @@ Emacs package for handling large files
   UTF-8 bullets for org mode
 ** Config
 Enable it on entering org-mode
-** Elisp
 	#+BEGIN_SRC emacs-lisp
 	(use-package org-bullets
 		  :ensure t
@@ -868,7 +851,6 @@ Enable it on entering org-mode
 	#+END_SRC
 * Origami 
 Code folding in emacs 
-** Elisp 
 #+BEGIN_SRC emacs-lisp
   (use-package origami
 	:ensure t
@@ -876,10 +858,8 @@ Code folding in emacs
 	('prog-mode-hook 'origami-mode))
 #+END_SRC
 
-#+END_SRC
 * Webpaste
 Online pastebin service integration 
-** ELisp 
 #+BEGIN_SRC emacs-lisp 
   (use-package webpaste
 	:ensure t)
@@ -898,7 +878,6 @@ Online pastebin service integration
   multi-target interface to compile
 ** Config 
 	Override multi-compile-run to run commands in interactive compile mode buffer.
-** Elisp
   #+BEGIN_SRC emacs-lisp 
 	(use-package multi-compile
 	  :ensure t
@@ -930,7 +909,6 @@ Online pastebin service integration
   
 * Format-all 
 autoformat plugin emacs
-** Elisp 
 #+BEGIN_SRC emacs-lisp
   (use-package format-all
 	:ensure t
@@ -938,7 +916,6 @@ autoformat plugin emacs
 #+END_SRC
 * JDecomp
 Java Decompiler support emacs
-** Elisp
    #+BEGIN_SRC emacs-lisp
 	 (use-package jdecomp
 	   :ensure t
@@ -952,7 +929,6 @@ Java Decompiler support emacs
    #+END_SRC
 * LSP-Mode
 Language Server Client for Emacs
-** Elisp
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode
 	:defer t
@@ -961,8 +937,7 @@ Language Server Client for Emacs
 	:ensure t)
 #+END_SRC
 * LSP-UI
-Higher level UI modules for LSP-mode
-** Elisp
+  Higher level UI modules for LSP-mode
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-ui
 	:ensure t
@@ -993,9 +968,17 @@ Higher level UI modules for LSP-mode
 	:ghook
 	('lsp-mode-hook 'lsp-ui-mode))
 #+END_SRC
+* DAP-Mode
+#+BEGIN_SRC emacs-lisp
+  (use-package dap-mode
+	:ensure t
+	:after lsp-mode
+	:config
+	(dap-mode 1)
+	(dap-ui-mode 1))
+#+END_SRC
 * Company-lsp
   Company backend for lsp
-** Elisp 
 #+BEGIN_SRC emacs-lisp
   (use-package company-lsp
 	:ensure t
@@ -1008,13 +991,12 @@ Higher level UI modules for LSP-mode
 * LSP-cquery
   Cquery language server for c++.Works on arch flawlessly.Change
   cquery-executable path and cquery system package name as per the OS.
-** Elisp 
 #+BEGIN_SRC emacs-lisp
   (use-package cquery
 	:ensure t
 	:ensure-system-package
 	((cquery . cquery-git)
-	(clang . clang))
+	 (clang . clang))
 	:after projectile
 	:init
 	(setq cquery-executable "/usr/bin/cquery"
@@ -1036,16 +1018,15 @@ Higher level UI modules for LSP-mode
 		  (lsp-cquery-enable)
 		(user-error nil)))
 	:ghook
-	('c++-mode-hook #'cquery//enable))
+	('c++-mode-hook #'cquery//enable)
+	)
 #+END_SRC
-
 * Lsp-java
   Eclipse JDT-LS client for emacs
-** Init
+** Config
    1. Specify the installation directory for the lsp server.
    2. Specify the each and every project individually in
       lsp-java--workspace-folders.
-** Elisp
 #+BEGIN_SRC emacs-lisp
 	(use-package lsp-java
 	  :ensure t
@@ -1054,7 +1035,7 @@ Higher level UI modules for LSP-mode
 	  ('nxml-mode-hook #'my-xml-mode)
 	  :init
 	  (setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
-			lsp-java--workspace-folders (list "~/java/test")
+			lsp-java--workspace-folders (list "~/java/test" "~/java/daym")
 			lsp-ui-sideline-update-mode 'point)
 	  (defun ricky//get-java-package-name ()
 		"get package name for the current buffer"
@@ -1085,13 +1066,21 @@ Higher level UI modules for LSP-mode
 			   (flycheck-mode 1)
 			   (flycheck-select-checker 'xml-xmllint))))
 #+END_SRC
+
 * LSP-python 
-** Elisp 
 #+BEGIN_SRC emacs-lisp
-  (use-package lsp-python
-	:ensure t
-	:ghook
-	('python-mode-hook #'lsp-python-enable))
+	(use-package lsp-python
+	  :ensure t
+	  :init 
+	  (setq lsp-python-server-args '("-v"))
+	  :ghook
+	  ;; ('python-mode-hook #'lsp-python-enable)
+  )
+#+END_SRC
+* Pyenv 
+#+BEGIN_SRC emacs-lisp
+  (use-package pyvenv
+	:ensure t)
 #+END_SRC
 * LSP-Javascript-Typescript
 Javascript Typescript language client for emacs 
@@ -1110,14 +1099,12 @@ Javascript ide support
 #+END_SRC
 * Magit 
 Git interface for emacs on steroids
-** Elisp 
 #+BEGIN_SRC emacs-lisp
   (use-package magit
 	:ensure t)
 #+END_SRC
 * Evil-magit
 Evil interface to magit 
-** Elisp 
 #+BEGIN_SRC emacs-lisp
   (use-package evil-magit
 	:ensure t
@@ -1128,14 +1115,8 @@ Evil interface to magit
 	(general-unbind '(magit-mode-map magit-diff-mode-map) "SPC")
 	)
 #+END_SRC
-* Exec-path-from shell
-Makes emacs path coherent with shell path 
-** Elisp 
+* Reveal.js
 #+BEGIN_SRC emacs-lisp
-  (use-package exec-path-from-shell
-	:if (memq window-system '(mac ns x))
-	:ensure t
-	:config
-	(exec-path-from-shell-initialize))
+  (use-package ox-reveal
+	:quelpa(ox-reveal :fetcher github :repo "yjwen/org-reveal"))
 #+END_SRC
-
