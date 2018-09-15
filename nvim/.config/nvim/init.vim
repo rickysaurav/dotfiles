@@ -15,6 +15,7 @@ set number
 set background=dark
 set splitright
 
+
 "vim-plug bootstrap
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
 	silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
@@ -69,7 +70,6 @@ Plug 'Chiel92/vim-autoformat'
 Plug 'takac/vim-hardtime'
 Plug 'zchee/deoplete-clang' "dependencies deoplete and libclang python3.
 Plug 'zchee/deoplete-go', {'build': {'unix': 'make'}}
-Plug 'zchee/deoplete-jedi'
 Plug 'fatih/vim-go'
 Plug 'jodosha/vim-godebug' " Debugger integration via delve
 Plug 'shougo/echodoc.vim'
@@ -328,5 +328,6 @@ endfunction
 
 nnoremap <Leader>T :call ToggleHiddenAll()<CR>
 
-
-
+"python virtualenv values
+let g:python_host_prog = $HOME.'/.local/share/virtualenvs/neovim2/bin/python'
+let g:python3_host_prog = $HOME.'/.local/share/virtualenvs/neovim3/bin/python'

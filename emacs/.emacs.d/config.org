@@ -1073,6 +1073,8 @@ Language Server Client for Emacs
 	  :ensure t
 	  :init 
 	  (setq lsp-python-server-args '("-v"))
+	  :config 
+		(delete (company-mode/backend-with-yas 'company-capf) company-backends)
 	  :ghook
 	  ;; ('python-mode-hook #'lsp-python-enable)
   )
