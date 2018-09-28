@@ -964,7 +964,8 @@ Language Server Client for Emacs
 			  )
 	:init
 	(setq lsp-ui-doc-max-height 7 
-		  lsp-ui-doc-max-width 40)
+		  lsp-ui-doc-max-width 40
+		  lsp-ui-sideline-update-mode 'point)
 	:ghook
 	('lsp-mode-hook 'lsp-ui-mode))
 #+END_SRC
@@ -977,6 +978,12 @@ Language Server Client for Emacs
 	(dap-mode 1)
 	(dap-ui-mode 1))
 #+END_SRC
+* DAP-Java 
+  #+BEGIN_SRC emacs-lisp 
+	(use-package dap-java
+	  :ensure dap-mode
+	  :after lsp-java)
+  #+END_SRC
 * Company-lsp
   Company backend for lsp
 #+BEGIN_SRC emacs-lisp
@@ -1028,43 +1035,43 @@ Language Server Client for Emacs
    2. Specify the each and every project individually in
       lsp-java--workspace-folders.
 #+BEGIN_SRC emacs-lisp
-	(use-package lsp-java
-	  :ensure t
-	  :ghook
-	  ('java-mode-hook #'my-java-mode)
-	  ('nxml-mode-hook #'my-xml-mode)
-	  :init
-	  (setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
-			lsp-java--workspace-folders (list "~/java/test" "~/java/daym")
-			lsp-ui-sideline-update-mode 'point)
-	  (defun ricky//get-java-package-name ()
-		"get package name for the current buffer"
-		(let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
-		  (if (and (listp packages) (eq (length packages) 1))
-			  (semantic-tag-name (car packages)))))
-	  (defun ricky//get-fully-qualified-class-name ()
-		"returns the fully qualified classname for the current buffer"
-		(interactive "")
-			  (concat (ricky//get-java-package-name) "."
-				  (file-name-sans-extension
-				   (file-name-nondirectory (buffer-file-name)))))
-	  :config
-	  (defun my-java-mode()
-		"enable lsp-java on .java files and pom.xml"
-		(interactive)
-		(if (or(equal (file-name-nondirectory buffer-file-name) "pom.xml")(equal (file-name-extension buffer-file-name) "java"))
-			(progn
-			  (lsp-java-enable)
-			  (semantic-mode 1)
-			  (general-add-hook 'before-save-hook #'lsp-format-buffer nil t))))
-	  (defun my-xml-mode()
-		"enable lsp-java on .java files and pom.xml"
-		(interactive)
-		(progn (my-java-mode)
-			   (setq flycheck-check-syntax-automatically
-					 '(save idle-change new-line mode-enabled))
-			   (flycheck-mode 1)
-			   (flycheck-select-checker 'xml-xmllint))))
+  (use-package lsp-java
+	:ensure t
+	:ghook
+	('java-mode-hook #'my-java-mode)
+	('nxml-mode-hook #'my-xml-mode)
+	:init
+	(setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
+		  lsp-java--workspace-folders (list "~/java/test" "~/java/daym")
+		  lsp-ui-sideline-update-mode 'point)
+	(defun ricky//get-java-package-name ()
+	  "get package name for the current buffer"
+	  (let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
+		(if (and (listp packages) (eq (length packages) 1))
+			(semantic-tag-name (car packages)))))
+	(defun ricky//get-fully-qualified-class-name ()
+	  "returns the fully qualified classname for the current buffer"
+	  (interactive "")
+			(concat (ricky//get-java-package-name) "."
+				(file-name-sans-extension
+				 (file-name-nondirectory (buffer-file-name)))))
+	:config
+	(defun my-java-mode()
+	  "enable lsp-java on .java files and pom.xml"
+	  (interactive)
+	  (if (or(equal (file-name-nondirectory buffer-file-name) "pom.xml")(equal (file-name-extension buffer-file-name) "java"))
+		  (progn
+			(lsp-java-enable)
+			(semantic-mode 1)
+			(general-add-hook 'before-save-hook #'lsp-format-buffer nil t))))
+	(defun my-xml-mode()
+	  "enable lsp-java on .java files and pom.xml"
+	  (interactive)
+	  (progn (my-java-mode)
+			 (setq flycheck-check-syntax-automatically
+				   '(save idle-change new-line mode-enabled))
+			 (flycheck-mode 1)
+			 (flycheck-select-checker 'xml-xmllint))))
 #+END_SRC
 
 * LSP-python 
