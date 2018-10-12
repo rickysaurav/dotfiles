@@ -1026,9 +1026,38 @@ Language Server Client for Emacs
 		  (lsp-cquery-enable)
 		(user-error nil)))
 	:ghook
-	('c++-mode-hook #'cquery//enable)
+	;; ('c++-mode-hook #'cquery//enable)
 	)
 #+END_SRC
+* Lsp-ccls 
+  #+BEGIN_SRC emacs-lisp
+	(use-package ccls
+	  :ensure t
+	  :ensure-system-package((ccls . ccls)(clang . clang))
+	  :after projectile
+	  :init
+		(setq ccls-executable "/usr/bin/ccls")
+		;; Log file
+		(setq ccls-extra-args '("--log-file=/tmp/cq.log"))
+		;; Cache directory, both relative and absolute paths are supported
+		(setq ccls-cache-dir ".ccls-cache")
+		;; ;; Initialization options
+		(setq projectile-project-root-files-top-down-recurring
+			(append '("compile_commands.json"
+					  ".ccls")
+					projectile-project-root-files-top-down-recurring))
+		(setq ccls-extra-init-params '(:index (:comments 2) :completion (:detailedLabel t)))
+		(setq ccls-sem-highlight-method 'font-lock)
+	  :config
+	  (defun ccls//enable ()
+		(condition-case nil
+			(lsp-ccls-enable)
+		  (user-error nil)))
+	  :ghook
+	  ('c++-mode-hook #'ccls//enable)
+	  )
+
+  #+END_SRC
 * Lsp-java
   Eclipse JDT-LS client for emacs
 ** Config
