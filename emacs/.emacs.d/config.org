@@ -516,7 +516,8 @@ Use <SPC-w> as evil window prefix along with <C-w>
 	"f" 'toggle-frame-fullscreen
 	"s" 'toggle-scroll-bar
 	"t" 'toggle-tool-bar-mode-from-frame
-	"l" 'hide-mode-line-mode)
+	"l" 'hide-mode-line-mode
+	"c" 'load-theme)
 #+END_SRC
 * Helm
   Interface autocompletion for emacs
@@ -1078,10 +1079,20 @@ Language Server Client for Emacs
 #+BEGIN_SRC emacs-lisp
 	(use-package lsp-python
 	  :ensure t
+	  :commands (lsp-python-enable)
 	  :init 
-	  (setq lsp-python-server-args '("-v"))
-	  :config 
+	  (setq lsp-python-server-args '("--log-file" "/tmp/pyls.log" "-v"))
+	  :config
+	  (lsp-define-stdio-client lsp-python "python"
+				 (lsp-make-traverser #'(lambda (dir)
+							 (directory-files
+							  dir
+							  nil
+				  "setup.py\\|requirements.txt\\|Pipfile\\|setup.cfg\\|tox.ini")))
+							 nil
+							 :command-fn 'lsp-python--ls-command)
 		(delete (company-mode/backend-with-yas 'company-capf) company-backends)
+
 	  :ghook
 	  ;; ('python-mode-hook #'lsp-python-enable)
   )

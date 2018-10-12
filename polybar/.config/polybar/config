@@ -50,7 +50,7 @@ font-1 = "Iosevka Nerd Font:size=13;+0"
 modules-left = powermenu i3
 modules-center = music mpd
 modules-right =  memory cpu volume backlight wireless-network wired-network battery date
-;tray-position = center
+; tray-position = right
 
 [bar/bottom]
 monitor = DP-1

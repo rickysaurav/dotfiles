@@ -287,6 +287,7 @@ for_window [class="Lxappearance"] floating enable
 ####shortcuts#####
 #bindsym $mod+Shift+x exec $HOME/.config/i3/my_lock.sh
 bindsym $mod+Shift+x exec i3lock-fancy
+bindsym $mod+Shift+w exec networkmanager_dmenu 
 bindsym $mod+d exec rofi -show run -matching fuzzy
 bindsym $mod+shift+d exec rofi -show window -matching fuzzy
 bindsym $mod+m exec bash $HOME/scripts/rofi_layouts.sh
@@ -300,6 +301,7 @@ bindsym Shift+Print exec --no-startup-id scrot -u '%Y-%m-%d-%H-%M-%S_$wx$h.png' 
 ####autostart####
 # exec --no-startup-id $HOME/.config/i3/my_lock.sh
 exec --no-startup-id i3lock-fancy
+exec --no-startup-id nm-applet
 exec --no-startup-id $browser 
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
 exec --no-startup-id compton -b --config $HOME/.compton.conf 
