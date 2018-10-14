@@ -957,7 +957,9 @@ Language Server Client for Emacs
 			  "i" '(helm-imenu :which-key "helm-imenu")
 			  "p" '(pop-tag-mark :which-key "pop-definition-stack")
 			  "w" '(lsp-ui-peek-find-workspace-symbol :which-key "workspace-symbol")
-			  "." '(lsp-ui-sideline-apply-code-actions :which-key "code-action"))
+			  "." '(lsp-ui-sideline-apply-code-actions :which-key "code-action")
+			  "l" '(lsp-restart-workspace :which-key "restart lsp")
+			  )
 	(:keymaps 'lsp-ui-mode-map
 			  [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
 			  [remap xref-find-references] #'lsp-ui-peek-find-references
