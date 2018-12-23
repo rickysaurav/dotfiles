@@ -1106,28 +1106,17 @@ Language Server Client for Emacs
 			 (flycheck-select-checker 'xml-xmllint))))
 #+END_SRC
 
-* LSP-python 
-#+BEGIN_SRC emacs-lisp
-	(use-package lsp-python
+* Lsp-ms-python 
+  #+BEGIN_SRC emacs-lisp
+	(use-package lsp-python-ms
+	  :quelpa(lsp-python-ms :fetcher github :repo "andrew-christianson/lsp-python-ms")
 	  :ensure t
-	  :commands (lsp-python-enable)
-	  :init 
-	  (setq lsp-python-server-args '("--log-file" "/tmp/pyls.log" "-v"))
 	  :config
-	  (lsp-define-stdio-client lsp-python "python"
-				 (lsp-make-traverser #'(lambda (dir)
-							 (directory-files
-							  dir
-							  nil
-				  "setup.py\\|requirements.txt\\|Pipfile\\|setup.cfg\\|tox.ini")))
-							 nil
-							 :command-fn 'lsp-python--ls-command)
-		(delete (company-mode/backend-with-yas 'company-capf) company-backends)
-
-	  :ghook
-	  ;; ('python-mode-hook #'lsp-python-enable)
-  )
-#+END_SRC
+	  (setq lsp-python-ms-dir
+			(expand-file-name "~/repos/python-language-server/output/bin/Release")) 
+	  (setq lsp-python-ms-executable
+			"~/repos/python-language-server/output/bin/Release/linux-x64/publish/Microsoft.Python.LanguageServer"))
+  #+END_SRC
 * Pyenv 
 #+BEGIN_SRC emacs-lisp
   (use-package pyvenv
