@@ -6,89 +6,89 @@
   this configuration as-is, because it probably contains a lot you don’t really
   need. I do, however, hope people find some golden nuggets that they can smuggle
   into their own configs.
-* Bootstrap
-** Initialise and add melpa
-	#+BEGIN_SRC emacs-lisp
-	  (require 'package)
-	  (setq package-enable-at-startup nil)
-	  (add-to-list 'package-archives 
-				   '("melpa" . "https://melpa.org/packages/"))
-	  (package-initialize)
-	#+END_SRC
-** Bootstrap use-package
-	#+BEGIN_SRC emacs-lisp
-	(unless (package-installed-p 'use-package)
-	(package-refresh-contents)
-	(package-install 'use-package))
-	(eval-when-compile
-	(setq use-package-verbose t)
-	(require 'use-package))
-	#+END_SRC
-* Exec-path-from shell
-Makes emacs path coherent with shell path 
-#+BEGIN_SRC emacs-lisp
-  (use-package exec-path-from-shell
-	:if (memq window-system '(mac ns x))
-	:ensure t
-	:config
-	(exec-path-from-shell-initialize))
-#+END_SRC
-* System-package 
-  Emacs integration with system package manager 
-** Config 
-Add yay package manager config and make it the default for my arch-linux system.
-#+BEGIN_SRC emacs-lisp 
-  (use-package system-packages
-	:ensure t
-	:defer t
-	:config
-	(add-to-list 'system-packages-supported-package-managers
-				 '(yay .
-					   ((default-sudo . nil)
-						(install . "yay -S")
-						(search . "yay -Ss")
-						(uninstall . "yay -Rns")
-						(update . "yay -Syu")
-						(clean-cache . "yay -Sc")
-						(log . "cat /var/log/pacman.log")
-						(get-info . "yay -Qi")
-						(get-info-remote . "yay -Si")
-						(list-files-provided-by . "yay -Ql")
-						(verify-all-packages . "yay -Qkk")
-						(verify-all-dependencies . "yay -Dk")
-						(remove-orphaned . "yay -Rns $(yay -Qtdq)")
-						(list-installed-packages . "yay -Qe")
-						(list-installed-packages-all . "yay -Q")
-						(list-dependencies-of . "yay -Qi")
-						(noconfirm . "--noconfirm"))))
-	(setq system-packages-use-sudo nil
-	system-packages-package-manager 'yay))
-
-#+END_SRC
-* Use-package-ensure-system-package
-  Use package :ensure for system-packages
-	#+BEGIN_SRC emacs-lisp
-	(use-package use-package-ensure-system-package
-		:ensure t
-		:defer t
-		:after (system-packages use-package ))
-	#+END_SRC
-* Quelpa 
-  Download repos as emacs packages 
-	#+BEGIN_SRC emacs-lisp
-	  (use-package quelpa
-		  :defer t
-		  :ensure t)
-	#+END_SRC
-* Quelpa-use-package 
-  Use-package interface to quelpa
-	#+BEGIN_SRC emacs-lisp
-	  (use-package quelpa-use-package
-		:ensure t
-		:init
-		(setq quelpa-use-package-inhibit-loading-quelpa t))
-	#+END_SRC
-* Interface Tweaks
+* Package Installation setup
+** Bootstrap
+*** Initialise and add melpa
+	 #+BEGIN_SRC emacs-lisp
+	   (require 'package)
+	   (setq package-enable-at-startup nil)
+	   (add-to-list 'package-archives 
+					'("melpa" . "https://melpa.org/packages/"))
+	   (package-initialize)
+	 #+END_SRC
+*** Bootstrap use-package
+	 #+BEGIN_SRC emacs-lisp
+	 (unless (package-installed-p 'use-package)
+	 (package-refresh-contents)
+	 (package-install 'use-package))
+	 (eval-when-compile
+	 (setq use-package-verbose t)
+	 (require 'use-package))
+	 #+END_SRC
+** Exec-path-from shell
+ Makes emacs path coherent with shell path 
+ #+BEGIN_SRC emacs-lisp
+   (use-package exec-path-from-shell
+	 :if (memq window-system '(mac ns x))
+	 :ensure t
+	 :config
+	 (exec-path-from-shell-initialize))
+ #+END_SRC
+** System-package 
+   Emacs integration with system package manager 
+*** Config 
+ Add yay package manager config and make it the default for my arch-linux system.
+ #+BEGIN_SRC emacs-lisp 
+   (use-package system-packages
+	 :ensure t
+	 :defer t
+	 :config
+	 (add-to-list 'system-packages-supported-package-managers
+				  '(yay .
+						((default-sudo . nil)
+						 (install . "yay -S")
+						 (search . "yay -Ss")
+						 (uninstall . "yay -Rns")
+						 (update . "yay -Syu")
+						 (clean-cache . "yay -Sc")
+						 (log . "cat /var/log/pacman.log")
+						 (get-info . "yay -Qi")
+						 (get-info-remote . "yay -Si")
+						 (list-files-provided-by . "yay -Ql")
+						 (verify-all-packages . "yay -Qkk")
+						 (verify-all-dependencies . "yay -Dk")
+						 (remove-orphaned . "yay -Rns $(yay -Qtdq)")
+						 (list-installed-packages . "yay -Qe")
+						 (list-installed-packages-all . "yay -Q")
+						 (list-dependencies-of . "yay -Qi")
+						 (noconfirm . "--noconfirm"))))
+	 (setq system-packages-use-sudo nil
+	 system-packages-package-manager 'yay))
+ #+END_SRC
+** Use-package-ensure-system-package
+   Use package :ensure for system-packages
+	 #+BEGIN_SRC emacs-lisp
+	 (use-package use-package-ensure-system-package
+		 :ensure t
+		 :defer t
+		 :after (system-packages use-package ))
+	 #+END_SRC
+** Quelpa 
+   Download repos as emacs packages 
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package quelpa
+		   :defer t
+		   :ensure t)
+	 #+END_SRC
+** Quelpa-use-package 
+   Use-package interface to quelpa
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package quelpa-use-package
+		 :ensure t
+		 :init
+		 (setq quelpa-use-package-inhibit-loading-quelpa t))
+	 #+END_SRC
+* Personal Config Tweaks
 ** Line-numbers
 	#+BEGIN_SRC emacs-lisp
 	  (setq-default display-line-numbers 'relative)
@@ -131,7 +131,6 @@ Add yay package manager config and make it the default for my arch-linux system.
 	#+END_SRC
 ** Font settings
 	#+BEGIN_SRC emacs-lisp
-	  ;; (set-face-attribute 'default nil :font "Iosevka Nerd Font-16" )
 	  (setq default-frame-alist '((font . "Iosevka Nerd Font-16")))
 	#+END_SRC
 ** Indentation settings
@@ -166,7 +165,6 @@ Add yay package manager config and make it the default for my arch-linux system.
 	  (defadvice windmove-right (before other-window-now activate)
 		(when buffer-file-name (save-buffer)))
 	#+END_SRC
-* Config edit & reload
 ** Edit config.org
    #+BEGIN_SRC emacs-lisp
 	 (defun config-visit ()
@@ -181,982 +179,991 @@ Add yay package manager config and make it the default for my arch-linux system.
 	(interactive)
 	(org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
 	#+END_SRC
-* General
-  Keybinding on steroids
-** Config 
-A lot of packages depend on this package.Load this first.
-   #+BEGIN_SRC emacs-lisp
-	 (use-package general
-	   :ensure t
-	   :demand t
-	   :config
-	   (general-evil-setup))
-   #+END_SRC
-* Dashboard
-  Vim startify attempt for emacs
+* Keybinding management
+** General
+   Keybinding on steroids
+*** Config 
+ A lot of packages depend on this package.Load this first.
 	#+BEGIN_SRC emacs-lisp
-	(use-package dashboard
-	:ensure t
-	:config
-	(dashboard-setup-startup-hook))
-	#+END_SRC
-* Which-key
-  Display available keybindings in a popup
-	#+BEGIN_SRC emacs-lisp
-	  (use-package which-key
-		  :ensure t
-		  :diminish which-key-mode
-		  :config
-		  (which-key-mode 1))
-	#+END_SRC
-* Evil-mode
-  Vim bindings for emacs
-** Config
-   1. minibuffer-keyboard-quit to quit all minibuffers
-   2. Map [escape] to quit all minibuffers
-	#+BEGIN_SRC emacs-lisp
-	  (use-package evil
-		:after general
+	  (use-package general
 		:ensure t
 		:demand t
-		:init
-		(defun minibuffer-keyboard-quit ()
-		  "Abort recursive edit.
-	  In Delete Selection mode, if the mark is active, just deactivate it;
-	  then it takes a second \\[keyboard-quit] to abort the minibuffer."
-		  (interactive)
-		  (if (and delete-selection-mode transient-mark-mode mark-active)
-			  (setq deactivate-mark  t)
-			(when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
-			(abort-recursive-edit)))
-		:general
-		('insert
-		 "C-n" nil
-		 "C-p" nil)
-		:init
-		(setq evil-want-C-u-scroll t)
 		:config
-		(evil-mode 1)
-		(define-key evil-normal-state-map [escape] 'keyboard-quit)
-		(define-key evil-motion-state-map [escape] 'keyboard-quit)
-		(define-key evil-visual-state-map [escape] 'keyboard-quit)
-		(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-		(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-		(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-		(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-		(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit))
+		(general-evil-setup))
 	#+END_SRC
-* Unbind Space
-  Unbind Space in evil-states to use it as prefix
+** Which-key
+   Display available keybindings in a popup
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package which-key
+		   :ensure t
+		   :demand t
+		   :diminish which-key-mode
+		   :config
+		   (which-key-mode 1))
+	 #+END_SRC
+* Evil Setup
+** Evil-mode
+   Vim bindings for emacs
+*** Config
+	1. minibuffer-keyboard-quit to quit all minibuffers
+	2. Map [escape] to quit all minibuffers
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package evil
+		 :after general
+		 :ensure t
+		 :demand t
+		 :init
+		 (defun minibuffer-keyboard-quit ()
+		   "Abort recursive edit.
+	   In Delete Selection mode, if the mark is active, just deactivate it;
+	   then it takes a second \\[keyboard-quit] to abort the minibuffer."
+		   (interactive)
+		   (if (and delete-selection-mode transient-mark-mode mark-active)
+			   (setq deactivate-mark  t)
+			 (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+			 (abort-recursive-edit)))
+		 :general
+		 ('insert
+		  "C-n" nil
+		  "C-p" nil)
+		 :init
+		 (setq evil-want-C-u-scroll t)
+		 :config
+		 (evil-mode 1)
+		 (define-key evil-normal-state-map [escape] 'keyboard-quit)
+		 (define-key evil-motion-state-map [escape] 'keyboard-quit)
+		 (define-key evil-visual-state-map [escape] 'keyboard-quit)
+		 (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+		 (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+		 (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+		 (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+		 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit))
+	 #+END_SRC
+** Unbind Space
+   Unbind Space in evil-states to use it as prefix
+	 #+BEGIN_SRC emacs-lisp
+	   (general-unbind '(normal motion operator visual)
+		 "SPC")
+	   (general-unbind '(compilation-mode-map)
+		 "SPC")
+	   (general-unbind 'motion 'Info-mode-map "SPC")
+	   (general-unbind 'Info-mode-map "SPC")
+	   (general-def '(motion normal) 'Info-mode-map "<escape>" 'keyboard-escape-quit)
+	 #+END_SRC
+** Evil-surround
+ Vim surround on emacs 
 	#+BEGIN_SRC emacs-lisp
-	  (general-unbind '(normal motion operator visual)
-		"SPC")
-	  (general-unbind '(compilation-mode-map)
-		"SPC")
+	  (use-package evil-surround
+		:ensure t
+		:after evil
+		:ghook
+		('prog-mode-hook #'evil-surround-mode 1))
 	#+END_SRC
-* Info mode 
-  Info mode is really finicky with evil mode,standalone configuration for it 
-#+BEGIN_SRC emacs-lisp
-  (general-unbind 'motion 'Info-mode-map "SPC")
-  (general-unbind 'Info-mode-map "SPC")
-  (general-def '(motion normal) 'Info-mode-map "<escape>" 'keyboard-escape-quit)
-#+END_SRC
-* Evil-surround
-Vim surround on emacs 
-   #+BEGIN_SRC emacs-lisp
-	 (use-package evil-surround
+** Evil-nerd-commenter
+   Vim nerd-commenter for emacs
+	#+BEGIN_SRC emacs-lisp
+	  (use-package evil-nerd-commenter
+		:ensure t
+		:general
+		(
+		 :keymaps '(normal motion insert emacs)
+		 :prefix "SPC c"
+		 :non-normal-prefix "M-SPC c"
+		 :prefix-map 'ricky//comment/compile-prefix-map
+		 "" '(:ignore t :which-key "comment/compile-prefix")
+		 "i" 'evilnc-comment-or-uncomment-lines
+		 "l" 'evilnc-quick-comment-or-uncomment-to-the-line
+		 "c" 'evilnc-copy-and-comment-lines
+		 "p" 'evilnc-comment-or-uncomment-paragraphs
+		 "r" 'comment-or-uncomment-region
+		 "v" 'evilnc-toggle-invert-comment-line-by-line
+		 "."  'evilnc-copy-and-comment-operator
+		 "\\" 'evilnc-comment-operator ; if you prefer backslash key
+		 ))
+	#+END_SRC
+** Avy
+   Vim-easymotion alternative for emacs
+*** Config 
+	1. map <return> to avy-isearch,for vim-easymotion n-char search(does not work well with evil-search).
+	2. bind <SPC-/> to got-char as work-around for previous.(unbind SPC befor binding <SPC-/>)
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package avy
+		 :ensure t
+		 :demand t
+		 :init
+		 (setq avy-all-windows nil)
+		 (defvar ricky//avy-isearch-point nil "value for storing last avy-isearch point ")
+		 ;; (make-variable-buffer-local ricky//avy-isearch-point)
+		 (defun ricky//avy-isearch ()
+		   "Jump to one of the current isearch candidates."
+		   (interactive)
+		   (avy-with avy-isearch
+			 (let ((avy-background nil))
+			   (avy--process
+				(avy--regex-candidates (if isearch-regexp
+										   isearch-string
+										 (regexp-quote isearch-string)))
+				(avy--style-fn avy-style))
+			   (setq ricky//avy-isearch-point (point))
+			   (isearch-done))))
+		 (defun ricky//evil-forward-search-avy-advice (old-fun &rest args)
+		   "integrate avy-isearch with evil forward search" 
+		   (interactive)
+		   (setq ricky//avy-isearch-point (point))
+		   (apply old-fun args)
+		   (when (and (boundp 'ricky//avy-isearch-point) ricky//avy-isearch-point)
+			 (goto-char ricky//avy-isearch-point)
+			 (setq ricky//avy-isearch-point nil)))
+		 :general
+		 (:keymaps 'isearch-mode-map
+				   "<return>" 'ricky//avy-isearch)
+		 :config
+		 (avy-setup-default)
+		 (general-add-advice 'evil-search-forward :around #'ricky//evil-forward-search-avy-advice)
+		 )
+	 #+END_SRC
+** Evil-Easymotion
+   Vim-easymotion emacs bindings
+*** Config
+	Two different prefixes for easymotion commands "," and "SPC m".
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package evil-easymotion
+		 :ensure t
+		 :defer t
+		 :general
+		 (:keymaps '(normal motion insert emacs)
+				   :prefix "SPC m"
+				   :non-normal-prefix "M-SPC m"
+				   "" '(:keymap evilem-map :package evil-easymotion :which-key "easy-motion prefix"))
+		 (:keymaps '(normal motion insert emacs)
+				   :prefix ","
+				   :non-normal-prefix "M-,"
+				   "" '(:keymap evilem-map :package evil-easymotion :which-key "easy-motion prefix"))
+		 :config
+		 (evilem-default-keybindings "SPC m"))
+	 #+END_SRC
+* UI 
+** Spacemacs-theme
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package spacemacs-theme
+		 :ensure t
+		 :no-require t
+		 :config
+		 (load-theme 'spacemacs-dark t))
+	 #+END_SRC
+** Telephone-line
+   Modern mode-line for emacs
+*** Config
+	1. Set lhs,lhs-center,rhs-center,rhs segments
+	2. Set the separator values
+	3. Set line height
+	4. Short values for evil-state
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package telephone-line
 	   :ensure t
-	   :after evil
-	   :ghook
-	   ('prog-mode-hook #'evil-surround-mode 1))
-   #+END_SRC
-* Evil-nerd-commenter
-  Vim nerd-commenter for emacs
+	   :ghook 
+	   ('after-init-hook #'telephone-line-mode)
+	   :init
+	   (setq telephone-line-lhs
+	   '((evil   . (telephone-line-evil-tag-segment))
+		   (accent . (telephone-line-vc-segment telephone-line-process-segment telephone-line-projectile-segment))
+		   (nil    . (telephone-line-minor-mode-segment))))
+	   (setq telephone-line-center-lhs
+		   '((nil .())
+		   (evil   . (telephone-line-buffer-segment))))
+	   (setq telephone-line-center-rhs
+		   '((evil   . (telephone-line-major-mode-segment))
+		   (nil .())))
+	   (setq telephone-line-rhs
+	   '((nil    . (telephone-line-flycheck-segment))
+	   (accent . (telephone-line-misc-info-segment))
+		   (evil   . (telephone-line-airline-position-segment))))
+	   (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+		   telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
+		   telephone-line-primary-right-separator 'telephone-line-cubed-right
+		   telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
+	   (setq telephone-line-height 24
+		   telephone-line-evil-use-short-tag t)
+		   )
+	 #+END_SRC
+** Dashboard
+   Vim startify attempt for emacs
+	 #+BEGIN_SRC emacs-lisp
+	 (use-package dashboard
+	 :ensure t
+	 :config
+	 (dashboard-setup-startup-hook))
+	 #+END_SRC
+** Helm
+   Interface autocompletion for emacs
+*** Config
+	Enable fuzzy matching wherever possible
+ #+BEGIN_SRC emacs-lisp
+   (use-package helm
+	 :ensure t
+	 :demand t
+	 :general
+	 ("M-x" 'helm-M-x
+	  "C-x C-f" 'helm-find-files)
+	 :init
+	 (setq helm-semantic-fuzzy-match t
+		   helm-imenu-fuzzy-match    t
+		   helm-locate-fuzzy-match t
+		   helm-apropos-fuzzy-match t
+		   helm-M-x-fuzzy-match t
+		   helm-buffers-fuzzy-matching t
+		   helm-recentf-fuzzy-match    t
+		   helm-mode-fuzzy-match t
+		   helm-completion-in-region-fuzzy-match t
+		   helm-window-prefer-horizontal-split 'decide)
+	 :diminish helm-mode
+	 :config
+	 (helm-mode 1))
+ #+END_SRC
+** Diminish
+   Reduce modeline clutter by diminishing minor modes
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package diminish
+		 :ensure t
+		 :defer 5
+		 :init
+		 (diminish 'undo-tree-mode)
+		 (diminish 'abbrev-mode)
+		 (diminish 'rainbow-mode)
+		 (diminish 'eldoc-mode)
+		 (diminish 'auto-fill-mode))
+	 #+END_SRC
+** Hide-mode-line 
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package hide-mode-line
+		 :ensure t
+		 :commands hide-mode-line-mode)
+	 #+END_SRC
+* Keybindings
+** Window manipulation
+*** Toggle maximize
+	Copied from spacemacs https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Bdistributions/spacemacs-base/funcs.el
+**** Elisp
+	 #+BEGIN_SRC emacs-lisp
+	 (defun toggle-maximize-buffer ()
+	 "Maximize buffer"
+	 (interactive)
+	 (if (and (= 1 (length (window-list)))
+		 (assoc ?_ register-alist))
+		 (jump-to-register ?_)
+		 (progn
+		 (window-configuration-to-register ?_)
+		 (delete-other-windows))))
+	 #+END_SRC
+*** Config
+ Use <SPC-w> as evil window prefix along with <C-w>
    #+BEGIN_SRC emacs-lisp
-	 (use-package evil-nerd-commenter
-	   :ensure t
-	   :general
-	   (
-		:keymaps '(normal motion insert emacs)
-		:prefix "SPC c"
-		:non-normal-prefix "M-SPC c"
-		:prefix-map 'ricky//comment/compile-prefix-map
-		"" '(:ignore t :which-key "comment/compile-prefix")
-		"i" 'evilnc-comment-or-uncomment-lines
-		"l" 'evilnc-quick-comment-or-uncomment-to-the-line
-		"c" 'evilnc-copy-and-comment-lines
-		"p" 'evilnc-comment-or-uncomment-paragraphs
-		"r" 'comment-or-uncomment-region
-		"v" 'evilnc-toggle-invert-comment-line-by-line
-		"."  'evilnc-copy-and-comment-operator
-		"\\" 'evilnc-comment-operator ; if you prefer backslash key
-		))
+	 (general-def
+	   :keymaps '(normal motion insert emacs)
+	   :prefix "SPC w"
+	   :non-normal-prefix "M-SPC w"
+	   "" '(
+			:keymap evil-window-map
+			:package evil
+			:which-key "window-prefix"))
+	 (general-def
+	   :keymaps 'evil-window-map
+	   "m" 'toggle-maximize-buffer)
    #+END_SRC
-* Avy
-  Vim-easymotion alternative for emacs
-** Config 
-   1. map <return> to avy-isearch,for vim-easymotion n-char search(does not work well with evil-search).
-   2. bind <SPC-/> to got-char as work-around for previous.(unbind SPC befor binding <SPC-/>)
-	#+BEGIN_SRC emacs-lisp
-	  (use-package avy
-		:ensure t
-		:demand t
-		:init
-		(setq avy-all-windows nil)
-		(defvar ricky//avy-isearch-point nil "value for storing last avy-isearch point ")
-		;; (make-variable-buffer-local ricky//avy-isearch-point)
-		(defun ricky//avy-isearch ()
-		  "Jump to one of the current isearch candidates."
-		  (interactive)
-		  (avy-with avy-isearch
-			(let ((avy-background nil))
-			  (avy--process
-			   (avy--regex-candidates (if isearch-regexp
-										  isearch-string
-										(regexp-quote isearch-string)))
-			   (avy--style-fn avy-style))
-			  (setq ricky//avy-isearch-point (point))
-			  (isearch-done))))
-		(defun ricky//evil-forward-search-avy-advice (old-fun &rest args)
-		  "integrate avy-isearch with evil forward search" 
-		  (interactive)
-		  (setq ricky//avy-isearch-point (point))
-		  (apply old-fun args)
-		  (when (and (boundp 'ricky//avy-isearch-point) ricky//avy-isearch-point)
-			(goto-char ricky//avy-isearch-point)
-			(setq ricky//avy-isearch-point nil)))
-		:general
-		(:keymaps 'isearch-mode-map
-				  "<return>" 'ricky//avy-isearch)
-		:config
-		(avy-setup-default)
-		(general-add-advice 'evil-search-forward :around #'ricky//evil-forward-search-avy-advice)
-		)
-	#+END_SRC
-* Evil-Easymotion
-  Vim-easymotion emacs bindings
-** Config
-   Two different prefixes for easymotion commands "," and "SPC m".
-	#+BEGIN_SRC emacs-lisp
-	  (use-package evil-easymotion
-		:ensure t
-		:after avy
-		:general
-		(:keymaps '(normal motion insert emacs)
-				  :prefix "SPC m"
-				  :non-normal-prefix "M-SPC m"
-				  "" '(:ignore t :which-key "easy-motion prefix"))
-		(:keymaps '(normal motion insert emacs)
-				  :prefix ","
-				  :non-normal-prefix "M-,"
-				  "" '(:keymap evilem-map :package evil-easymotion :which-key "easy-motion prefix"))
-		:config
-		(evilem-default-keybindings "SPC m"))
-	#+END_SRC
-* Spacemacs-theme
-	#+BEGIN_SRC emacs-lisp
-	  (use-package spacemacs-theme
-		:ensure t
-		:no-require t
-		:config
-		(load-theme 'spacemacs-dark t))
-	#+END_SRC
-* Telephone-line
-  Modern mode-line for emacs
-** Config
-   1. Set lhs,lhs-center,rhs-center,rhs segments
-   2. Set the separator values
-   3. Set line height
-   4. Short values for evil-state
-	#+BEGIN_SRC emacs-lisp
-	  (use-package telephone-line
-	  :ensure t
-	  :ghook 
-	  ('after-init-hook 'telephone-line-mode)
-	  :init
-	  (setq telephone-line-lhs
-	  '((evil   . (telephone-line-evil-tag-segment))
-		  (accent . (telephone-line-vc-segment telephone-line-process-segment telephone-line-projectile-segment))
-		  (nil    . (telephone-line-minor-mode-segment))))
-	  (setq telephone-line-center-lhs
-		  '((nil .())
-		  (evil   . (telephone-line-buffer-segment))))
-	  (setq telephone-line-center-rhs
-		  '((evil   . (telephone-line-major-mode-segment))
-		  (nil .())))
-	  (setq telephone-line-rhs
-	  '((nil    . (telephone-line-flycheck-segment))
-	  (accent . (telephone-line-misc-info-segment))
-		  (evil   . (telephone-line-airline-position-segment))))
-	  (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-		  telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
-		  telephone-line-primary-right-separator 'telephone-line-cubed-right
-		  telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
-	  (setq telephone-line-height 24
-		  telephone-line-evil-use-short-tag t)
-		  )
-	#+END_SRC
-* Window manipulation
-** Toggle maximize
-   Copied from spacemacs https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Bdistributions/spacemacs-base/funcs.el
-*** Elisp
-	#+BEGIN_SRC emacs-lisp
-	(defun toggle-maximize-buffer ()
-	"Maximize buffer"
-	(interactive)
-	(if (and (= 1 (length (window-list)))
-		(assoc ?_ register-alist))
-		(jump-to-register ?_)
-		(progn
-		(window-configuration-to-register ?_)
-		(delete-other-windows))))
-	#+END_SRC
-** Config
-Use <SPC-w> as evil window prefix along with <C-w>
+** Buffer manipulation
+	Personal Spacemacs like buffer manipulation shortcuts
+	 #+BEGIN_SRC emacs-lisp
+	   (general-def 
+		 :keymaps '(normal motion insert emacs)
+		 :prefix "SPC b"
+		 :non-normal-prefix "M-SPC b"
+		 :prefix-map 'ricky//buffer-prefix-map
+		 "" '(:ignore t :which-key "buffer-prefix")
+		 "b" 'helm-mini
+		 "q" 'kill-buffer-and-window
+		 "d" 'kill-this-buffer
+		 "k" 'kill-buffer
+		 "n" 'next-buffer
+		 "p" 'previous-buffer
+		 "c" '((lambda()
+				 (interactive) 
+				 (switch-to-buffer nil)) :which-key "cycle-last-buffer")
+		 "s" '((lambda()
+				 (interactive)
+				 (switch-to-buffer "*scratch*")) :which-key "scratch-buffer")
+		 "f" 'format-all-buffer)
+	 #+END_SRC
+** File manipulation
+   File manipulation shortcuts
+*** Copy file-name 
+	Copied from spacemacs 
+	https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Bdistributions/spacemacs-base/funcs.el
+**** Elisp
+ #+BEGIN_SRC emacs-lisp
+   (defun show-and-copy-buffer-filename ()
+	 "Show and copy the full path to the current file in the minibuffer."
+	 (interactive)
+	 ;; list-buffers-directory is the variable set in dired buffers
+	 (let ((file-name (or (buffer-file-name) list-buffers-directory)))
+	   (if file-name (message (kill-new file-name))
+		 (error "Buffer not visiting a file"))))
+ #+END_SRC
+*** Config
   #+BEGIN_SRC emacs-lisp
 	(general-def
 	  :keymaps '(normal motion insert emacs)
-	  :prefix "SPC w"
-	  :non-normal-prefix "M-SPC w"
-	  "" '(
-		   :keymap evil-window-map
-		   :package evil
-		   :which-key "window-prefix"))
-	(general-def
-	  :keymaps 'evil-window-map
-	  "m" 'toggle-maximize-buffer)
+	  :prefix "SPC f"
+	  :non-normal-prefix "M-SPC f"
+	  :prefix-map 'ricky//file-prefix-map
+	  "" '(:ignore t :which-key "file-prefix")
+	  "l" 'helm-locate
+	  "e" 'sudo-edit
+	  "s" 'save-buffer
+	  "S" 'evil-write-all
+	  "c" 'copy-file
+	  "y" 'show-and-copy-buffer-filename
+	  "v" 'config-visit
+	  "r" 'config-reload
+	  "f" 'helm-find-files
+	  "b" 'eww-open-file)
   #+END_SRC
-* Buffer manipulation
-   Personal Spacemacs like buffer manipulation shortcuts
-	#+BEGIN_SRC emacs-lisp
-	  (general-def 
-		:keymaps '(normal motion insert emacs)
-		:prefix "SPC b"
-		:non-normal-prefix "M-SPC b"
-		:prefix-map 'ricky//buffer-prefix-map
-		"" '(:ignore t :which-key "buffer-prefix")
-		"b" 'helm-mini
-		"q" 'kill-buffer-and-window
-		"d" 'kill-this-buffer
-		"k" 'kill-buffer
-		"n" 'next-buffer
-		"p" 'previous-buffer
-		"c" '((lambda()
-				(interactive) 
-				(switch-to-buffer nil)) :which-key "cycle-last-buffer")
-		"s" '((lambda()
-				(interactive)
-				(switch-to-buffer "*scratch*")) :which-key "scratch-buffer")
-		"f" 'format-all-buffer)
-	#+END_SRC
-* File manipulation
-  File manipulation shortcuts
-** Copy file-name 
-   Copied from spacemacs 
-   https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Bdistributions/spacemacs-base/funcs.el
-*** Elisp
-#+BEGIN_SRC emacs-lisp
-  (defun show-and-copy-buffer-filename ()
-	"Show and copy the full path to the current file in the minibuffer."
-	(interactive)
-	;; list-buffers-directory is the variable set in dired buffers
-	(let ((file-name (or (buffer-file-name) list-buffers-directory)))
-	  (if file-name (message (kill-new file-name))
-		(error "Buffer not visiting a file"))))
-#+END_SRC
-** Config
+** Helm shortcuts
+	 #+BEGIN_SRC emacs-lisp
+	   (general-def
+		 :keymaps '(normal motion insert emacs)
+		 :prefix "SPC h"
+		 :non-normal-prefix "M-SPC h"
+		 :prefix-map 'ricky//helm-prefix-map
+		 "" '(:ignore t :which-key "helm-prefix")
+		 "h" 'helm-apropos
+		 "i" 'helm-imenu
+		 "k" 'helm-show-kill-ring
+		 )
+	 #+END_SRC
+** Help shortcuts
  #+BEGIN_SRC emacs-lisp
    (general-def
-	 :keymaps '(normal motion insert emacs)
-	 :prefix "SPC f"
-	 :non-normal-prefix "M-SPC f"
-	 :prefix-map 'ricky//file-prefix-map
-	 "" '(:ignore t :which-key "file-prefix")
-	 "l" 'helm-locate
-	 "e" 'sudo-edit
-	 "s" 'save-buffer
-	 "S" 'evil-write-all
-	 "c" 'copy-file
-	 "y" 'show-and-copy-buffer-filename
-	 "v" 'config-visit
-	 "r" 'config-reload
-	 "f" 'helm-find-files
-	 "b" 'eww-open-file)
+		 :states '(normal motion insert emacs)
+		 :prefix "SPC H"
+		 :non-normal-prefix "M-SPC H"
+		 "" '(:keymap help-map :package help :which-key "help-prefix"))
  #+END_SRC
-* Helm shortcuts
+** Feature toggle shortcuts 
+ #+BEGIN_SRC emacs-lisp 
+   (general-def
+	 :keymaps '(normal motion insert emacs)
+	 :prefix "SPC T"
+	 :non-normal-prefix "M-SPC T"
+	 :prefix-map 'ricky//toggle-prefix-map
+	 "" '(:ignore t :which-key "toggle-prefix")
+	 "m" 'toggle-menu-bar-mode-from-frame
+	 "f" 'toggle-frame-fullscreen
+	 "s" 'toggle-scroll-bar
+	 "t" 'toggle-tool-bar-mode-from-frame
+	 "l" 'hide-mode-line-mode
+	 "c" 'load-theme)
+ #+END_SRC
+* Project Managements
+** Projectile
+   Project management for emacs
+*** Config
+	1. Make <SPC-p> projectile-prefix by binding it to the
+       projectile-command-keymap
+	2. Bind escape in projectile-mode-map to quit,to avoid getting stuck in
+       mini-buffer.
+ #+BEGIN_SRC emacs-lisp
+	 (use-package projectile
+	   :ensure t
+	   :ensure helm-rg
+	   :ensure-system-package 
+	   (rg . ripgrep)
+	   :init
+	   (setq projectile-enable-caching t
+			 projectile-completion-system 'helm)
+	   :diminish projectile-mode
+	   :defer t
+	   :ghook
+	   ('prog-mode-hook #'projectile-mode)
+	   :general
+	   (:keymaps 'projectile-command-map
+				 "<escape>" '(keyboard-quit :which-key "quit")
+				 "ESC" nil)
+	   (:keymaps '(normal motion insert emacs)
+		:prefix "SPC p"
+		:non-normal-prefix "M-SPC p"
+		"" '(:keymap projectile-command-map :package projectile :which-key "projectile-prefix"))
+	   :config
+	   (projectile-mode 1))
+ #+END_SRC
+** Helm-projectile
+   Helm interface for projectile
+	 #+BEGIN_SRC emacs-lisp
+	 (use-package helm-projectile
+		 :ensure t
+		 :after (helm projectile)
+		 :config
+		 (helm-projectile-on))
+	 #+END_SRC
+** Treemacs 
+ NerdTree like project explorer for emacs.
+ #+BEGIN_SRC emacs-lisp
+   (use-package treemacs
+	 :ensure t
+	 :defer t
+	 :config
+	 (progn
+	   (setq treemacs-collapse-dirs (if (executable-find "python") 3 0))
+	   (treemacs-follow-mode t)
+	   (treemacs-filewatch-mode t)
+	   (pcase (cons (not (null (executable-find "git")))
+					(not (null (executable-find "python3"))))
+		 (`(t . t)
+		  (treemacs-git-mode 'deferred))
+		 (`(t . _)
+		  (treemacs-git-mode 'simple)))
+	   )
+	 :general
+	 (:keymaps '(normal motion insert emacs)
+	  :prefix "SPC t"
+	  :non-normal-prefix "M-SPC t"
+	  :prefix-map 'ricky//treemacs-mode-map
+	  "" '(:ignore t :which-key "treemacs-prefix")
+	  "0" 'treemacs-select-window
+	  "1" 'treemacs-delete-other-windows
+	  "t" 'treemacs
+	  "B" 'treemacs-bookmark
+	  "f" 'treemacs-find-file
+	  "T" 'treemacs-find-tag)
+	 (:keymaps 'treemacs-mode-map
+			   "<escape>" 'keyboard-quit))
+ #+END_SRC
+*** Treemacs-evil
 	#+BEGIN_SRC emacs-lisp
-	  (general-def
-		:keymaps '(normal motion insert emacs)
-		:prefix "SPC h"
-		:non-normal-prefix "M-SPC h"
-		:prefix-map 'ricky//helm-prefix-map
-		"" '(:ignore t :which-key "helm-prefix")
-		"h" 'helm-apropos
-		"i" 'helm-imenu
-		"k" 'helm-show-kill-ring
+   (use-package treemacs-evil
+	 :after treemacs evil
+	 :ensure t)
+   
+	#+END_SRC
+*** Treemacs-projectile
+	#+BEGIN_SRC emacs-lisp
+	  (use-package treemacs-projectile
+		:after treemacs projectile
+		:ensure t
+		:general
+		(:keymaps 'ricky//treemacs-mode-map
+				  "p" 'treemacs-projectile))
+	#+END_SRC
+* Linting
+** Flycheck
+   Asynchronous linting
+*** Config
+	Make <SPC-e> the flycheck prefix by binding it to flycheck-command-map.
+ #+BEGIN_SRC emacs-lisp
+   (use-package flycheck
+	 :ensure t
+	 :diminish flycheck-mode
+	 :general
+	 (
+	  :keymaps '(normal motion insert emacs)
+	  :prefix "SPC e"
+	  :non-normal-prefix "M-SPC e"
+	  ""'(
+		  :keymap flycheck-command-map
+		  :package flycheck
+		  :which-key "flycheck-prefix"))
+	 :init
+	 (setq flycheck-navigation-minimum-level 'error)
+	 :ghook
+	 ('prog-mode-hook #'flycheck-mode))
+ #+END_SRC
+** Flycheck-posframe
+   Dispaly flycheck errors in childframe(requires emacs 26).
+ #+BEGIN_SRC emacs-lisp
+   (use-package flycheck-posframe
+	 :ensure t
+	 :after flycheck
+	 :ghook
+	 ('flycheck-mode-hook #'flycheck-posframe-mode))
+ #+END_SRC
+* Completion
+** Company
+   Code completion package
+*** Config
+	1. Show numbers for completion selection using M-[0-9]
+	2. Set 0 idle-delay for quick completion
+	3. Function to group backends with company-yasnippet
+	4. Map C-[0-9] for numbered completion
+	5. <C-p> and <C-n> , <tab>and <s-tab> completion navigation
+	#+BEGIN_SRC emacs-lisp
+		   (use-package company
+			 :ensure t
+			 :defer 2
+			 :general
+			 (company-active-map
+			  "C-n" (lambda () (interactive) (company-select-next-if-tooltip-visible-or-complete-selection))
+			  "C-p" (lambda () (interactive) (company-select-previous))
+			  "C-SPC"(lambda()(interactive)(company-complete-common))
+			  "<tab>" (lambda () (interactive) (company-select-next-if-tooltip-visible-or-complete-selection))
+			  "<backtab>" (lambda () (interactive) (company-select-previous)))
+			 :init
+			 (setq company-show-numbers t)
+			 (setq company-idle-delay 0)
+			 (setq company-selection-wrap-around t)
+			 ;; Add yasnippet support for all company backends
+			 ;; https://github.com/syl20bnr/spacemacs/pull/179
+			 (defvar company-mode/enable-yas t
+			   "Enable yasnippet for all backends.")
+			 (defun company-mode/backend-with-yas (backend)
+			   (if (or (not company-mode/enable-yas)
+					   (and (listp backend) (member 'company-yasnippet backend)))
+				   backend
+				 (append (if (consp backend) backend (list backend))
+						 '(:with company-yasnippet))))
+			 :config
+			 (global-company-mode 1)
+			 (dotimes (i 10)
+			   (general-def
+				 :keymaps 'company-active-map
+				 (format "C-%d" i) 'company-complete-number))
+			 (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+	  )
+	#+END_SRC
+** Yasnippet
+ Snippet engine for emacs
+*** Config
+	Rebind <CR> or <return> to complete snippet where it exists.
+	Using general-def instead of :general since yas-maybe-expand is a variable
+	which is defined only after autoload.
+	#+BEGIN_SRC emacs-lisp
+	  (use-package yasnippet
+		:ensure yasnippet-snippets
+		:defer 3
+		:config
+		(yas-global-mode 1)
+		(general-def 'yas-minor-mode-map
+		  "<return>" yas-maybe-expand)
 		)
 	#+END_SRC
-* Help shortcuts
-#+BEGIN_SRC emacs-lisp
-  (general-def
-		:states '(normal motion insert emacs)
-		:prefix "SPC H"
-		:non-normal-prefix "M-SPC H"
-		"" '(:keymap help-map :package help :which-key "help-prefix"))
-#+END_SRC
-* Feature toggle shortcuts 
-#+BEGIN_SRC emacs-lisp 
-  (general-def
-	:keymaps '(normal motion insert emacs)
-	:prefix "SPC T"
-	:non-normal-prefix "M-SPC T"
-	:prefix-map 'ricky//toggle-prefix-map
-	"" '(:ignore t :which-key "toggle-prefix")
-	"m" 'toggle-menu-bar-mode-from-frame
-	"f" 'toggle-frame-fullscreen
-	"s" 'toggle-scroll-bar
-	"t" 'toggle-tool-bar-mode-from-frame
-	"l" 'hide-mode-line-mode
-	"c" 'load-theme)
-#+END_SRC
-* Helm
-  Interface autocompletion for emacs
-** Config
-   Enable fuzzy matching wherever possible
-#+BEGIN_SRC emacs-lisp
-  (use-package helm
-	:ensure t
-	:demand t
-	:general
-	("M-x" 'helm-M-x
-	 "C-x C-f" 'helm-find-files)
-	:init
-	(setq helm-semantic-fuzzy-match t
-		  helm-imenu-fuzzy-match    t
-		  helm-locate-fuzzy-match t
-		  helm-apropos-fuzzy-match t
-		  helm-M-x-fuzzy-match t
-		  helm-buffers-fuzzy-matching t
-		  helm-recentf-fuzzy-match    t
-		  helm-mode-fuzzy-match t
-		  helm-completion-in-region-fuzzy-match t
-		  helm-window-prefer-horizontal-split 'decide)
-	:diminish helm-mode
-	:config
-	(helm-mode 1))
-#+END_SRC
-* Projectile
-  Project management for emacs
-** Config
-   1. Make <SPC-p> projectile-prefix by binding it to the
-      projectile-command-keymap
-   2. Bind escape in projectile-mode-map to quit,to avoid getting stuck in
-      mini-buffer.
-#+BEGIN_SRC emacs-lisp
-	(use-package projectile
-	  :ensure t
-	  :ensure helm-rg
-	  :ensure-system-package 
-	  (rg . ripgrep)
-	  :after helm
-	  :init
-	  (setq projectile-enable-caching t
-			projectile-completion-system 'helm)
-	  :diminish projectile-mode
-	  :defer t
-	  :ghook
-	  ('prog-mode-hook #'projectile-mode)
-	  :general
-	  (:keymaps 'projectile-command-map
-				"<escape>" '(keyboard-quit :which-key "quit")
-				"ESC" nil)
-	  (:keymaps '(normal motion insert emacs)
-	   :prefix "SPC p"
-	   :non-normal-prefix "M-SPC p"
-	   "" '(:keymap projectile-command-map :package projectile :which-key "projectile-prefix"))
-	  :config
-	  (projectile-mode 1))
-#+END_SRC
-* Helm-projectile
-  Helm interface for projectile
+** Company quickhelp
+   Company mode completion documentation
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package company-quickhelp
+		 :ensure t
+		 :init
+		 (setq company-quickhelp-delay 0.3)
+		 :after company
+		 :config
+		 (company-quickhelp-mode 1))
+	 #+END_SRC
+** Company-flx
+   Fuzzy matching for company-capf only.
+ #+BEGIN_SRC emacs-lisp
+   (use-package company-flx
+	 :ensure t
+	 :after company
+	 :config
+	 (company-flx-mode +1))
+ #+END_SRC
+* Programming Helpers
+** Smart-parens
+   Package for bracket-pair matching
+*** Config
+	1. NewLine and Indent for C/C++ programming
+	 #+BEGIN_SRC emacs-lisp
+	   (use-package smartparens-config
+		 :ensure smartparens
+		 :demand t
+		 :diminish smartparens-mode
+		 :init
+		 (setq sp-escape-quotes-after-insert nil)
+		 (defun my-create-newline-and-enter-sexp (&rest _ignored)
+		   "Open a new brace or bracket expression, with relevant newlines and indent. "
+		   (newline)
+		   (indent-according-to-mode)
+		   (forward-line -1)
+		   (indent-according-to-mode))
+		 :config
+		 (smartparens-global-mode 1)
+		 (show-smartparens-global-mode 1)
+		 (sp-local-pair 'c++-mode "{" nil
+						:post-handlers '((my-create-newline-and-enter-sexp "RET"))))
+	 #+END_SRC
+** Hungry-delete
+   Remove all preceding whitespace
+*** Config 
+	Add advice to hungry-delete-backward to play along with smartparens
 	#+BEGIN_SRC emacs-lisp
-	(use-package helm-projectile
+	  (use-package hungry-delete
 		:ensure t
-		:after (helm projectile)
+		:diminish hungry-delete-mode
 		:config
-		(helm-projectile-on))
+		(defadvice hungry-delete-backward (before sp-delete-pair-advice activate) (save-match-data (sp-delete-pair (ad-get-arg 0))))
+		(global-hungry-delete-mode 1))
 	#+END_SRC
-* Flycheck
-  Asynchronous linting
-** Config
-   Make <SPC-e> the flycheck prefix by binding it to flycheck-command-map.
-#+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-	:ensure t
-	:diminish flycheck-mode
-	:general
-	(
-	 :keymaps '(normal motion insert emacs)
-	 :prefix "SPC e"
-	 :non-normal-prefix "M-SPC e"
-	 ""'(
-		 :keymap flycheck-command-map
-		 :package flycheck
-		 :which-key "flycheck-prefix"))
-	:init
-	(setq flycheck-navigation-minimum-level 'error)
-	:ghook
-	('prog-mode-hook #'flycheck-mode))
-#+END_SRC
-* Flycheck-posframe
-  Dispaly flycheck errors in childframe(requires emacs 26).
-#+BEGIN_SRC emacs-lisp
-  (use-package flycheck-posframe
-	:ensure t
-	:after flycheck
-	:ghook
-	('flycheck-mode-hook #'flycheck-posframe-mode))
-#+END_SRC
-* Company
-  Code completion package
-** Config
-   1. Show numbers for completion selection using M-[0-9]
-   2. Set 0 idle-delay for quick completion
-   3. Function to group backends with company-yasnippet
-   4. Map C-[0-9] for numbered completion
-   5. <C-p> and <C-n> , <tab>and <s-tab> completion navigation
-   #+BEGIN_SRC emacs-lisp
-		  (use-package company
-			:ensure t
-			:defer 2
-			:general
-			(company-active-map
-			 "C-n" (lambda () (interactive) (company-select-next-if-tooltip-visible-or-complete-selection))
-			 "C-p" (lambda () (interactive) (company-select-previous))
-			 "C-SPC"(lambda()(interactive)(company-complete-common))
-			 "<tab>" (lambda () (interactive) (company-select-next-if-tooltip-visible-or-complete-selection))
-			 "<backtab>" (lambda () (interactive) (company-select-previous)))
-			:init
-			(setq company-show-numbers t)
-			(setq company-idle-delay 0)
-			(setq company-selection-wrap-around t)
-			;; Add yasnippet support for all company backends
-			;; https://github.com/syl20bnr/spacemacs/pull/179
-			(defvar company-mode/enable-yas t
-			  "Enable yasnippet for all backends.")
-			(defun company-mode/backend-with-yas (backend)
-			  (if (or (not company-mode/enable-yas)
-					  (and (listp backend) (member 'company-yasnippet backend)))
-				  backend
-				(append (if (consp backend) backend (list backend))
-						'(:with company-yasnippet))))
-			:config
-			(global-company-mode 1)
-			(dotimes (i 10)
-			  (general-def
-				:keymaps 'company-active-map
-				(format "C-%d" i) 'company-complete-number))
-			(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
-	 )
-   #+END_SRC
-* Yasnippet
-Snippet engine for emacs
-** Config
-   Rebind <CR> or <return> to complete snippet where it exists.
-   Using general-def instead of :general since yas-maybe-expand is a variable
-   which is defined only after autoload.
-   #+BEGIN_SRC emacs-lisp
-	 (use-package yasnippet
-	   :ensure yasnippet-snippets
-	   :defer 3
-	   :config
-	   (yas-global-mode 1)
-	   (general-def 'yas-minor-mode-map
-		 "<return>" yas-maybe-expand)
-	   )
-   #+END_SRC
-* Company quickhelp
-  Company mode completion documentation
-	#+BEGIN_SRC emacs-lisp
-	  (use-package company-quickhelp
-		:ensure t
-		:init
-		(setq company-quickhelp-delay 0.3)
-		:after company
-		:config
-		(company-quickhelp-mode 1))
-	#+END_SRC
-* Company-flx
-  Fuzzy matching for company-capf only.
-#+BEGIN_SRC emacs-lisp
-  (use-package company-flx
-	:ensure t
-	:after company
-	:config
-	(company-flx-mode +1))
-#+END_SRC
-* Treemacs 
-NerdTree like project explorer for emacs.
-#+BEGIN_SRC emacs-lisp
-  (use-package treemacs
-	:ensure t
-	:defer t
-	:config
-	(progn
-	  (setq treemacs-collapse-dirs (if (executable-find "python") 3 0))
-	  (treemacs-follow-mode t)
-	  (treemacs-filewatch-mode t)
-	  (pcase (cons (not (null (executable-find "git")))
-				   (not (null (executable-find "python3"))))
-		(`(t . t)
-		 (treemacs-git-mode 'deferred))
-		(`(t . _)
-		 (treemacs-git-mode 'simple)))
-	  )
-	:general
-	(:keymaps '(normal motion insert emacs)
-	 :prefix "SPC t"
-	 :non-normal-prefix "M-SPC t"
-	 :prefix-map 'ricky//treemacs-mode-map
-	 "" '(:ignore t :which-key "treemacs-prefix")
-	 "0" 'treemacs-select-window
-	 "1" 'treemacs-delete-other-windows
-	 "t" 'treemacs
-	 "B" 'treemacs-bookmark
-	 "f" 'treemacs-find-file
-	 "T" 'treemacs-find-tag)
-	(:keymaps 'treemacs-mode-map
-			  "<escape>" 'keyboard-quit))
-#+END_SRC
-** Treemacs-evil
-   #+BEGIN_SRC emacs-lisp
-  (use-package treemacs-evil
-	:after treemacs evil
-	:ensure t)
-   
-   #+END_SRC
-** Treemacs-projectile
-   #+BEGIN_SRC emacs-lisp
-	 (use-package treemacs-projectile
-	   :after treemacs projectile
+** Rainbow-delimeters
+   Rainbow delimeters
+ #+BEGIN_SRC emacs-lisp
+   (use-package rainbow-delimiters
+	 :ensure t
+	 :ghook
+	 ('prog-mode-hook #'rainbow-delimiters-mode))
+ #+END_SRC
+** Rainbow-mode
+   colorize color hex values
+ #+BEGIN_SRC emacs-lisp
+   (use-package rainbow-mode
+	 :defer t
+	 :commands rainbow-mode
+	 :ensure t)
+ #+END_SRC
+** Org-bullets
+   UTF-8 bullets for org mode
+*** Config
+ Enable it on entering org-mode
+	 #+BEGIN_SRC emacs-lisp
+	 (use-package org-bullets
+		   :ensure t
+		   :ghook
+		   ('org-mode-hook #'org-bullets-mode))
+	 #+END_SRC
+** Origami 
+   Code folding in emacs 
+ #+BEGIN_SRC emacs-lisp
+   (use-package origami
+	 :ensure t
+	 :ghook
+	 ('prog-mode-hook #'origami-mode))
+ #+END_SRC
+
+** Multi-compile 
+   multi-target interface to compile
+*** Config 
+	 Override multi-compile-run to run commands in interactive compile mode buffer.
+   #+BEGIN_SRC emacs-lisp 
+	 (use-package multi-compile
 	   :ensure t
 	   :general
-	   (:keymaps 'ricky//treemacs-mode-map
-				 "p" 'treemacs-projectile))
-   #+END_SRC
-* Smart-parens
-  Package for bracket-pair matching
-** Config
-   1. NewLine and Indent for C/C++ programming
-	#+BEGIN_SRC emacs-lisp
-	  (use-package smartparens-config
-		:ensure smartparens
-		:diminish smartparens-mode
-		:init
-		(setq sp-escape-quotes-after-insert nil)
-		(defun my-create-newline-and-enter-sexp (&rest _ignored)
-		  "Open a new brace or bracket expression, with relevant newlines and indent. "
-		  (newline)
-		  (indent-according-to-mode)
-		  (forward-line -1)
-		  (indent-according-to-mode))
-		:config
-		(smartparens-global-mode 1)
-		(show-smartparens-global-mode 1)
-		(sp-local-pair 'c++-mode "{" nil
-					   :post-handlers '((my-create-newline-and-enter-sexp "RET"))))
-	#+END_SRC
-* Hungry-delete
-  Remove all preceding whitespace
-** Config 
-   Add advice to hungry-delete-backward to play along with smartparens
-   #+BEGIN_SRC emacs-lisp
-	 (use-package hungry-delete
-	   :ensure t
-	   :diminish hungry-delete-mode
-	   :config
-	   (defadvice hungry-delete-backward (before sp-delete-pair-advice activate) (save-match-data (sp-delete-pair (ad-get-arg 0))))
-	   (global-hungry-delete-mode 1))
-   #+END_SRC
-* Rainbow-delimeters
-  Rainbow delimeters
-#+BEGIN_SRC emacs-lisp
-  (use-package rainbow-delimiters
-	:ensure t
-	:ghook
-	('prog-mode-hook #'rainbow-delimiters-mode))
-#+END_SRC
-* Rainbow-mode
-  colorize color hex values
-#+BEGIN_SRC emacs-lisp
-  (use-package rainbow-mode
-	:defer t
-	:commands rainbow-mode
-	:ensure t)
-#+END_SRC
-* Diminish
-  Reduce modeline clutter by diminishing minor modes
-	#+BEGIN_SRC emacs-lisp
-	  (use-package diminish
-		:ensure t
-		:defer 5
-		:init
-		(diminish 'undo-tree-mode)
-		(diminish 'abbrev-mode)
-		(diminish 'rainbow-mode)
-		(diminish 'eldoc-mode)
-		(diminish 'auto-fill-mode))
-	#+END_SRC
-* Try
-  Try emacs packages
-#+BEGIN_SRC emacs-lisp
-  (use-package try
-	:ensure t
-	:defer t)
-#+END_SRC
-* Sudo-edit
-  Tramp wrapper to edit files as root
-  #+BEGIN_SRC emacs-lisp
-	(use-package sudo-edit
-	  :ensure t
-	  :defer t)
-  #+END_SRC
-* Hide-mode-line 
-	#+BEGIN_SRC emacs-lisp
-	(use-package hide-mode-line
-		:ensure t)
-	#+END_SRC
-* VLFI 
-Emacs package for handling large files 
-#+BEGIN_SRC emacs-lisp 
-  (use-package vlf-setup
-	:ensure vlf
-	:init
-	(setq vlf-application 'dont-ask)
-	:general
-	(:keymaps '(normal motion insert emacs)
-			  :prefix "SPC v"
-			  :non-normal-prefix "M-SPC v"
-			  ""'(:keymap vlf-mode-map :package vlf :which-key "vlf-prefix")
-			  ))
-#+END_SRC
-* Org-bullets
-  UTF-8 bullets for org mode
-** Config
-Enable it on entering org-mode
-	#+BEGIN_SRC emacs-lisp
-	(use-package org-bullets
-		  :ensure t
-		  :ghook
-		  ('org-mode-hook #'org-bullets-mode))
-	#+END_SRC
-* Origami 
-Code folding in emacs 
-#+BEGIN_SRC emacs-lisp
-  (use-package origami
-	:ensure t
-	:ghook
-	('prog-mode-hook 'origami-mode))
-#+END_SRC
-
-* Webpaste
-Online pastebin service integration 
-#+BEGIN_SRC emacs-lisp 
-  (use-package webpaste
-	:ensure t)
-#+END_SRC
-* PDF-tools
- PDF plugin for emacs 
- #+BEGIN_SRC emacs-lisp
-   (use-package pdf-tools
-	 :ensure t
-	 :defer 10
-	 :config
-	 (pdf-tools-install))
- #+END_SRC
- 
-* Multi-compile 
-  multi-target interface to compile
-** Config 
-	Override multi-compile-run to run commands in interactive compile mode buffer.
-  #+BEGIN_SRC emacs-lisp 
-	(use-package multi-compile
-	  :ensure t
-	  :general
-	  ('(normal motion)
-	   :prefix "SPC c"
-	   "r" 'multi-compile-run
-	   )
-	  :init
-	  (setq multi-compile-completion-system 'helm)
-	  (setq multi-compile-alist '(
-			(c++-mode . (("c++-thread_run" . "g++ %file-name -pthread -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")
-						 ("c++-run" . "g++ %file-name -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")))
-			(java-mode . (("java-maven-exec" "mvn exec:java -q -Dexec.mainClass=\"%cname\"" (multi-compile-locate-file-dir "pom.xml"))))
-			))
-	  :config
-	  (add-to-list 'multi-compile-template
-		'("%cname" . (ricky//get-fully-qualified-class-name)))
-	  (defun multi-compile-run ()
-		"Choice target and start compile."
-		(interactive)
-		(let* ((template (multi-compile--get-command-template))
-			   (command (or (car-safe template) template))
-			   (default-directory (if (listp template) (eval-expression (cadr template)) default-directory)))
-		  (compilation-start
-		   (multi-compile--fill-template command) t)))
-	  )
-  #+END_SRC
-  
-* Format-all 
-autoformat plugin emacs
-#+BEGIN_SRC emacs-lisp
-  (use-package format-all
-	:ensure t
-	:defer t)
-#+END_SRC
-* JDecomp
-Java Decompiler support emacs
-   #+BEGIN_SRC emacs-lisp
-	 (use-package jdecomp
-	   :ensure t
-	   :defer 10
-	   :ensure-system-package (cfr . cfr)
+	   ('(normal motion)
+		:prefix "SPC c"
+		"r" 'multi-compile-run
+		)
 	   :init
-	   (setq jdecomp-decompiler-paths
-			 '((cfr . "/usr/share/java/cfr/cfr.jar")))
+	   (setq multi-compile-completion-system 'helm)
+	   (setq multi-compile-alist '(
+			 (c++-mode . (("c++-thread_run" . "g++ %file-name -pthread -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")
+						  ("c++-run" . "g++ %file-name -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")))
+			 (java-mode . (("java-maven-exec" "mvn exec:java -q -Dexec.mainClass=\"%cname\"" (multi-compile-locate-file-dir "pom.xml"))))
+			 ))
 	   :config
-	   (jdecomp-mode 1))
+	   (add-to-list 'multi-compile-template
+		 '("%cname" . (ricky//get-fully-qualified-class-name)))
+	   (defun multi-compile-run ()
+		 "Choice target and start compile."
+		 (interactive)
+		 (let* ((template (multi-compile--get-command-template))
+				(command (or (car-safe template) template))
+				(default-directory (if (listp template) (eval-expression (cadr template)) default-directory)))
+		   (compilation-start
+			(multi-compile--fill-template command) t)))
+	   )
    #+END_SRC
-* LSP-Mode
-Language Server Client for Emacs
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode
-	:defer t
-	:init
-	(setq lsp-inhibit-message t)
-	:ensure t)
-#+END_SRC
-* LSP-UI
-  Higher level UI modules for LSP-mode
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-ui
-	:ensure t
-	:after lsp-mode
-	:general
-	(:keymaps '(normal motion insert emacs)
-			  :prefix "SPC l"
-			  :non-normal-prefix "M-SPC l"
-			  :prefix-map 'ricky//lsp-ui-prefix-map
-			  "" '(:ignore t :which-key "lsp-ui-prefix")
-			  "d" '(lsp-ui-peek-find-definitions :which-key "definitions")
-			  "r" '(lsp-ui-peek-find-references :which-key "references")
-			  "R" '(lsp-rename :which-key "rename var")
-			  "e" '(lsp-ui-flycheck-list :which-key "errors")
-			  "s" '(lsp-ui-imenu :which-key "lsp-imenu")
-			  "i" '(helm-imenu :which-key "helm-imenu")
-			  "p" '(pop-tag-mark :which-key "pop-definition-stack")
-			  "w" '(lsp-ui-peek-find-workspace-symbol :which-key "workspace-symbol")
-			  "." '(lsp-ui-sideline-apply-code-actions :which-key "code-action")
-			  "l" '(lsp-restart-workspace :which-key "restart lsp")
-			  )
-	(:keymaps 'lsp-ui-mode-map
-			  [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
-			  [remap xref-find-references] #'lsp-ui-peek-find-references
-			  [remap evil-goto-definition] #'lsp-ui-peek-find-definitions
-			  )
-	:init
-	(setq lsp-ui-doc-max-height 7 
-		  lsp-ui-doc-max-width 40
-		  lsp-ui-sideline-update-mode 'point)
-	:ghook
-	('lsp-mode-hook 'lsp-ui-mode))
-#+END_SRC
-* DAP-Mode
-#+BEGIN_SRC emacs-lisp
-  (use-package dap-mode
-	:ensure t
-	:after lsp-mode
-	:config
-	(dap-mode 1)
-	(dap-ui-mode 1))
-#+END_SRC
-* DAP-Java 
-  #+BEGIN_SRC emacs-lisp 
-	(use-package dap-java
-	  :ensure dap-mode
-	  :after lsp-java)
-  #+END_SRC
-* Company-lsp
-  Company backend for lsp
-#+BEGIN_SRC emacs-lisp
-  (use-package company-lsp
-	:ensure t
-	:after (company lsp-mode)
-	:ghook
-	('lsp-mode-hook
-	 (lambda()(add-to-list 'company-backends
-						   (company-mode/backend-with-yas 'company-lsp)))))
-#+END_SRC
-* LSP-cquery
-  Cquery language server for c++.Works on arch flawlessly.Change
-  cquery-executable path and cquery system package name as per the OS.
-#+BEGIN_SRC emacs-lisp
-  (use-package cquery
-	:ensure t
-	:ensure-system-package
-	((cquery . cquery-git)
-	 (clang . clang))
-	:after projectile
-	:init
-	(setq cquery-executable "/usr/bin/cquery"
-		  cquery-sem-highlight-method 'font-lock
-		  ;; ;; Log file
-		  cquery-extra-args '("--log-file=/tmp/cq.log")
-		  ;; ;; Cache directory, both relative and absolute paths are supported
-		  cquery-cache-dir "~/.emacs.d/.cache/cquery/"
-		  ;; ;; Initialization options
-		  cquery-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
-	(setq projectile-project-root-files-top-down-recurring
-		  (append '("compile_commands.json"
-					".cquery")
-				  projectile-project-root-files-top-down-recurring))
-	:config
-	(defun cquery//enable ()
-	  "enable lsp-cquery"
-	  (condition-case nil
-		  (lsp-cquery-enable)
-		(user-error nil)))
-	:ghook
-	;; ('c++-mode-hook #'cquery//enable)
-	)
-#+END_SRC
-* Lsp-ccls 
+  
+** Format-all 
+ autoformat plugin emacs
+ #+BEGIN_SRC emacs-lisp
+   (use-package format-all
+	 :ensure t
+	 :defer t)
+ #+END_SRC
+* Org Stuff
+** Reveal.js
+ #+BEGIN_SRC emacs-lisp
+	  (use-package ox-reveal
+		:quelpa(ox-reveal :fetcher github :repo "yjwen/org-reveal")
+		:defer t)
+ #+END_SRC
+* Misc
+** Try
+   Try emacs packages
+ #+BEGIN_SRC emacs-lisp
+   (use-package try
+	 :ensure t
+	 :defer t)
+ #+END_SRC
+** Sudo-edit
+   Tramp wrapper to edit files as root
+   #+BEGIN_SRC emacs-lisp
+	 (use-package sudo-edit
+	   :ensure t
+	   :defer t)
+   #+END_SRC
+** VLFI 
+ Emacs package for handling large files 
+ #+BEGIN_SRC emacs-lisp 
+   (use-package vlf-setup
+	 :ensure vlf
+	 :defer t
+	 :init
+	 (setq vlf-application 'dont-ask)
+	 :general
+	 (:keymaps '(normal motion insert emacs)
+			   :prefix "SPC v"
+			   :non-normal-prefix "M-SPC v"
+			   ""'(:keymap vlf-mode-map :package vlf :which-key "vlf-prefix")
+			   ))
+ #+END_SRC
+** Webpaste
+ Online pastebin service integration 
+ #+BEGIN_SRC emacs-lisp 
+   (use-package webpaste
+	 :ensure t
+	 :defer t)
+ #+END_SRC
+** PDF-tools
+  PDF plugin for emacs 
   #+BEGIN_SRC emacs-lisp
-	(use-package ccls
+	(use-package pdf-tools
 	  :ensure t
-	  :ensure-system-package((ccls . ccls)(clang . clang))
-	  :after projectile
-	  :init
-		(setq ccls-executable "/usr/bin/ccls")
-		;; Log file
-		(setq ccls-extra-args '("--log-file=/tmp/cq.log"))
-		;; Cache directory, both relative and absolute paths are supported
-		(setq ccls-cache-dir ".ccls-cache")
-		;; ;; Initialization options
-		(setq projectile-project-root-files-top-down-recurring
-			(append '("compile_commands.json"
-					  ".ccls")
-					projectile-project-root-files-top-down-recurring))
-		(setq ccls-extra-init-params '(:index (:comments 2) :completion (:detailedLabel t)))
-		(setq ccls-sem-highlight-method 'font-lock)
+	  :defer 10
 	  :config
-	  (defun ccls//enable ()
-		(condition-case nil
-			(lsp-ccls-enable)
-		  (user-error nil)))
-	  :ghook
-	  ('c++-mode-hook #'ccls//enable)
-	  )
-
+	  (pdf-tools-install))
   #+END_SRC
-* Lsp-java
-  Eclipse JDT-LS client for emacs
-** Config
-   1. Specify the installation directory for the lsp server.
-   2. Specify the each and every project individually in
-      lsp-java--workspace-folders.
+ 
+* Git 
+** Magit 
+ Git interface for emacs on steroids
+ #+BEGIN_SRC emacs-lisp
+   (use-package magit
+	 :ensure t
+	 :general
+	 ("C-x g" 'magit-status)
+	 :commands magit-status)
+ #+END_SRC
+** Evil-magit
+ Evil interface to magit 
+ #+BEGIN_SRC emacs-lisp
+   (use-package evil-magit
+	 :ensure t
+	 :after magit
+	 :init
+	 (setq evil-magit-want-horizontal-movement t)
+	 :config
+	 (general-unbind '(magit-mode-map magit-diff-mode-map) "SPC")
+	 )
+ #+END_SRC
+* Language Tools 
+** Python 
+*** Pipenv 
 #+BEGIN_SRC emacs-lisp
-  (use-package lsp-java
+  (use-package pipenv
 	:ensure t
 	:ghook
-	('java-mode-hook #'my-java-mode)
-	('nxml-mode-hook #'my-xml-mode)
-	:init
-	(setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
-		  lsp-java--workspace-folders (list "~/java/test" "~/java/daym")
-		  lsp-ui-sideline-update-mode 'point)
-	(defun ricky//get-java-package-name ()
-	  "get package name for the current buffer"
-	  (let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
-		(if (and (listp packages) (eq (length packages) 1))
-			(semantic-tag-name (car packages)))))
-	(defun ricky//get-fully-qualified-class-name ()
-	  "returns the fully qualified classname for the current buffer"
-	  (interactive "")
-			(concat (ricky//get-java-package-name) "."
-				(file-name-sans-extension
-				 (file-name-nondirectory (buffer-file-name)))))
-	:config
-	(defun my-java-mode()
-	  "enable lsp-java on .java files and pom.xml"
-	  (interactive)
-	  (if (or(equal (file-name-nondirectory buffer-file-name) "pom.xml")(equal (file-name-extension buffer-file-name) "java"))
-		  (progn
-			(lsp-java-enable)
-			(semantic-mode 1)
-			(general-add-hook 'before-save-hook #'lsp-format-buffer nil t))))
-	(defun my-xml-mode()
-	  "enable lsp-java on .java files and pom.xml"
-	  (interactive)
-	  (progn (my-java-mode)
-			 (setq flycheck-check-syntax-automatically
-				   '(save idle-change new-line mode-enabled))
-			 (flycheck-mode 1)
-			 (flycheck-select-checker 'xml-xmllint))))
+	('python-mode-hook #'pipenv-mode))
 #+END_SRC
-
-* Lsp-ms-python 
+** Javascript
+*** Indium
+  Javascript ide support 
   #+BEGIN_SRC emacs-lisp
-	(use-package lsp-python-ms
-	  :quelpa(lsp-python-ms :fetcher github :repo "andrew-christianson/lsp-python-ms")
-	  :ensure t
-	  :config
-	  (setq lsp-python-ms-dir
-			(expand-file-name "~/repos/python-language-server/output/bin/Release")) 
-	  (setq lsp-python-ms-executable
-			"~/repos/python-language-server/output/bin/Release/linux-x64/publish/Microsoft.Python.LanguageServer"))
+	(use-package indium
+	  :ensure t)
   #+END_SRC
-* Pyenv 
-#+BEGIN_SRC emacs-lisp
-  (use-package pyvenv
-	:ensure t)
-#+END_SRC
-* LSP-Javascript-Typescript
-Javascript Typescript language client for emacs 
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-javascript-typescript
-	:ensure t
-	:ensure-system-package javascript-typescript-langserver
-	:ghook
-	('(js-mode-hook typescript-mode-hook js3-mode-hook rjsx-mode-hook) #'lsp-javascript-typescript-enable))
-#+END_SRC
-* Indium
-Javascript ide support 
-#+BEGIN_SRC emacs-lisp
-  (use-package indium
-	:ensure t)
-#+END_SRC
-* Magit 
-Git interface for emacs on steroids
-#+BEGIN_SRC emacs-lisp
-  (use-package magit
-	:ensure t)
-#+END_SRC
-* Evil-magit
-Evil interface to magit 
-#+BEGIN_SRC emacs-lisp
-  (use-package evil-magit
-	:ensure t
-	:after magit
-	:init
-	(setq evil-magit-want-horizontal-movement t)
-	:config
-	(general-unbind '(magit-mode-map magit-diff-mode-map) "SPC")
-	)
-#+END_SRC
-* Reveal.js
-#+BEGIN_SRC emacs-lisp
-  (use-package ox-reveal
-	:quelpa(ox-reveal :fetcher github :repo "yjwen/org-reveal"))
-#+END_SRC
+* LSP
+** LSP-Mode
+ Language Server Client for Emacs
+ #+BEGIN_SRC emacs-lisp
+   (use-package lsp-mode
+	 :defer t
+	 :init
+	 (setq lsp-inhibit-message t)
+	 :ensure t)
+ #+END_SRC
+** LSP-UI
+   Higher level UI modules for LSP-mode
+ #+BEGIN_SRC emacs-lisp
+   (use-package lsp-ui
+	 :ensure t
+	 :after lsp-mode
+	 :general
+	 (:keymaps '(normal motion insert emacs)
+			   :prefix "SPC l"
+			   :non-normal-prefix "M-SPC l"
+			   :prefix-map 'ricky//lsp-ui-prefix-map
+			   "" '(:ignore t :which-key "lsp-ui-prefix")
+			   "d" '(lsp-ui-peek-find-definitions :which-key "definitions")
+			   "r" '(lsp-ui-peek-find-references :which-key "references")
+			   "R" '(lsp-rename :which-key "rename var")
+			   "e" '(lsp-ui-flycheck-list :which-key "errors")
+			   "s" '(lsp-ui-imenu :which-key "lsp-imenu")
+			   "i" '(helm-imenu :which-key "helm-imenu")
+			   "p" '(pop-tag-mark :which-key "pop-definition-stack")
+			   "w" '(lsp-ui-peek-find-workspace-symbol :which-key "workspace-symbol")
+			   "." '(lsp-ui-sideline-apply-code-actions :which-key "code-action")
+			   "l" '(lsp-restart-workspace :which-key "restart lsp")
+			   )
+	 (:keymaps 'lsp-ui-mode-map
+			   [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
+			   [remap xref-find-references] #'lsp-ui-peek-find-references
+			   [remap evil-goto-definition] #'lsp-ui-peek-find-definitions
+			   )
+	 :init
+	 (setq lsp-ui-doc-max-height 7 
+		   lsp-ui-doc-max-width 40
+		   lsp-ui-sideline-update-mode 'point)
+	 :ghook
+	 ('lsp-mode-hook 'lsp-ui-mode))
+ #+END_SRC
+** Company-lsp
+   Company backend for lsp
+ #+BEGIN_SRC emacs-lisp
+   (use-package company-lsp
+	 :ensure t
+	 :after (company lsp-mode)
+	 :ghook
+	 ('lsp-mode-hook
+	  (lambda()(add-to-list 'company-backends
+							(company-mode/backend-with-yas 'company-lsp)))))
+ #+END_SRC
+** Lsp-ccls 
+   #+BEGIN_SRC emacs-lisp
+	 (use-package ccls
+	   :ensure t
+	   :ensure-system-package((ccls . ccls)(clang . clang))
+	   :after projectile
+	   :init
+		 (setq ccls-executable "/usr/bin/ccls")
+		 ;; Log file
+		 (setq ccls-extra-args '("--log-file=/tmp/cq.log"))
+		 ;; Cache directory, both relative and absolute paths are supported
+		 (setq ccls-cache-dir ".ccls-cache")
+		 ;; ;; Initialization options
+		 (setq projectile-project-root-files-top-down-recurring
+			 (append '("compile_commands.json"
+					   ".ccls")
+					 projectile-project-root-files-top-down-recurring))
+		 (setq ccls-extra-init-params '(:index (:comments 2) :completion (:detailedLabel t)))
+		 (setq ccls-sem-highlight-method 'font-lock)
+	   :config
+	   (defun ccls//enable ()
+		 (condition-case nil
+			 (lsp-ccls-enable)
+		   (user-error nil)))
+	   :ghook
+	   ('c++-mode-hook #'ccls//enable)
+	   )
+
+   #+END_SRC
+** Lsp-java
+   Eclipse JDT-LS client for emacs
+*** Config
+	1. Specify the installation directory for the lsp server.
+	2. Specify the each and every project individually in
+       lsp-java--workspace-folders.
+ #+BEGIN_SRC emacs-lisp
+   (use-package lsp-java
+	 :ensure t
+	 :ghook
+	 ('java-mode-hook #'my-java-mode)
+	 ('nxml-mode-hook #'my-xml-mode)
+	 :init
+	 (setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
+		   lsp-java--workspace-folders (list "~/java/test" "~/java/daym")
+		   lsp-ui-sideline-update-mode 'point)
+	 (defun ricky//get-java-package-name ()
+	   "get package name for the current buffer"
+	   (let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
+		 (if (and (listp packages) (eq (length packages) 1))
+			 (semantic-tag-name (car packages)))))
+	 (defun ricky//get-fully-qualified-class-name ()
+	   "returns the fully qualified classname for the current buffer"
+	   (interactive "")
+			 (concat (ricky//get-java-package-name) "."
+				 (file-name-sans-extension
+				  (file-name-nondirectory (buffer-file-name)))))
+	 :config
+	 (defun my-java-mode()
+	   "enable lsp-java on .java files and pom.xml"
+	   (interactive)
+	   (if (or(equal (file-name-nondirectory buffer-file-name) "pom.xml")(equal (file-name-extension buffer-file-name) "java"))
+		   (progn
+			 (lsp-java-enable)
+			 (semantic-mode 1)
+			 (general-add-hook 'before-save-hook #'lsp-format-buffer nil t))))
+	 (defun my-xml-mode()
+	   "enable lsp-java on .java files and pom.xml"
+	   (interactive)
+	   (progn (my-java-mode)
+			  (setq flycheck-check-syntax-automatically
+					'(save idle-change new-line mode-enabled))
+			  (flycheck-mode 1)
+			  (flycheck-select-checker 'xml-xmllint))))
+ #+END_SRC
+
+** Lsp-ms-python 
+   #+BEGIN_SRC emacs-lisp
+	 (use-package lsp-python-ms
+	   :quelpa(lsp-python-ms :fetcher github :repo "andrew-christianson/lsp-python-ms")
+	   :ensure t
+	   :config
+	   (setq lsp-python-ms-dir
+			 (expand-file-name "~/repos/python-language-server/output/bin/Release")) 
+	   (setq lsp-python-ms-executable
+			 "~/repos/python-language-server/output/bin/Release/linux-x64/publish/Microsoft.Python.LanguageServer"))
+   #+END_SRC
+** LSP-cquery
+   Cquery language server for c++.Works on arch flawlessly.Change
+   cquery-executable path and cquery system package name as per the OS.
+ #+BEGIN_SRC emacs-lisp
+   (use-package cquery
+	 :ensure t
+	 :ensure-system-package
+	 ((cquery . cquery-git)
+	  (clang . clang))
+	 :after projectile
+	 :init
+	 (setq cquery-executable "/usr/bin/cquery"
+		   cquery-sem-highlight-method 'font-lock
+		   ;; ;; Log file
+		   cquery-extra-args '("--log-file=/tmp/cq.log")
+		   ;; ;; Cache directory, both relative and absolute paths are supported
+		   cquery-cache-dir "~/.emacs.d/.cache/cquery/"
+		   ;; ;; Initialization options
+		   cquery-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
+	 (setq projectile-project-root-files-top-down-recurring
+		   (append '("compile_commands.json"
+					 ".cquery")
+				   projectile-project-root-files-top-down-recurring))
+	 :config
+	 (defun cquery//enable ()
+	   "enable lsp-cquery"
+	   (condition-case nil
+		   (lsp-cquery-enable)
+		 (user-error nil)))
+	 :ghook
+	 ;; ('c++-mode-hook #'cquery//enable)
+	 )
+ #+END_SRC
+** LSP-Javascript-Typescript
+ Javascript Typescript language client for emacs 
+ #+BEGIN_SRC emacs-lisp
+   (use-package lsp-javascript-typescript
+	 :ensure t
+	 :ensure-system-package javascript-typescript-langserver
+	 :ghook
+	 ('(js-mode-hook typescript-mode-hook js3-mode-hook rjsx-mode-hook) #'lsp-javascript-typescript-enable))
+ #+END_SRC
+* DAP
+** DAP-Mode
+ #+BEGIN_SRC emacs-lisp
+   (use-package dap-mode
+	 :ensure t
+	 :after lsp-mode
+	 :config
+	 (dap-mode 1)
+	 (dap-ui-mode 1))
+ #+END_SRC
+** DAP-Java 
+   #+BEGIN_SRC emacs-lisp 
+	 (use-package dap-java
+	   :ensure dap-mode
+	   :after lsp-java)
+   #+END_SRC
