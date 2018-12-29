@@ -348,8 +348,19 @@
 	   (use-package spacemacs-theme
 		 :ensure t
 		 :no-require t
-		 :config
-		 (load-theme 'spacemacs-dark t))
+		 :init 
+		 (defun ricky//load-spacemacs-theme (frame)
+		   (select-frame frame)
+		   (load-theme 'spacemacs-dark t)
+		   (remove-hook 'after-make-frame-functions #'ricky//load-spacemacs-theme))
+	   (if (daemonp)
+		   (add-hook 'after-make-frame-functions #'ricky//load-spacemacs-theme)
+		 (load-theme 'spacemacs-dark t)))
+	   ;;   :config
+	   ;; (if (daemonp)
+	   ;; 	(add-hook 'after-make-frame-functions #'ricky//load-spacemacs-theme)
+	   ;;   (load-theme 'spacemacs-dark t)))
+		 ;; (load-theme 'spacemacs-dark t))
 	 #+END_SRC
 ** Telephone-line
    Modern mode-line for emacs
@@ -389,10 +400,12 @@
 ** Dashboard
    Vim startify attempt for emacs
 	 #+BEGIN_SRC emacs-lisp
-	 (use-package dashboard
-	 :ensure t
-	 :config
-	 (dashboard-setup-startup-hook))
+			(use-package dashboard
+			:ensure t
+			:config
+			(dashboard-setup-startup-hook)
+			:init
+			(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))))
 	 #+END_SRC
 ** Helm
    Interface autocompletion for emacs
@@ -572,28 +585,32 @@
 	2. Bind escape in projectile-mode-map to quit,to avoid getting stuck in
        mini-buffer.
  #+BEGIN_SRC emacs-lisp
-	 (use-package projectile
-	   :ensure t
-	   :ensure helm-rg
-	   :ensure-system-package 
-	   (rg . ripgrep)
-	   :init
-	   (setq projectile-enable-caching t
-			 projectile-completion-system 'helm)
-	   :diminish projectile-mode
-	   :defer t
-	   :ghook
-	   ('prog-mode-hook #'projectile-mode)
-	   :general
-	   (:keymaps 'projectile-command-map
-				 "<escape>" '(keyboard-quit :which-key "quit")
-				 "ESC" nil)
-	   (:keymaps '(normal motion insert emacs)
-		:prefix "SPC p"
-		:non-normal-prefix "M-SPC p"
-		"" '(:keymap projectile-command-map :package projectile :which-key "projectile-prefix"))
-	   :config
-	   (projectile-mode 1))
+   (use-package projectile
+	 :ensure t
+	 :ensure helm-rg
+	 :ensure-system-package 
+	 (rg . ripgrep)
+	 :init
+	 (setq projectile-enable-caching t
+		   projectile-completion-system 'helm)
+	 :diminish projectile-mode
+	 :defer t
+	 :ghook
+	 ('prog-mode-hook #'projectile-mode)
+	 :general
+	 (:keymaps 'projectile-command-map
+			   "<escape>" '(keyboard-quit :which-key "quit")
+			   "ESC" nil)
+	 (:keymaps '(normal motion insert emacs)
+			   :prefix "SPC p"
+			   :non-normal-prefix "M-SPC p"
+			   "" '(:keymap projectile-command-map :package projectile :which-key "projectile-prefix"))
+	 :config
+	 (setq projectile-project-root-files-top-down-recurring
+		   (append '("compile_commands.json"
+					 ".ccls")
+				   projectile-project-root-files-top-down-recurring))
+	 (projectile-mode 1))
  #+END_SRC
 ** Helm-projectile
    Helm interface for projectile
@@ -674,7 +691,8 @@
 	 :init
 	 (setq flycheck-navigation-minimum-level 'error)
 	 :ghook
-	 ('prog-mode-hook #'flycheck-mode))
+	 ('prog-mode-hook #'flycheck-mode)
+	 )
  #+END_SRC
 ** Flycheck-posframe
    Dispaly flycheck errors in childframe(requires emacs 26).
@@ -928,7 +946,6 @@
 	  :config
 	  (pdf-tools-install))
   #+END_SRC
- 
 * Git 
 ** Magit 
  Git interface for emacs on steroids
@@ -951,30 +968,17 @@
 	 (general-unbind '(magit-mode-map magit-diff-mode-map) "SPC")
 	 )
  #+END_SRC
-* Language Tools 
-** Python 
-*** Pipenv 
-#+BEGIN_SRC emacs-lisp
-  (use-package pipenv
-	:ensure t
-	:ghook
-	('python-mode-hook #'pipenv-mode))
-#+END_SRC
-** Javascript
-*** Indium
-  Javascript ide support 
-  #+BEGIN_SRC emacs-lisp
-	(use-package indium
-	  :ensure t)
-  #+END_SRC
-* LSP
+* Language Tools
 ** LSP-Mode
  Language Server Client for Emacs
  #+BEGIN_SRC emacs-lisp
    (use-package lsp-mode
 	 :defer t
+	 :commands lsp
+	 :general
 	 :init
 	 (setq lsp-inhibit-message t)
+	 (setq lsp-prefer-flymake nil)
 	 :ensure t)
  #+END_SRC
 ** LSP-UI
@@ -983,6 +987,8 @@
    (use-package lsp-ui
 	 :ensure t
 	 :after lsp-mode
+	 :defer t
+	 :commands lsp-ui-mode
 	 :general
 	 (:keymaps '(normal motion insert emacs)
 			   :prefix "SPC l"
@@ -1008,9 +1014,7 @@
 	 :init
 	 (setq lsp-ui-doc-max-height 7 
 		   lsp-ui-doc-max-width 40
-		   lsp-ui-sideline-update-mode 'point)
-	 :ghook
-	 ('lsp-mode-hook 'lsp-ui-mode))
+		   lsp-ui-sideline-update-mode 'point))
  #+END_SRC
 ** Company-lsp
    Company backend for lsp
@@ -1018,145 +1022,134 @@
    (use-package company-lsp
 	 :ensure t
 	 :after (company lsp-mode)
-	 :ghook
-	 ('lsp-mode-hook
-	  (lambda()(add-to-list 'company-backends
-							(company-mode/backend-with-yas 'company-lsp)))))
+	 :defer t
+	 :commands company-lsp)
  #+END_SRC
-** Lsp-ccls 
-   #+BEGIN_SRC emacs-lisp
-	 (use-package ccls
-	   :ensure t
-	   :ensure-system-package((ccls . ccls)(clang . clang))
-	   :after projectile
-	   :init
-		 (setq ccls-executable "/usr/bin/ccls")
-		 ;; Log file
-		 (setq ccls-extra-args '("--log-file=/tmp/cq.log"))
-		 ;; Cache directory, both relative and absolute paths are supported
-		 (setq ccls-cache-dir ".ccls-cache")
-		 ;; ;; Initialization options
-		 (setq projectile-project-root-files-top-down-recurring
-			 (append '("compile_commands.json"
-					   ".ccls")
-					 projectile-project-root-files-top-down-recurring))
-		 (setq ccls-extra-init-params '(:index (:comments 2) :completion (:detailedLabel t)))
-		 (setq ccls-sem-highlight-method 'font-lock)
-	   :config
-	   (defun ccls//enable ()
-		 (condition-case nil
-			 (lsp-ccls-enable)
-		   (user-error nil)))
-	   :ghook
-	   ('c++-mode-hook #'ccls//enable)
-	   )
-
-   #+END_SRC
-** Lsp-java
-   Eclipse JDT-LS client for emacs
-*** Config
-	1. Specify the installation directory for the lsp server.
-	2. Specify the each and every project individually in
-       lsp-java--workspace-folders.
- #+BEGIN_SRC emacs-lisp
-   (use-package lsp-java
-	 :ensure t
-	 :ghook
-	 ('java-mode-hook #'my-java-mode)
-	 ('nxml-mode-hook #'my-xml-mode)
-	 :init
-	 (setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
-		   lsp-java--workspace-folders (list "~/java/test" "~/java/daym")
-		   lsp-ui-sideline-update-mode 'point)
-	 (defun ricky//get-java-package-name ()
-	   "get package name for the current buffer"
-	   (let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
-		 (if (and (listp packages) (eq (length packages) 1))
-			 (semantic-tag-name (car packages)))))
-	 (defun ricky//get-fully-qualified-class-name ()
-	   "returns the fully qualified classname for the current buffer"
-	   (interactive "")
-			 (concat (ricky//get-java-package-name) "."
-				 (file-name-sans-extension
-				  (file-name-nondirectory (buffer-file-name)))))
-	 :config
-	 (defun my-java-mode()
-	   "enable lsp-java on .java files and pom.xml"
-	   (interactive)
-	   (if (or(equal (file-name-nondirectory buffer-file-name) "pom.xml")(equal (file-name-extension buffer-file-name) "java"))
-		   (progn
-			 (lsp-java-enable)
-			 (semantic-mode 1)
-			 (general-add-hook 'before-save-hook #'lsp-format-buffer nil t))))
-	 (defun my-xml-mode()
-	   "enable lsp-java on .java files and pom.xml"
-	   (interactive)
-	   (progn (my-java-mode)
-			  (setq flycheck-check-syntax-automatically
-					'(save idle-change new-line mode-enabled))
-			  (flycheck-mode 1)
-			  (flycheck-select-checker 'xml-xmllint))))
- #+END_SRC
-
-** Lsp-ms-python 
-   #+BEGIN_SRC emacs-lisp
-	 (use-package lsp-python-ms
-	   :quelpa(lsp-python-ms :fetcher github :repo "andrew-christianson/lsp-python-ms")
-	   :ensure t
-	   :config
-	   (setq lsp-python-ms-dir
-			 (expand-file-name "~/repos/python-language-server/output/bin/Release")) 
-	   (setq lsp-python-ms-executable
-			 "~/repos/python-language-server/output/bin/Release/linux-x64/publish/Microsoft.Python.LanguageServer"))
-   #+END_SRC
-** LSP-cquery
-   Cquery language server for c++.Works on arch flawlessly.Change
-   cquery-executable path and cquery system package name as per the OS.
- #+BEGIN_SRC emacs-lisp
-   (use-package cquery
-	 :ensure t
-	 :ensure-system-package
-	 ((cquery . cquery-git)
-	  (clang . clang))
-	 :after projectile
-	 :init
-	 (setq cquery-executable "/usr/bin/cquery"
-		   cquery-sem-highlight-method 'font-lock
-		   ;; ;; Log file
-		   cquery-extra-args '("--log-file=/tmp/cq.log")
-		   ;; ;; Cache directory, both relative and absolute paths are supported
-		   cquery-cache-dir "~/.emacs.d/.cache/cquery/"
-		   ;; ;; Initialization options
-		   cquery-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
-	 (setq projectile-project-root-files-top-down-recurring
-		   (append '("compile_commands.json"
-					 ".cquery")
-				   projectile-project-root-files-top-down-recurring))
-	 :config
-	 (defun cquery//enable ()
-	   "enable lsp-cquery"
-	   (condition-case nil
-		   (lsp-cquery-enable)
-		 (user-error nil)))
-	 :ghook
-	 ;; ('c++-mode-hook #'cquery//enable)
-	 )
- #+END_SRC
-** LSP-Javascript-Typescript
- Javascript Typescript language client for emacs 
- #+BEGIN_SRC emacs-lisp
-   (use-package lsp-javascript-typescript
-	 :ensure t
-	 :ensure-system-package javascript-typescript-langserver
-	 :ghook
-	 ('(js-mode-hook typescript-mode-hook js3-mode-hook rjsx-mode-hook) #'lsp-javascript-typescript-enable))
- #+END_SRC
+** C-family
+*** Lsp-ccls 
+	#+BEGIN_SRC emacs-lisp
+	  (use-package ccls
+		:ensure t
+		:ensure-system-package((ccls . ccls))
+		:defer t
+		:init
+		  (setq ccls-executable "/usr/bin/ccls")
+		  (setq ccls-extra-args '("--log-file=/tmp/cq.log"))
+		  (setq ccls-cache-dir ".ccls-cache")
+		  (setq ccls-extra-init-params '(:index (:comments 2) :completion (:detailedLabel t)))
+		  (setq ccls-sem-highlight-method 'font-lock)
+		:ghook
+		('(c-mode-hook c++-mode-hook objc-mode-hook)
+		  (lambda () (require 'ccls) (lsp))))
+	#+END_SRC
+** Java
+*** Lsp-java
+	Eclipse JDT-LS client for emacs
+  #+BEGIN_SRC emacs-lisp
+	;; (use-package lsp-java
+	;;   :ensure t
+	;;   :ghook
+	;;   ('java-mode-hook #'my-java-mode)
+	;;   ('nxml-mode-hook #'my-xml-mode)
+	;;   :init
+	;;   (setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
+	;; 		lsp-java--workspace-folders (list "~/java/test" "~/java/daym")
+	;; 		lsp-ui-sideline-update-mode 'point)
+	;;   (defun ricky//get-java-package-name ()
+	;; 	"get package name for the current buffer"
+	;; 	(let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
+	;; 	  (if (and (listp packages) (eq (length packages) 1))
+	;; 		  (semantic-tag-name (car packages)))))
+	;;   (defun ricky//get-fully-qualified-class-name ()
+	;; 	"returns the fully qualified classname for the current buffer"
+	;; 	(interactive "")
+	;; 		  (concat (ricky//get-java-package-name) "."
+	;; 			  (file-name-sans-extension
+	;; 			   (file-name-nondirectory (buffer-file-name)))))
+	;;   :config
+	;;   (defun my-java-mode()
+	;; 	"enable lsp-java on .java files and pom.xml"
+	;; 	(interactive)
+	;; 	(if (or(equal (file-name-nondirectory buffer-file-name) "pom.xml")(equal (file-name-extension buffer-file-name) "java"))
+	;; 		(progn
+	;; 		  (lsp-java-enable)
+	;; 		  (semantic-mode 1)
+	;; 		  (general-add-hook 'before-save-hook #'lsp-format-buffer nil t))))
+	;;   (defun my-xml-mode()
+	;; 	"enable lsp-java on .java files and pom.xml"
+	;; 	(interactive)
+	;; 	(progn (my-java-mode)
+	;; 		   (setq flycheck-check-syntax-automatically
+	;; 				 '(save idle-change new-line mode-enabled))
+	;; 		   (flycheck-mode 1)
+	;; 		   (flycheck-select-checker 'xml-xmllint))))
+	(use-package lsp-java
+	  :ensure t
+	  :defer t
+	  :ghook
+	  ('java-mode-hook
+	   (lambda () (require 'lsp-java)(semantic-mode 1)(lsp)))
+	  :init
+		(setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
+				lsp-ui-sideline-update-mode 'point)
+	  (defun ricky//get-java-package-name ()
+		"get package name for the current buffer"
+		(let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
+		  (if (and (listp packages) (eq (length packages) 1))
+			  (semantic-tag-name (car packages))))) 
+	  (defun ricky//get-fully-qualified-class-name ()
+		"returns the fully qualified classname for the current buffer"
+		(interactive "")
+		(concat (ricky//get-java-package-name) "."
+				(file-name-sans-extension
+				 (file-name-nondirectory (buffer-file-name))))))
+  #+END_SRC
+*** Lsp-java-treemacs
+	treemacs project explorer support java 
+	#+BEGIN_SRC emacs-lisp 
+	  (use-package lsp-java-treemacs
+		:ensure lsp-java
+		:after (treemacs lsp-java))
+	#+END_SRC
+** Python
+*** Pipenv 
+#+BEGIN_SRC emacs-lisp
+  (use-package pipenv
+	:ensure t
+	:ghook
+	('python-mode-hook #'pipenv-mode))
+#+END_SRC
+*** Lsp-ms-python 
+	#+BEGIN_SRC emacs-lisp
+	  (use-package lsp-python-ms
+		:quelpa(lsp-python-ms :fetcher github :repo "andrew-christianson/lsp-python-ms")
+		:ensure t
+		:defer t
+		:config
+		(setq lsp-python-ms-dir
+			  (expand-file-name "~/repos/python-language-server/output/bin/Release")) 
+		(setq lsp-python-ms-executable
+			  "~/repos/python-language-server/output/bin/Release/linux-x64/publish/Microsoft.Python.LanguageServer")
+		:ghook
+		('python-mode-hook
+		  (lambda () (require 'lsp-python-ms)(pipenv-activate)(lsp)) t))
+	#+END_SRC
+** Javascript
+*** Indium
+  Javascript ide support 
+  #+BEGIN_SRC emacs-lisp
+	(use-package indium
+	  :ensure t
+	  :defer t)
+  #+END_SRC
 * DAP
 ** DAP-Mode
  #+BEGIN_SRC emacs-lisp
    (use-package dap-mode
 	 :ensure t
 	 :after lsp-mode
+	 :defer t
+	 :commands dap-mode
 	 :config
 	 (dap-mode 1)
 	 (dap-ui-mode 1))
@@ -1167,3 +1160,4 @@
 	   :ensure dap-mode
 	   :after lsp-java)
    #+END_SRC
+   
