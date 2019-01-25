@@ -223,7 +223,7 @@
 			 (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
 			 (abort-recursive-edit)))
 		 :general
-		 ('insert
+		 (:states '(insert)
 		  "C-n" nil
 		  "C-p" nil)
 		 :init
@@ -266,7 +266,7 @@
 		:ensure t
 		:general
 		(
-		 :keymaps '(normal motion insert emacs)
+		 :states '(normal motion insert emacs)
 		 :prefix "SPC c"
 		 :non-normal-prefix "M-SPC c"
 		 :prefix-map 'ricky//comment/compile-prefix-map
@@ -331,11 +331,11 @@
 		 :ensure t
 		 :defer t
 		 :general
-		 (:keymaps '(normal motion insert emacs)
+		 (:states '(normal motion insert emacs)
 				   :prefix "SPC m"
 				   :non-normal-prefix "M-SPC m"
 				   "" '(:keymap evilem-map :package evil-easymotion :which-key "easy-motion prefix"))
-		 (:keymaps '(normal motion insert emacs)
+		 (:states '(normal motion insert emacs)
 				   :prefix ","
 				   :non-normal-prefix "M-,"
 				   "" '(:keymap evilem-map :package evil-easymotion :which-key "easy-motion prefix"))
@@ -472,7 +472,7 @@
  Use <SPC-w> as evil window prefix along with <C-w>
    #+BEGIN_SRC emacs-lisp
 	 (general-def
-	   :keymaps '(normal motion insert emacs)
+	   :states '(normal motion insert emacs)
 	   :prefix "SPC w"
 	   :non-normal-prefix "M-SPC w"
 	   "" '(
@@ -487,7 +487,7 @@
 	Personal Spacemacs like buffer manipulation shortcuts
 	 #+BEGIN_SRC emacs-lisp
 	   (general-def 
-		 :keymaps '(normal motion insert emacs)
+		 :states '(normal motion insert emacs)
 		 :prefix "SPC b"
 		 :non-normal-prefix "M-SPC b"
 		 :prefix-map 'ricky//buffer-prefix-map
@@ -524,7 +524,7 @@
 *** Config
   #+BEGIN_SRC emacs-lisp
 	(general-def
-	  :keymaps '(normal motion insert emacs)
+	  :states '(normal motion insert emacs)
 	  :prefix "SPC f"
 	  :non-normal-prefix "M-SPC f"
 	  :prefix-map 'ricky//file-prefix-map
@@ -543,7 +543,7 @@
 ** Helm shortcuts
 	 #+BEGIN_SRC emacs-lisp
 	   (general-def
-		 :keymaps '(normal motion insert emacs)
+		 :states '(normal motion insert emacs)
 		 :prefix "SPC h"
 		 :non-normal-prefix "M-SPC h"
 		 :prefix-map 'ricky//helm-prefix-map
@@ -564,7 +564,7 @@
 ** Feature toggle shortcuts 
  #+BEGIN_SRC emacs-lisp 
    (general-def
-	 :keymaps '(normal motion insert emacs)
+	 :states '(normal motion insert emacs)
 	 :prefix "SPC T"
 	 :non-normal-prefix "M-SPC T"
 	 :prefix-map 'ricky//toggle-prefix-map
@@ -576,7 +576,7 @@
 	 "l" 'hide-mode-line-mode
 	 "c" 'load-theme)
  #+END_SRC
-* Project Managements
+* Project Management
 ** Projectile
    Project management for emacs
 *** Config
@@ -640,7 +640,7 @@
 		  (treemacs-git-mode 'simple)))
 	   )
 	 :general
-	 (:keymaps '(normal motion insert emacs)
+	 (:states '(normal motion insert emacs)
 	  :prefix "SPC t"
 	  :non-normal-prefix "M-SPC t"
 	  :prefix-map 'ricky//treemacs-mode-map
@@ -681,7 +681,7 @@
 	 :diminish flycheck-mode
 	 :general
 	 (
-	  :keymaps '(normal motion insert emacs)
+	  :states '(normal motion insert emacs)
 	  :prefix "SPC e"
 	  :non-normal-prefix "M-SPC e"
 	  ""'(
@@ -717,7 +717,7 @@
 			 :ensure t
 			 :defer 2
 			 :general
-			 (company-active-map
+			 (:keymaps 'company-active-map
 			  "C-n" (lambda () (interactive) (company-select-next-if-tooltip-visible-or-complete-selection))
 			  "C-p" (lambda () (interactive) (company-select-previous))
 			  "C-SPC"(lambda()(interactive)(company-complete-common))
@@ -753,14 +753,15 @@
 	Using general-def instead of :general since yas-maybe-expand is a variable
 	which is defined only after autoload.
 	#+BEGIN_SRC emacs-lisp
-	  (use-package yasnippet
-		:ensure yasnippet-snippets
-		:defer 3
-		:config
-		(yas-global-mode 1)
-		(general-def 'yas-minor-mode-map
-		  "<return>" yas-maybe-expand)
-		)
+			(use-package yasnippet
+			  :ensure yasnippet-snippets
+			  :defer 3
+			  :config
+			  (yas-global-mode 1)
+			  (general-def 
+				:keymaps 'yas-minor-mode-map
+				"<return>" yas-maybe-expand)
+			  )
 	#+END_SRC
 ** Company quickhelp
    Company mode completion documentation
@@ -861,7 +862,7 @@
 	 (use-package multi-compile
 	   :ensure t
 	   :general
-	   ('(normal motion)
+	   (:states '(normal motion)
 		:prefix "SPC c"
 		"r" 'multi-compile-run
 		)
@@ -916,7 +917,7 @@
 	   :defer t)
    #+END_SRC
 ** VLFI 
- Emacs package for handling large files 
+   Emacs package for handling large files 
  #+BEGIN_SRC emacs-lisp 
    (use-package vlf-setup
 	 :ensure vlf
@@ -924,7 +925,7 @@
 	 :init
 	 (setq vlf-application 'dont-ask)
 	 :general
-	 (:keymaps '(normal motion insert emacs)
+	 (:states '(normal motion insert emacs)
 			   :prefix "SPC v"
 			   :non-normal-prefix "M-SPC v"
 			   ""'(:keymap vlf-mode-map :package vlf :which-key "vlf-prefix")
@@ -954,6 +955,10 @@
 	 :ensure t
 	 :general
 	 ("C-x g" 'magit-status)
+	 (:states '(normal motion insert emacs)
+				  :prefix "SPC g"
+				  :non-normal-prefix "M-SPC g"
+				  "" 'magit-status)
 	 :commands magit-status)
  #+END_SRC
 ** Evil-magit
@@ -976,6 +981,24 @@
 	 :defer t
 	 :commands lsp
 	 :general
+		(:states '(normal motion insert emacs)
+				 :keymaps 'lsp-mode-map
+				  :prefix "SPC l"
+				  :non-normal-prefix "M-SPC l"
+				  "" '(:ignore t :which-key "lsp-prefix")
+				  "d" '(xref-find-definitions :which-key "definitions")
+				  "r" '(xref-find-references :which-key "references")
+				  "R" '(lsp-rename :which-key "rename var")
+				  "e" '(lsp-ui-flycheck-list :which-key "errors")
+				  "s" '(lsp-ui-imenu :which-key "lsp-imenu")
+				  "i" '(helm-imenu :which-key "helm-imenu")
+				  "p" '(xref-pop-marker-stack :which-key "pop-definition-stack")
+				  "w" '(lsp-ui-peek-find-workspace-symbol :which-key "workspace-symbol")
+				  ;; "." '(lsp-ui-sideline-apply-code-actions :which-key "code-action")
+				  "." '(lsp-execute-code-action :which-key "code-action")
+				  "l" '(lsp-restart-workspace :which-key "restart lsp")
+				  )
+
 	 :init
 	 (setq lsp-inhibit-message t)
 	 (setq lsp-prefer-flymake nil)
@@ -989,28 +1012,22 @@
 	 :after lsp-mode
 	 :defer t
 	 :commands lsp-ui-mode
+	 :ghook ('lsp-mode-hook #'lsp-ui-mode 1)
 	 :general
-	 (:keymaps '(normal motion insert emacs)
-			   :prefix "SPC l"
-			   :non-normal-prefix "M-SPC l"
-			   :prefix-map 'ricky//lsp-ui-prefix-map
-			   "" '(:ignore t :which-key "lsp-ui-prefix")
-			   "d" '(lsp-ui-peek-find-definitions :which-key "definitions")
-			   "r" '(lsp-ui-peek-find-references :which-key "references")
-			   "R" '(lsp-rename :which-key "rename var")
-			   "e" '(lsp-ui-flycheck-list :which-key "errors")
-			   "s" '(lsp-ui-imenu :which-key "lsp-imenu")
-			   "i" '(helm-imenu :which-key "helm-imenu")
-			   "p" '(pop-tag-mark :which-key "pop-definition-stack")
-			   "w" '(lsp-ui-peek-find-workspace-symbol :which-key "workspace-symbol")
-			   "." '(lsp-ui-sideline-apply-code-actions :which-key "code-action")
-			   "l" '(lsp-restart-workspace :which-key "restart lsp")
-			   )
 	 (:keymaps 'lsp-ui-mode-map
 			   [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
 			   [remap xref-find-references] #'lsp-ui-peek-find-references
-			   [remap evil-goto-definition] #'lsp-ui-peek-find-definitions
-			   )
+			   [remap evil-goto-definition] #'lsp-ui-peek-find-definitions)
+	 (:states '(normal motion insert emacs)
+			  :keymaps 'lsp-ui-mode-map
+			  :prefix "SPC l"
+			  :non-normal-prefix "M-SPC l"
+			  "e" '(lsp-ui-flycheck-list :which-key "errors")
+			  "s" '(lsp-ui-imenu :which-key "lsp-imenu")
+			  "p" '(xref-pop-marker-stack :which-key "pop-definition-stack")
+			  "w" '(lsp-ui-peek-find-workspace-symbol :which-key "workspace-symbol")
+			  "." '(lsp-ui-sideline-apply-code-actions :which-key "code-action")
+			  )
 	 :init
 	 (setq lsp-ui-doc-max-height 7 
 		   lsp-ui-doc-max-width 40
@@ -1046,43 +1063,6 @@
 *** Lsp-java
 	Eclipse JDT-LS client for emacs
   #+BEGIN_SRC emacs-lisp
-	;; (use-package lsp-java
-	;;   :ensure t
-	;;   :ghook
-	;;   ('java-mode-hook #'my-java-mode)
-	;;   ('nxml-mode-hook #'my-xml-mode)
-	;;   :init
-	;;   (setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
-	;; 		lsp-java--workspace-folders (list "~/java/test" "~/java/daym")
-	;; 		lsp-ui-sideline-update-mode 'point)
-	;;   (defun ricky//get-java-package-name ()
-	;; 	"get package name for the current buffer"
-	;; 	(let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
-	;; 	  (if (and (listp packages) (eq (length packages) 1))
-	;; 		  (semantic-tag-name (car packages)))))
-	;;   (defun ricky//get-fully-qualified-class-name ()
-	;; 	"returns the fully qualified classname for the current buffer"
-	;; 	(interactive "")
-	;; 		  (concat (ricky//get-java-package-name) "."
-	;; 			  (file-name-sans-extension
-	;; 			   (file-name-nondirectory (buffer-file-name)))))
-	;;   :config
-	;;   (defun my-java-mode()
-	;; 	"enable lsp-java on .java files and pom.xml"
-	;; 	(interactive)
-	;; 	(if (or(equal (file-name-nondirectory buffer-file-name) "pom.xml")(equal (file-name-extension buffer-file-name) "java"))
-	;; 		(progn
-	;; 		  (lsp-java-enable)
-	;; 		  (semantic-mode 1)
-	;; 		  (general-add-hook 'before-save-hook #'lsp-format-buffer nil t))))
-	;;   (defun my-xml-mode()
-	;; 	"enable lsp-java on .java files and pom.xml"
-	;; 	(interactive)
-	;; 	(progn (my-java-mode)
-	;; 		   (setq flycheck-check-syntax-automatically
-	;; 				 '(save idle-change new-line mode-enabled))
-	;; 		   (flycheck-mode 1)
-	;; 		   (flycheck-select-checker 'xml-xmllint))))
 	(use-package lsp-java
 	  :ensure t
 	  :defer t
