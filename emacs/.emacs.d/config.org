@@ -8,29 +8,42 @@
   into their own configs.
 * Package Installation setup
 ** Bootstrap
-*** Initialise and add melpa
+*** Install straight.el
 	 #+BEGIN_SRC emacs-lisp
-	   (require 'package)
-	   (setq package-enable-at-startup nil)
-	   (add-to-list 'package-archives 
-					'("melpa" . "https://melpa.org/packages/"))
-	   (package-initialize)
+	   (defvar bootstrap-version)
+	   (let ((bootstrap-file
+			  (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+			 (bootstrap-version 5))
+		 (unless (file-exists-p bootstrap-file)
+		   (with-current-buffer
+			   (url-retrieve-synchronously
+				"https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+				'silent 'inhibit-cookies)
+			 (goto-char (point-max))
+			 (eval-print-last-sexp)))
+		 (load bootstrap-file nil 'nomessage))
 	 #+END_SRC
-*** Bootstrap use-package
+*** Install use-package
 	 #+BEGIN_SRC emacs-lisp
-	 (unless (package-installed-p 'use-package)
-	 (package-refresh-contents)
-	 (package-install 'use-package))
-	 (eval-when-compile
-	 (setq use-package-verbose t)
-	 (require 'use-package))
+	   (straight-use-package 'use-package)
 	 #+END_SRC
+** Pre-evaluate all autoloads
+   Pre evaluate evaluate all cached autoloads 
+#+BEGIN_SRC emacs-lisp
+  (maphash (lambda (package value)
+			 (add-to-list 'load-path (directory-file-name
+									  (straight--build-dir package)))
+			 (let ((load-file-name (straight--autoloads-file package)))
+			   (dolist (form (cdr value))
+				 (eval form))) ) straight--autoloads-cache)
+#+END_SRC
 ** Exec-path-from shell
  Makes emacs path coherent with shell path 
  #+BEGIN_SRC emacs-lisp
    (use-package exec-path-from-shell
-	 :if (memq window-system '(mac ns x))
-	 :ensure t
+	 :if (or (daemonp) (memq window-system '(mac ns x)))
+	 :straight t
+	 :defer 2
 	 :config
 	 (exec-path-from-shell-initialize))
  #+END_SRC
@@ -39,8 +52,8 @@
 *** Config 
  Add yay package manager config and make it the default for my arch-linux system.
  #+BEGIN_SRC emacs-lisp 
-   (use-package system-packages
-	 :ensure t
+ (use-package system-packages
+	 :straight t
 	 :defer t
 	 :config
 	 (add-to-list 'system-packages-supported-package-managers
@@ -69,24 +82,9 @@
    Use package :ensure for system-packages
 	 #+BEGIN_SRC emacs-lisp
 	 (use-package use-package-ensure-system-package
-		 :ensure t
+		 :straight t
 		 :defer t
 		 :after (system-packages use-package ))
-	 #+END_SRC
-** Quelpa 
-   Download repos as emacs packages 
-	 #+BEGIN_SRC emacs-lisp
-	   (use-package quelpa
-		   :defer t
-		   :ensure t)
-	 #+END_SRC
-** Quelpa-use-package 
-   Use-package interface to quelpa
-	 #+BEGIN_SRC emacs-lisp
-	   (use-package quelpa-use-package
-		 :ensure t
-		 :init
-		 (setq quelpa-use-package-inhibit-loading-quelpa t))
 	 #+END_SRC
 * Personal Config Tweaks
 ** Line-numbers
@@ -111,11 +109,12 @@
 	#+END_SRC
 ** Some interface tweaks
 	#+BEGIN_SRC emacs-lisp
-	(display-battery-mode t)
-	(display-time-mode t)
-	(menu-bar-mode -1)
-	(scroll-bar-mode -1)
-	(tool-bar-mode -1)
+	  (general-add-hook 'after-init-hook (lambda ()
+										   (display-battery-mode t)
+										   (display-time-mode t)
+										   (menu-bar-mode -1)
+										   (scroll-bar-mode -1)
+										   (tool-bar-mode -1)))
 	#+END_SRC
 ** Save locations on buffers
 	#+BEGIN_SRC emacs-lisp
@@ -165,15 +164,12 @@
 	  (defadvice windmove-right (before other-window-now activate)
 		(when buffer-file-name (save-buffer)))
 	#+END_SRC
-** Edit config.org
+** Edit & Reload config.org
    #+BEGIN_SRC emacs-lisp
 	 (defun config-visit ()
 	   "visit emacs config file"
 	   (interactive)
 	   (find-file "~/.emacs.d/config.org"))
-   #+END_SRC
-** Reload config
-	#+BEGIN_SRC emacs-lisp
 	(defun config-reload ()
 	"Reloads ~/.emacs.d/config.org at runtime"
 	(interactive)
@@ -186,7 +182,7 @@
  A lot of packages depend on this package.Load this first.
 	#+BEGIN_SRC emacs-lisp
 	  (use-package general
-		:ensure t
+		:straight t
 		:demand t
 		:config
 		(general-evil-setup))
@@ -195,7 +191,7 @@
    Display available keybindings in a popup
 	 #+BEGIN_SRC emacs-lisp
 	   (use-package which-key
-		   :ensure t
+		   :straight t
 		   :demand t
 		   :diminish which-key-mode
 		   :config
@@ -210,7 +206,7 @@
 	 #+BEGIN_SRC emacs-lisp
 	   (use-package evil
 		 :after general
-		 :ensure t
+		 :straight t
 		 :demand t
 		 :init
 		 (defun minibuffer-keyboard-quit ()
@@ -254,7 +250,7 @@
  Vim surround on emacs 
 	#+BEGIN_SRC emacs-lisp
 	  (use-package evil-surround
-		:ensure t
+		:straight t
 		:after evil
 		:ghook
 		('prog-mode-hook #'evil-surround-mode 1))
@@ -263,7 +259,7 @@
    Vim nerd-commenter for emacs
 	#+BEGIN_SRC emacs-lisp
 	  (use-package evil-nerd-commenter
-		:ensure t
+		:straight t
 		:general
 		(
 		 :states '(normal motion insert emacs)
@@ -288,7 +284,7 @@
 	2. bind <SPC-/> to got-char as work-around for previous.(unbind SPC befor binding <SPC-/>)
 	 #+BEGIN_SRC emacs-lisp
 	   (use-package avy
-		 :ensure t
+		 :straight t
 		 :demand t
 		 :init
 		 (setq avy-all-windows nil)
@@ -328,7 +324,7 @@
 	Two different prefixes for easymotion commands "," and "SPC m".
 	 #+BEGIN_SRC emacs-lisp
 	   (use-package evil-easymotion
-		 :ensure t
+		 :straight t
 		 :defer t
 		 :general
 		 (:states '(normal motion insert emacs)
@@ -346,7 +342,7 @@
 ** Spacemacs-theme
 	 #+BEGIN_SRC emacs-lisp
 	   (use-package spacemacs-theme
-		 :ensure t
+		 :straight t
 		 :no-require t
 		 :init 
 		 (defun ricky//load-spacemacs-theme (frame)
@@ -371,7 +367,7 @@
 	4. Short values for evil-state
 	 #+BEGIN_SRC emacs-lisp
 	   (use-package telephone-line
-	   :ensure t
+	   :straight t
 	   :ghook 
 	   ('after-init-hook #'telephone-line-mode)
 	   :init
@@ -401,7 +397,7 @@
    Vim startify attempt for emacs
 	 #+BEGIN_SRC emacs-lisp
 			(use-package dashboard
-			:ensure t
+			:straight t
 			:config
 			(dashboard-setup-startup-hook)
 			:init
@@ -413,7 +409,7 @@
 	Enable fuzzy matching wherever possible
  #+BEGIN_SRC emacs-lisp
    (use-package helm
-	 :ensure t
+	 :straight t
 	 :demand t
 	 :general
 	 ("M-x" 'helm-M-x
@@ -437,8 +433,8 @@
    Reduce modeline clutter by diminishing minor modes
 	 #+BEGIN_SRC emacs-lisp
 	   (use-package diminish
-		 :ensure t
-		 :defer 5
+		 :straight t
+		 :commands diminish
 		 :init
 		 (diminish 'undo-tree-mode)
 		 (diminish 'abbrev-mode)
@@ -449,7 +445,7 @@
 ** Hide-mode-line 
 	 #+BEGIN_SRC emacs-lisp
 	   (use-package hide-mode-line
-		 :ensure t
+		 :straight t
 		 :commands hide-mode-line-mode)
 	 #+END_SRC
 * Keybindings
@@ -586,8 +582,8 @@
        mini-buffer.
  #+BEGIN_SRC emacs-lisp
    (use-package projectile
-	 :ensure t
-	 :ensure helm-rg
+	 :straight t
+	 :straight helm-rg
 	 :ensure-system-package 
 	 (rg . ripgrep)
 	 :init
@@ -616,7 +612,7 @@
    Helm interface for projectile
 	 #+BEGIN_SRC emacs-lisp
 	 (use-package helm-projectile
-		 :ensure t
+		 :straight t
 		 :after (helm projectile)
 		 :config
 		 (helm-projectile-on))
@@ -625,7 +621,7 @@
  NerdTree like project explorer for emacs.
  #+BEGIN_SRC emacs-lisp
    (use-package treemacs
-	 :ensure t
+	 :straight t
 	 :defer t
 	 :config
 	 (progn
@@ -658,14 +654,14 @@
 	#+BEGIN_SRC emacs-lisp
    (use-package treemacs-evil
 	 :after treemacs evil
-	 :ensure t)
+	 :straight t)
    
 	#+END_SRC
 *** Treemacs-projectile
 	#+BEGIN_SRC emacs-lisp
 	  (use-package treemacs-projectile
 		:after treemacs projectile
-		:ensure t
+		:straight t
 		:general
 		(:keymaps 'ricky//treemacs-mode-map
 				  "p" 'treemacs-projectile))
@@ -677,7 +673,7 @@
 	Make <SPC-e> the flycheck prefix by binding it to flycheck-command-map.
  #+BEGIN_SRC emacs-lisp
    (use-package flycheck
-	 :ensure t
+	 :straight t
 	 :diminish flycheck-mode
 	 :general
 	 (
@@ -698,7 +694,7 @@
    Dispaly flycheck errors in childframe(requires emacs 26).
  #+BEGIN_SRC emacs-lisp
    (use-package flycheck-posframe
-	 :ensure t
+	 :straight t
 	 :after flycheck
 	 :ghook
 	 ('flycheck-mode-hook #'flycheck-posframe-mode))
@@ -714,7 +710,7 @@
 	5. <C-p> and <C-n> , <tab>and <s-tab> completion navigation
 	#+BEGIN_SRC emacs-lisp
 		   (use-package company
-			 :ensure t
+			 :straight t
 			 :defer 2
 			 :general
 			 (:keymaps 'company-active-map
@@ -743,8 +739,7 @@
 			   (general-def
 				 :keymaps 'company-active-map
 				 (format "C-%d" i) 'company-complete-number))
-			 (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
-	  )
+			 (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)))
 	#+END_SRC
 ** Yasnippet
  Snippet engine for emacs
@@ -754,7 +749,8 @@
 	which is defined only after autoload.
 	#+BEGIN_SRC emacs-lisp
 			(use-package yasnippet
-			  :ensure yasnippet-snippets
+			  :straight t
+			  :straight yasnippet-snippets
 			  :defer 3
 			  :config
 			  (yas-global-mode 1)
@@ -767,7 +763,7 @@
    Company mode completion documentation
 	 #+BEGIN_SRC emacs-lisp
 	   (use-package company-quickhelp
-		 :ensure t
+		 :straight t
 		 :init
 		 (setq company-quickhelp-delay 0.3)
 		 :after company
@@ -778,7 +774,7 @@
    Fuzzy matching for company-capf only.
  #+BEGIN_SRC emacs-lisp
    (use-package company-flx
-	 :ensure t
+	 :straight t
 	 :after company
 	 :config
 	 (company-flx-mode +1))
@@ -790,7 +786,7 @@
 	1. NewLine and Indent for C/C++ programming
 	 #+BEGIN_SRC emacs-lisp
 	   (use-package smartparens-config
-		 :ensure smartparens
+		 :straight smartparens
 		 :demand t
 		 :diminish smartparens-mode
 		 :init
@@ -813,7 +809,7 @@
 	Add advice to hungry-delete-backward to play along with smartparens
 	#+BEGIN_SRC emacs-lisp
 	  (use-package hungry-delete
-		:ensure t
+		:straight t
 		:diminish hungry-delete-mode
 		:config
 		(defadvice hungry-delete-backward (before sp-delete-pair-advice activate) (save-match-data (sp-delete-pair (ad-get-arg 0))))
@@ -823,7 +819,7 @@
    Rainbow delimeters
  #+BEGIN_SRC emacs-lisp
    (use-package rainbow-delimiters
-	 :ensure t
+	 :straight t
 	 :ghook
 	 ('prog-mode-hook #'rainbow-delimiters-mode))
  #+END_SRC
@@ -833,7 +829,7 @@
    (use-package rainbow-mode
 	 :defer t
 	 :commands rainbow-mode
-	 :ensure t)
+	 :straight t)
  #+END_SRC
 ** Org-bullets
    UTF-8 bullets for org mode
@@ -841,7 +837,7 @@
  Enable it on entering org-mode
 	 #+BEGIN_SRC emacs-lisp
 	 (use-package org-bullets
-		   :ensure t
+		   :straight t
 		   :ghook
 		   ('org-mode-hook #'org-bullets-mode))
 	 #+END_SRC
@@ -849,7 +845,7 @@
    Code folding in emacs 
  #+BEGIN_SRC emacs-lisp
    (use-package origami
-	 :ensure t
+	 :straight t
 	 :ghook
 	 ('prog-mode-hook #'origami-mode))
  #+END_SRC
@@ -860,7 +856,7 @@
 	 Override multi-compile-run to run commands in interactive compile mode buffer.
    #+BEGIN_SRC emacs-lisp 
 	 (use-package multi-compile
-	   :ensure t
+	   :straight t
 	   :general
 	   (:states '(normal motion)
 		:prefix "SPC c"
@@ -891,36 +887,29 @@
  autoformat plugin emacs
  #+BEGIN_SRC emacs-lisp
    (use-package format-all
-	 :ensure t
+	 :straight t
 	 :defer t)
  #+END_SRC
 * Org Stuff
 ** Reveal.js
  #+BEGIN_SRC emacs-lisp
 	  (use-package ox-reveal
-		:quelpa(ox-reveal :fetcher github :repo "yjwen/org-reveal")
+		:straight (:host github :repo "emacsmirror/ox-reveal")
 		:defer t)
  #+END_SRC
 * Misc
-** Try
-   Try emacs packages
- #+BEGIN_SRC emacs-lisp
-   (use-package try
-	 :ensure t
-	 :defer t)
- #+END_SRC
 ** Sudo-edit
    Tramp wrapper to edit files as root
    #+BEGIN_SRC emacs-lisp
 	 (use-package sudo-edit
-	   :ensure t
+	   :straight t
 	   :defer t)
    #+END_SRC
 ** VLFI 
    Emacs package for handling large files 
  #+BEGIN_SRC emacs-lisp 
    (use-package vlf-setup
-	 :ensure vlf
+	 :straight vlf
 	 :defer t
 	 :init
 	 (setq vlf-application 'dont-ask)
@@ -935,24 +924,30 @@
  Online pastebin service integration 
  #+BEGIN_SRC emacs-lisp 
    (use-package webpaste
-	 :ensure t
+	 :straight t
 	 :defer t)
  #+END_SRC
 ** PDF-tools
   PDF plugin for emacs 
   #+BEGIN_SRC emacs-lisp
 	(use-package pdf-tools
-	  :ensure t
+	  :straight t
 	  :defer 10
 	  :config
 	  (pdf-tools-install))
   #+END_SRC
+** Emacs Startup Profiler 
+#+BEGIN_SRC emacs-lisp
+  (use-package esup
+	:straight t
+	:commands esup)
+#+END_SRC
 * Git 
 ** Magit 
  Git interface for emacs on steroids
  #+BEGIN_SRC emacs-lisp
    (use-package magit
-	 :ensure t
+	 :straight t
 	 :general
 	 ("C-x g" 'magit-status)
 	 (:states '(normal motion insert emacs)
@@ -965,7 +960,7 @@
  Evil interface to magit 
  #+BEGIN_SRC emacs-lisp
    (use-package evil-magit
-	 :ensure t
+	 :straight t
 	 :after magit
 	 :init
 	 (setq evil-magit-want-horizontal-movement t)
@@ -978,37 +973,37 @@
  Language Server Client for Emacs
  #+BEGIN_SRC emacs-lisp
    (use-package lsp-mode
+	 :straight t
 	 :defer t
 	 :commands lsp
 	 :general
-		(:states '(normal motion insert emacs)
-				 :keymaps 'lsp-mode-map
-				  :prefix "SPC l"
-				  :non-normal-prefix "M-SPC l"
-				  "" '(:ignore t :which-key "lsp-prefix")
-				  "d" '(xref-find-definitions :which-key "definitions")
-				  "r" '(xref-find-references :which-key "references")
-				  "R" '(lsp-rename :which-key "rename var")
-				  "e" '(lsp-ui-flycheck-list :which-key "errors")
-				  "s" '(lsp-ui-imenu :which-key "lsp-imenu")
-				  "i" '(helm-imenu :which-key "helm-imenu")
-				  "p" '(xref-pop-marker-stack :which-key "pop-definition-stack")
-				  "w" '(lsp-ui-peek-find-workspace-symbol :which-key "workspace-symbol")
-				  ;; "." '(lsp-ui-sideline-apply-code-actions :which-key "code-action")
-				  "." '(lsp-execute-code-action :which-key "code-action")
-				  "l" '(lsp-restart-workspace :which-key "restart lsp")
-				  )
+	 (:states '(normal motion insert emacs)
+			  :keymaps 'lsp-mode-map
+			  :prefix "SPC l"
+			  :non-normal-prefix "M-SPC l"
+			  "" '(:ignore t :which-key "lsp-prefix")
+			  "d" '(xref-find-definitions :which-key "definitions")
+			  "r" '(xref-find-references :which-key "references")
+			  "R" '(lsp-rename :which-key "rename var")
+			  "e" '(lsp-ui-flycheck-list :which-key "errors")
+			  "s" '(lsp-ui-imenu :which-key "lsp-imenu")
+			  "i" '(helm-imenu :which-key "helm-imenu")
+			  "p" '(xref-pop-marker-stack :which-key "pop-definition-stack")
+			  "w" '(lsp-ui-peek-find-workspace-symbol :which-key "workspace-symbol")
+			  ;; "." '(lsp-ui-sideline-apply-code-actions :which-key "code-action")
+			  "." '(lsp-execute-code-action :which-key "code-action")
+			  "l" '(lsp-restart-workspace :which-key "restart lsp")
+			  )
 
 	 :init
 	 (setq lsp-inhibit-message t)
-	 (setq lsp-prefer-flymake nil)
-	 :ensure t)
+	 (setq lsp-prefer-flymake nil))
  #+END_SRC
 ** LSP-UI
    Higher level UI modules for LSP-mode
  #+BEGIN_SRC emacs-lisp
    (use-package lsp-ui
-	 :ensure t
+	 :straight t
 	 :after lsp-mode
 	 :defer t
 	 :commands lsp-ui-mode
@@ -1037,7 +1032,7 @@
    Company backend for lsp
  #+BEGIN_SRC emacs-lisp
    (use-package company-lsp
-	 :ensure t
+	 :straight t
 	 :after (company lsp-mode)
 	 :defer t
 	 :commands company-lsp)
@@ -1046,7 +1041,7 @@
 *** Lsp-ccls 
 	#+BEGIN_SRC emacs-lisp
 	  (use-package ccls
-		:ensure t
+		:straight t
 		:ensure-system-package((ccls . ccls))
 		:defer t
 		:init
@@ -1064,14 +1059,17 @@
 	Eclipse JDT-LS client for emacs
   #+BEGIN_SRC emacs-lisp
 	(use-package lsp-java
-	  :ensure t
+	  :straight t
 	  :defer t
 	  :ghook
 	  ('java-mode-hook
 	   (lambda () (require 'lsp-java)(semantic-mode 1)(lsp)))
 	  :init
 		(setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
-				lsp-ui-sideline-update-mode 'point)
+			  lsp-ui-sideline-update-mode 'point
+			  lsp-java-format-settings-url (expand-file-name "~/Downloads/java-google-style-formatter.xml")
+			  lsp-java-format-settings-profile "GoogleStyle"
+			  lsp-java-favorite-static-members '( "java.util.stream.Collectors.*" "org.junit.Assert.*" "org.junit.Assume.*" "org.junit.jupiter.api.Assertions.*" "org.junit.jupiter.api.Assumptions.*" "org.junit.jupiter.api.DynamicContainer.*" "org.junit.jupiter.api.DynamicTest.*"))
 	  (defun ricky//get-java-package-name ()
 		"get package name for the current buffer"
 		(let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
@@ -1082,28 +1080,29 @@
 		(interactive "")
 		(concat (ricky//get-java-package-name) "."
 				(file-name-sans-extension
-				 (file-name-nondirectory (buffer-file-name))))))
+				 (file-name-nondirectory (buffer-file-name)))))
+	  )
+
   #+END_SRC
 *** Lsp-java-treemacs
 	treemacs project explorer support java 
 	#+BEGIN_SRC emacs-lisp 
 	  (use-package lsp-java-treemacs
-		:ensure lsp-java
+		:straight lsp-java
 		:after (treemacs lsp-java))
 	#+END_SRC
 ** Python
 *** Pipenv 
 #+BEGIN_SRC emacs-lisp
   (use-package pipenv
-	:ensure t
+	:straight t
 	:ghook
 	('python-mode-hook #'pipenv-mode))
 #+END_SRC
 *** Lsp-ms-python 
 	#+BEGIN_SRC emacs-lisp
 	  (use-package lsp-python-ms
-		:quelpa(lsp-python-ms :fetcher github :repo "andrew-christianson/lsp-python-ms")
-		:ensure t
+		:straight (:host github :repo "andrew-christianson/lsp-python-ms")
 		:defer t
 		:config
 		(setq lsp-python-ms-dir
@@ -1119,14 +1118,14 @@
   Javascript ide support 
   #+BEGIN_SRC emacs-lisp
 	(use-package indium
-	  :ensure t
+	  :straight t
 	  :defer t)
   #+END_SRC
 * DAP
 ** DAP-Mode
  #+BEGIN_SRC emacs-lisp
    (use-package dap-mode
-	 :ensure t
+	 :straight t
 	 :after lsp-mode
 	 :defer t
 	 :commands dap-mode
@@ -1137,7 +1136,7 @@
 ** DAP-Java 
    #+BEGIN_SRC emacs-lisp 
 	 (use-package dap-java
-	   :ensure dap-mode
+	   :straight dap-mode
 	   :after lsp-java)
    #+END_SRC
    
