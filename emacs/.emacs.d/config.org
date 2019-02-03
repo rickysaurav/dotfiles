@@ -414,6 +414,14 @@
 	 :general
 	 ("M-x" 'helm-M-x
 	  "C-x C-f" 'helm-find-files)
+	 (:states '(normal motion insert emacs)
+	  :prefix "SPC h"
+	  :non-normal-prefix "M-SPC h"
+	  :prefix-map 'ricky//helm-prefix-map
+	  "" '(:ignore t :which-key "helm-prefix")
+	  "h" 'helm-apropos
+	  "i" 'helm-imenu
+	  "k" 'helm-show-kill-ring)
 	 :init
 	 (setq helm-semantic-fuzzy-match t
 		   helm-imenu-fuzzy-match    t
@@ -429,6 +437,19 @@
 	 :config
 	 (helm-mode 1))
  #+END_SRC
+** Helm-swoop
+Buffer Search utility using helm 
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-swoop
+	:straight t
+	:after helm
+	:defer t
+	:general
+	(
+	 :keymaps  '(helm-swoop-map)
+	 "M-i" 'helm-multi-swoop-all-from-helm-swoop
+	 "M-m" 'helm-multi-swoop-current-mode-from-helm-swoop))
+#+END_SRC
 ** Diminish
    Reduce modeline clutter by diminishing minor modes
 	 #+BEGIN_SRC emacs-lisp
@@ -536,19 +557,6 @@
 	  "f" 'helm-find-files
 	  "b" 'eww-open-file)
   #+END_SRC
-** Helm shortcuts
-	 #+BEGIN_SRC emacs-lisp
-	   (general-def
-		 :states '(normal motion insert emacs)
-		 :prefix "SPC h"
-		 :non-normal-prefix "M-SPC h"
-		 :prefix-map 'ricky//helm-prefix-map
-		 "" '(:ignore t :which-key "helm-prefix")
-		 "h" 'helm-apropos
-		 "i" 'helm-imenu
-		 "k" 'helm-show-kill-ring
-		 )
-	 #+END_SRC
 ** Help shortcuts
  #+BEGIN_SRC emacs-lisp
    (general-def
@@ -572,6 +580,19 @@
 	 "l" 'hide-mode-line-mode
 	 "c" 'load-theme)
  #+END_SRC
+** Search shortcuts
+#+BEGIN_SRC emacs-lisp
+  (general-def
+	:states '(normal motion insert emacs)
+	:prefix "SPC s"
+	:non-normal-prefix "M-SPC s"
+	:prefix-map 'ricky//search-prefix-map
+	"" '(:ignore t :which-key "search-prefix")
+	"s" 'helm-swoop
+	"r" 'helm-rg
+	"m" 'helm-multi-swoop-all
+	"c" 'helm-multi-swoop-current-mode)
+#+END_SRC
 * Project Management
 ** Projectile
    Project management for emacs
@@ -1042,11 +1063,10 @@
 	#+BEGIN_SRC emacs-lisp
 	  (use-package ccls
 		:straight t
-		:ensure-system-package((ccls . ccls))
+		:ensure-system-package((ccls . ccls-git))
 		:defer t
 		:init
 		  (setq ccls-executable "/usr/bin/ccls")
-		  (setq ccls-extra-args '("--log-file=/tmp/cq.log"))
 		  (setq ccls-cache-dir ".ccls-cache")
 		  (setq ccls-extra-init-params '(:index (:comments 2) :completion (:detailedLabel t)))
 		  (setq ccls-sem-highlight-method 'font-lock)
