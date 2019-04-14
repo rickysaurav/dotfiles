@@ -1,12 +1,14 @@
 # Created by newuser for 5.4.1
 cat /home/ricky_saurav/.cache/wal/sequences
+export TERMCMD=urxvtc
 export GOPATH=~/go
 export EDITOR="emacsclient -c -a \"\""
 export VISUAL=$EDITOR
 export ALTERNATE_EDITOR=nvim
-export PATH=/usr/bin/core_perl:$HOME/.rvm/bin:/usr/lib/w3m:$GOPATH/bin:$HOME/bin:$HOME/.local/bin:$PATH
+# export PATH=/usr/bin/core_perl:$HOME/.rvm/bin:/usr/lib/w3m:$GOPATH/bin:$HOME/bin:$HOME/.local/bin:$PATH
+export PATH=$HOME/.cargo/bin:$GOPATH/bin:$HOME/.local/bin:$PATH
 # export TERM=xterm-256color
-export TERM=eterm-color
+#export TERM=eterm-color
 export FZF_TMUX=1
 ulimit -s 524144
 
