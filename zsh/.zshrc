@@ -28,11 +28,8 @@ source ~/.zplug/init.zsh
 ####PLUGINS#####
 zplug "zsh-users/zsh-history-substring-search", defer:3
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
-zplug "arzzen/calc.plugin.zsh"
 zplug "b4b4r07/enhancd", use:init.sh
 zplug "zplug/zplug"
-zplug "plugins/pip", from:oh-my-zsh 
-zplug "plugins/npm", from:oh-my-zsh 
 
 ####THEMES######
 #zplug "themes/fino-time", from:oh-my-zsh, as:theme

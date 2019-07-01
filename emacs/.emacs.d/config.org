@@ -48,7 +48,7 @@
    (use-package exec-path-from-shell
      :if (or (daemonp) (memq window-system '(mac ns x)))
      :straight t
-     :defer 2
+     :defer 1
      :config
      (exec-path-from-shell-initialize))
    #+END_SRC
@@ -193,6 +193,14 @@
         :config
         (general-evil-setup))
     #+END_SRC
+** Hydra
+Transient keymaps library.
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :straight t
+    :defer t)
+#+END_SRC
+
 ** Which-key
    Display available keybindings in a popup
    #+BEGIN_SRC emacs-lisp
@@ -492,12 +500,12 @@
          (delete-other-windows))))
      #+END_SRC
 *** Config
-    Use <SPC-w> as evil window prefix along with <C-w>
+    Use <SPC-W> as evil window prefix along with <C-w>
     #+BEGIN_SRC emacs-lisp
      (general-def
        :states '(normal motion insert emacs)
-       :prefix "SPC w"
-       :non-normal-prefix "M-SPC w"
+       :prefix "SPC W"
+       :non-normal-prefix "M-SPC W"
        "" '(
             :keymap evil-window-map
             :package evil
@@ -506,6 +514,61 @@
        :keymaps 'evil-window-map
        "m" 'toggle-maximize-buffer)
     #+END_SRC
+** Window manipulation hydra 
+*** Hydra 
+#+BEGIN_SRC emacs-lisp 
+  (defhydra hydra-window (:color red
+                          :hint nil)
+    "
+   Split: _v_ert _s_:horz
+  Delete: _o_nly  _D_ace  _d_window
+    Move: _x_swap,_w_window-other
+    Misc: _a_ce _m_aximise
+    Open: _p_rojectile _b_helm-mini
+  "
+    ("h" windmove-left)
+    ("j" windmove-down)
+    ("k" windmove-up)
+    ("l" windmove-right)
+    ("H" hydra-move-splitter-left);fix move splitters
+    ("J" hydra-move-splitter-down)
+    ("K" hydra-move-splitter-up)
+    ("L" hydra-move-splitter-right)
+    ("v" (lambda ()
+           (interactive)
+           (split-window-right)
+           (windmove-right)))
+    ("s" (lambda ()
+           (interactive)
+           (split-window-below)
+           (windmove-down)))
+    ("w" other-window :exit t)
+    ("_" split-window-right)
+    ("|" split-window-below)
+    ("o" delete-other-windows :exit t)
+    ("a" ace-window :exit t)
+    ("x" ace-swap-window)
+    ("D" ace-delete-window)
+    ("d" delete-window)
+    ("m" toggle-maximize-buffer)
+    ("p" helm-projectile :exit t)
+    ("b" helm-mini :exit t)
+    ("q" nil))
+#+END_SRC
+*** Binding 
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra-examples
+    :straight hydra
+    :commands(hydra-move-splitter-left
+              hydra-move-splitter-down
+              hydra-move-splitter-up
+              hydra-move-splitter-right)
+    :general
+    (:states '(normal motion insert emacs)
+             :prefix "SPC w"
+             :non-normal-prefix "M-SPC w"
+             "" 'hydra-window/body))
+#+END_SRC
 ** Buffer manipulation
    Personal Spacemacs like buffer manipulation shortcuts
    #+BEGIN_SRC emacs-lisp
@@ -608,34 +671,50 @@
     2. Bind escape in projectile-mode-map to quit,to avoid getting stuck in
        mini-buffer.
     #+BEGIN_SRC emacs-lisp
-   (use-package projectile
-     :straight t
-     :straight helm-rg
-     :ensure-system-package
-     (rg . ripgrep)
-     :init
-     (setq projectile-enable-caching t
-           projectile-completion-system 'helm)
-     :diminish projectile-mode
-     :defer t
-     :ghook
-     ('prog-mode-hook #'projectile-mode)
-     :general
-     (:keymaps 'projectile-command-map
-               "<escape>" '(keyboard-quit :which-key "quit")
-               "ESC" nil)
-     (:keymaps '(normal motion insert emacs)
-               :prefix "SPC p"
-               :non-normal-prefix "M-SPC p"
-               "" '(:keymap projectile-command-map :package projectile :which-key "projectile-prefix"))
-     :config
-     (setq projectile-project-root-files-top-down-recurring
-           (append '("compile_commands.json"
-                     ".ccls"
-                     "Pipfile")
-                   projectile-project-root-files-top-down-recurring))
-     (setq projectile-globally-ignored-directories (append (list (expand-file-name "~/.local/share/virtualenvs") "/usr") projectile-globally-ignored-directories ))
-     (projectile-mode 1))
+      (use-package projectile
+        :straight t
+        :straight helm-rg
+        :ensure-system-package
+        (rg . ripgrep)
+        :init
+        (setq projectile-enable-caching t
+              projectile-completion-system 'helm)
+        :diminish projectile-mode
+        :defer t
+        :ghook
+        ('prog-mode-hook #'projectile-mode)
+        :general
+        (:keymaps 'projectile-command-map
+                  "<escape>" '(keyboard-quit :which-key "quit")
+                  "ESC" nil)
+        (:keymaps '(normal motion insert emacs)
+                  :prefix "SPC p"
+                  :non-normal-prefix "M-SPC p"
+                  "" '(:keymap projectile-command-map :package projectile :which-key "projectile-prefix"))
+        :config
+        (setq projectile-project-root-files-top-down-recurring
+              (append '("compile_commands.json"
+                        ".ccls"
+                        "Pipfile")
+                      projectile-project-root-files-top-down-recurring))
+        (setq projectile-globally-ignored-directories (append (list (expand-file-name "~/.local/share/virtualenvs") "/usr") projectile-globally-ignored-directories ))
+        (projectile-mode 1))
+    #+END_SRC
+    3. helm-rg 
+    #+BEGIN_SRC emacs-lisp
+      (use-package helm-rg
+        :straight t
+        :commands helm-rg
+        :init
+        (setq helm-rg-default-directory 'projectile-root)
+        :config
+        (defun helm-rg--interpret-starting-dir (default-directory-spec)
+          (pcase-exhaustive default-directory-spec
+            ('projectile-root (projectile-project-root))
+            ('default default-directory)
+            ('git-root (helm-rg--get-git-root))
+            ;; TODO: add a test for this function for all values of the directory spec (see #5)!
+            ((pred stringp) (helm-rg--check-directory-path default-directory-spec)))) )
     #+END_SRC
 ** Helm-projectile
    Helm interface for projectile
@@ -846,6 +925,9 @@
       (use-package hungry-delete
         :straight t
         :diminish hungry-delete-mode
+        :general 
+        (:states '(insert)
+                 [remap delete-backward-char] 'hungry-delete-backward)
         :config
         (defadvice hungry-delete-backward (before sp-delete-pair-advice activate) (save-match-data (sp-delete-pair (ad-get-arg 0))))
         (global-hungry-delete-mode 1))
@@ -890,32 +972,34 @@
 *** Config
     Override multi-compile-run to run commands in interactive compile mode buffer.
     #+BEGIN_SRC emacs-lisp
-     (use-package multi-compile
-       :straight t
-       :general
-       (:states '(normal motion)
-        :prefix "SPC c"
-        "r" 'multi-compile-run
+      (use-package multi-compile
+        :straight t
+        :general
+        (:states '(normal motion)
+         :prefix "SPC c"
+         "r" 'multi-compile-run
+         )
+        :init
+        (setq multi-compile-completion-system 'helm)
+        (setq multi-compile-alist '(
+              (c++-mode . (("c++-thread_run" . "g++ %file-name -pthread -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")
+                           ("c++-run" . "g++ %file-name -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")))
+              (rust-mode . (("build" . "cargo build")
+                           ("run" . "cargo run")))
+              (java-mode . (("java-maven-exec" "mvn exec:java -q -Dexec.mainClass=\"%cname\"" (multi-compile-locate-file-dir "pom.xml"))))
+              ))
+        :config
+        (add-to-list 'multi-compile-template
+          '("%cname" . (ricky//get-fully-qualified-class-name)))
+        (defun multi-compile-run ()
+          "Choice target and start compile."
+          (interactive)
+          (let* ((template (multi-compile--get-command-template))
+                 (command (or (car-safe template) template))
+                 (default-directory (if (listp template) (eval-expression (cadr template)) default-directory)))
+            (compilation-start
+             (multi-compile--fill-template command) t)))
         )
-       :init
-       (setq multi-compile-completion-system 'helm)
-       (setq multi-compile-alist '(
-             (c++-mode . (("c++-thread_run" . "g++ %file-name -pthread -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")
-                          ("c++-run" . "g++ %file-name -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")))
-             (java-mode . (("java-maven-exec" "mvn exec:java -q -Dexec.mainClass=\"%cname\"" (multi-compile-locate-file-dir "pom.xml"))))
-             ))
-       :config
-       (add-to-list 'multi-compile-template
-         '("%cname" . (ricky//get-fully-qualified-class-name)))
-       (defun multi-compile-run ()
-         "Choice target and start compile."
-         (interactive)
-         (let* ((template (multi-compile--get-command-template))
-                (command (or (car-safe template) template))
-                (default-directory (if (listp template) (eval-expression (cadr template)) default-directory)))
-           (compilation-start
-            (multi-compile--fill-template command) t)))
-       )
     #+END_SRC
 
 ** Format-all
@@ -940,9 +1024,38 @@
 ** Reveal.js
    #+BEGIN_SRC emacs-lisp
       (use-package ox-reveal
-        :straight (:host github :repo "emacsmirror/ox-reveal")
+        :straight t
         :defer t)
    #+END_SRC
+* Terminal 
+** Vterm 
+VTE emulation in emacs 
+#+BEGIN_SRC emacs-lisp
+  (use-package vterm
+    :straight t
+    :commands vterm
+    :custom (vterm-install t)
+    :config
+    (defun vterm-send-return ()
+      "Sends C-m to the libvterm."
+      (interactive)
+      (process-send-string vterm--process "\C-m")) 
+    (defun vterm-send-backtab()
+      "Sends backtab to libvterm"
+      (interactive)
+      (when vterm--term
+        (let ((inhibit-redisplay t)
+              (inhibit-read-only t))
+          (vterm--update vterm--term "<tab>" t nil nil))))
+    (define-key vterm-mode-map [return]  #'vterm-send-return)
+    (define-key vterm-mode-map [backtab]  #'vterm-send-backtab)
+    (evil-set-initial-state 'vterm-mode 'emacs)
+    :general
+    (:states '(normal motion insert emacs)
+             :prefix "SPC RET"
+             :non-normal-prefix "M-SPC RET"
+             "" 'vterm-other-window))
+#+END_SRC
 * Misc
 ** Sudo-edit
    Tramp wrapper to edit files as root
@@ -1020,32 +1133,29 @@
 ** LSP-Mode
    Language Server Client for Emacs
    #+BEGIN_SRC emacs-lisp
-   (use-package lsp-mode
-     :straight t
-     :defer t
-     :commands lsp
-     :general
-     (:states '(normal motion insert emacs)
-              :keymaps 'lsp-mode-map
-              :prefix "SPC l"
-              :non-normal-prefix "M-SPC l"
-              "" '(:ignore t :which-key "lsp-prefix")
-              "d" '(xref-find-definitions :which-key "definitions")
-              "r" '(xref-find-references :which-key "references")
-              "R" '(lsp-rename :which-key "rename var")
-              "e" '(lsp-ui-flycheck-list :which-key "errors")
-              "s" '(lsp-ui-imenu :which-key "lsp-imenu")
-              "i" '(helm-imenu :which-key "helm-imenu")
-              "p" '(xref-pop-marker-stack :which-key "pop-definition-stack")
-              "w" '(lsp-ui-peek-find-workspace-symbol :which-key "workspace-symbol")
-              ;; "." '(lsp-ui-sideline-apply-code-actions :which-key "code-action")
-              "." '(lsp-execute-code-action :which-key "code-action")
-              "l" '(lsp-restart-workspace :which-key "restart lsp")
-              )
-
-     :init
-     (setq lsp-inhibit-message t)
-     (setq lsp-prefer-flymake nil))
+     (use-package lsp-mode
+       :straight t
+       :defer t
+       :commands lsp
+       :general
+       (:states '(normal motion insert emacs)
+                :keymaps 'lsp-mode-map
+                :prefix "SPC l"
+                :non-normal-prefix "M-SPC l"
+                "" '(:ignore t :which-key "lsp-prefix")
+                "d" '(xref-find-definitions :which-key "definitions")
+                "r" '(xref-find-references :which-key "references")
+                "R" '(lsp-rename :which-key "rename var")
+                "i" '(helm-imenu :which-key "helm-imenu")
+                "f" '(lsp-format-buffer :which-key "format buffer")
+                "p" '(xref-pop-marker-stack :which-key "pop-definition-stack")
+                "." '(lsp-execute-code-action :which-key "code-action")
+                "l" '(lsp-workspace-restart :which-key "restart lsp")
+                )
+       :init
+       (setq lsp-inhibit-message t)
+       (setq lsp-prefer-flymake nil) 
+       (setq lsp-eldoc-enable-hover t))
    #+END_SRC
 ** DAP-Mode
    #+BEGIN_SRC emacs-lisp
@@ -1082,11 +1192,7 @@
               :keymaps 'lsp-ui-mode-map
               :prefix "SPC l"
               :non-normal-prefix "M-SPC l"
-              "e" '(lsp-ui-flycheck-list :which-key "errors")
               "s" '(lsp-ui-imenu :which-key "lsp-imenu")
-              "p" '(xref-pop-marker-stack :which-key "pop-definition-stack")
-              "w" '(lsp-ui-peek-find-workspace-symbol :which-key "workspace-symbol")
-              "." '(lsp-ui-sideline-apply-code-actions :which-key "code-action")
               )
      :init
      (setq lsp-ui-doc-max-height 7
@@ -1103,6 +1209,35 @@
      :defer t
      :commands company-lsp)
    #+END_SRC
+** Lsp utils
+*** Helm LSP 
+    #+BEGIN_SRC emacs-lisp
+      (use-package helm-lsp
+          :straight t
+          :defer t
+          :commands helm-lsp-workspace-symbol
+          :general
+          (:states '(normal motion insert emacs)
+                  :keymaps 'lsp-mode-map
+                  :prefix "SPC l"
+                  :non-normal-prefix "M-SPC l"
+                  "w" '(helm-lsp-workspace-symbol :which-key "workspace-symbol")
+                  )
+          )
+    #+END_SRC
+*** LSP treemacs 
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-treemacs
+    :straight t
+    :after (lsp-mode)
+    :commands lsp-treemacs-errors-list
+    :general
+    (:states '(normal motion insert emacs)
+             :keymaps 'lsp-mode-map
+             :prefix "SPC l"
+             :non-normal-prefix "M-SPC l"
+             "e" '(lsp-treemacs-errors-list :which-key "error-list")))
+#+END_SRC
 ** C-family
 *** Lsp-ccls
     #+BEGIN_SRC emacs-lisp
@@ -1142,8 +1277,6 @@
       :init
         (setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
               lsp-ui-sideline-update-mode 'point
-              lsp-java-format-settings-url (expand-file-name "~/Downloads/java-google-style-formatter.xml")
-              lsp-java-format-settings-profile "GoogleStyle"
               lsp-java-favorite-static-members '( "java.util.stream.Collectors.*" "org.junit.Assert.*" "org.junit.Assume.*" "org.junit.jupiter.api.Assertions.*" "org.junit.jupiter.api.Assumptions.*" "org.junit.jupiter.api.DynamicContainer.*" "org.junit.jupiter.api.DynamicTest.*"))
       (defun ricky//get-java-package-name ()
         "get package name for the current buffer"
@@ -1165,13 +1298,6 @@
        :straight dap-mode
        :after lsp-java)
     #+END_SRC
-*** Lsp-java-treemacs
-    treemacs project explorer support java
-    #+BEGIN_SRC emacs-lisp
-      (use-package lsp-java-treemacs
-        :straight lsp-java
-        :after (treemacs lsp-java))
-    #+END_SRC
 ** Python
 *** Pipenv
     #+BEGIN_SRC emacs-lisp
@@ -1183,8 +1309,7 @@
 *** Lsp-ms-python
     #+BEGIN_SRC emacs-lisp
       (use-package lsp-python-ms
-        :straight (:host github :repo "andrew-christianson/lsp-python-ms")
-        :ensure-system-package ((mspyls . microsoft-python-language-server))
+        :straight t
         :defer t
         :config
         (setq lsp-python-ms-executable
