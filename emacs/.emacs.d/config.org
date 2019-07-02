@@ -514,9 +514,9 @@ Transient keymaps library.
        :keymaps 'evil-window-map
        "m" 'toggle-maximize-buffer)
     #+END_SRC
-** Window manipulation hydra 
-*** Hydra 
-#+BEGIN_SRC emacs-lisp 
+** Window manipulation hydra
+*** Hydra
+#+BEGIN_SRC emacs-lisp
   (defhydra hydra-window (:color red
                           :hint nil)
     "
@@ -555,7 +555,7 @@ Transient keymaps library.
     ("b" helm-mini :exit t)
     ("q" nil))
 #+END_SRC
-*** Binding 
+*** Binding
 #+BEGIN_SRC emacs-lisp
   (use-package hydra-examples
     :straight hydra
@@ -700,7 +700,7 @@ Transient keymaps library.
         (setq projectile-globally-ignored-directories (append (list (expand-file-name "~/.local/share/virtualenvs") "/usr") projectile-globally-ignored-directories ))
         (projectile-mode 1))
     #+END_SRC
-    3. helm-rg 
+    3. helm-rg
     #+BEGIN_SRC emacs-lisp
       (use-package helm-rg
         :straight t
@@ -925,7 +925,7 @@ Transient keymaps library.
       (use-package hungry-delete
         :straight t
         :diminish hungry-delete-mode
-        :general 
+        :general
         (:states '(insert)
                  [remap delete-backward-char] 'hungry-delete-backward)
         :config
@@ -1027,9 +1027,9 @@ Transient keymaps library.
         :straight t
         :defer t)
    #+END_SRC
-* Terminal 
-** Vterm 
-VTE emulation in emacs 
+* Terminal
+** Vterm
+VTE emulation in emacs
 #+BEGIN_SRC emacs-lisp
   (use-package vterm
     :straight t
@@ -1039,7 +1039,7 @@ VTE emulation in emacs
     (defun vterm-send-return ()
       "Sends C-m to the libvterm."
       (interactive)
-      (process-send-string vterm--process "\C-m")) 
+      (process-send-string vterm--process "\C-m"))
     (defun vterm-send-backtab()
       "Sends backtab to libvterm"
       (interactive)
@@ -1129,6 +1129,49 @@ VTE emulation in emacs
        "<escape>" 'transient-quit-one)
      (general-unbind '(magit-mode-map magit-diff-mode-map) "SPC"))
    #+END_SRC
+** Smerge mode hydra
+#+BEGIN_SRC emacs-lisp
+  (use-package smerge-mode
+    :after hydra
+    :config
+    (defhydra smerge-hydra
+      (:color pink :hint nil :post (smerge-auto-leave))
+      "
+  ^Move^       ^Keep^               ^Diff^                 ^Other^
+  ^^-----------^^-------------------^^---------------------^^-------
+  _n_ext       _b_ase               _<_: upper/base        _C_ombine
+  _p_rev       _u_pper              _=_: upper/lower       _r_esolve
+  ^^           _l_ower              _>_: base/lower        _k_ill current
+  ^^           _a_ll                _R_efine
+  ^^           _RET_: current       _E_diff
+  "
+      ("n" smerge-next)
+      ("p" smerge-prev)
+      ("b" smerge-keep-base)
+      ("u" smerge-keep-upper)
+      ("l" smerge-keep-lower)
+      ("a" smerge-keep-all)
+      ("RET" smerge-keep-current)
+      ("\C-m" smerge-keep-current)
+      ("<" smerge-diff-base-upper)
+      ("=" smerge-diff-upper-lower)
+      (">" smerge-diff-base-lower)
+      ("R" smerge-refine)
+      ("E" smerge-ediff)
+      ("C" smerge-combine-with-next)
+      ("r" smerge-resolve)
+      ("k" smerge-kill-current)
+      ("ZZ" (lambda ()
+              (interactive)
+              (save-buffer)
+              (bury-buffer))
+       "Save and bury buffer" :color blue)
+      ("q" nil "cancel" :color blue))
+    :hook (magit-diff-visit-file . (lambda ()
+                                     (when smerge-mode
+                                       (unpackaged/smerge-hydra/body)))))
+
+#+END_SRC
 * Language Tools
 ** LSP-Mode
    Language Server Client for Emacs
@@ -1154,7 +1197,7 @@ VTE emulation in emacs
                 )
        :init
        (setq lsp-inhibit-message t)
-       (setq lsp-prefer-flymake nil) 
+       (setq lsp-prefer-flymake nil)
        (setq lsp-eldoc-enable-hover t))
    #+END_SRC
 ** DAP-Mode
@@ -1210,7 +1253,7 @@ VTE emulation in emacs
      :commands company-lsp)
    #+END_SRC
 ** Lsp utils
-*** Helm LSP 
+*** Helm LSP
     #+BEGIN_SRC emacs-lisp
       (use-package helm-lsp
           :straight t
@@ -1225,7 +1268,7 @@ VTE emulation in emacs
                   )
           )
     #+END_SRC
-*** LSP treemacs 
+*** LSP treemacs
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-treemacs
     :straight t
