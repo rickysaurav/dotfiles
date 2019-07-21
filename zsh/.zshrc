@@ -37,8 +37,10 @@ zplug "zplug/zplug"
 #zplug "zakaziko99/agnosterzak-ohmyzsh-theme", use:agnosterzak.zsh-theme
 #zplug mafredri/zsh-async, from:github
 #zplug sindresorhus/pure, use:pure.zsh, from:github, as:theme
-#zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
-zplug "denysdovhan/spaceship-prompt", use:spaceship.zsh, from:github, as:theme
+# zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
+# zplug "denysdovhan/spaceship-prompt", use:spaceship.zsh, from:github, as:theme
+zplug "romkatv/powerlevel10k", use:config/p10k-pure.zsh 
+zplug "romkatv/powerlevel10k", use:powerlevel10k.zsh-theme
 
 # Install packages that have not been installed yet
 if ! zplug check --verbose; then
@@ -51,19 +53,19 @@ if ! zplug check --verbose; then
 fi
 
 #####POWERLEVEL9K THEME SETTINGS####
-POWERLEVEL9K_MODE='nerdfont-complete'
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir dir_writable virtualenv vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status background_jobs battery time)
-POWERLEVEL9K_TIME_FORMAT='%D{%H:%M}'
-POWERLEVEL9K_USER_ICON="\uF415" # 
-POWERLEVEL9K_ROOT_ICON="#"
-POWERLEVEL9K_BATTERY_STAGES="▁▂▃▄▅▆▇█"
+# POWERLEVEL9K_MODE='nerdfont-complete'
+# POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir dir_writable virtualenv vcs)
+# POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status background_jobs battery time)
+# POWERLEVEL9K_TIME_FORMAT='%D{%H:%M}'
+# POWERLEVEL9K_USER_ICON="\uF415" # 
+# POWERLEVEL9K_ROOT_ICON="#"
+# POWERLEVEL9K_BATTERY_STAGES="▁▂▃▄▅▆▇█"
 
 #####SPACESHIP-PROMPT THEME SETTINGS####
-SPACESHIP_TIME_SHOW='true'
-SPACESHIP_BATTERY_SHOW='always'
-SPACESHIP_BATTERY_THRESHOLD=90
-SPACESHIP_TIME_FORMAT='%D{%H:%M}'
+# SPACESHIP_TIME_SHOW='true'
+# SPACESHIP_BATTERY_SHOW='always'
+# SPACESHIP_BATTERY_THRESHOLD=90
+# SPACESHIP_TIME_FORMAT='%D{%H:%M}'
 
 #####LOAD ######
 zplug load
