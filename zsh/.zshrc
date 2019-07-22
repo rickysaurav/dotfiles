@@ -21,7 +21,7 @@ if [[ ! -d ~/.zplug ]]; then
 fi
 
 ####source  oh-my-zsh  and zplug ######
-export ZSH=~/.zplug/repos/robbyrussell/oh-my-zsh 
+export ZSH=~/.zplug/repos/robbyrussell/oh-my-zsh
 source $ZSH/oh-my-zsh.sh
 source ~/.zplug/init.zsh
 
@@ -32,14 +32,11 @@ zplug "b4b4r07/enhancd", use:init.sh
 zplug "zplug/zplug"
 
 ####THEMES######
-#zplug "themes/fino-time", from:oh-my-zsh, as:theme
-#zplug "mashaal/wild-cherry", use:zsh/wild-cherry.zsh-theme
-#zplug "zakaziko99/agnosterzak-ohmyzsh-theme", use:agnosterzak.zsh-theme
-#zplug mafredri/zsh-async, from:github
-#zplug sindresorhus/pure, use:pure.zsh, from:github, as:theme
-# zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
-# zplug "denysdovhan/spaceship-prompt", use:spaceship.zsh, from:github, as:theme
-zplug "romkatv/powerlevel10k", use:config/p10k-pure.zsh 
+if [ -f ~/p10k-config.zsh ]; then
+    source ~/p10k-config.zsh
+else
+    zplug "romkatv/powerlevel10k", use:config/p10k-pure.zsh
+fi
 zplug "romkatv/powerlevel10k", use:powerlevel10k.zsh-theme
 
 # Install packages that have not been installed yet
@@ -78,7 +75,7 @@ if zplug check b4b4r07/enhancd; then
     # setting if enhancd is available
     export ENHANCD_FILTER=fzf
 fi
- 
+
 bindkey -M emacs '^P' history-substring-search-up
 bindkey -M emacs '^N' history-substring-search-down
 # tm - create new tmux session, or switch to existing one. Works from within tmux too. (@bag-man)
@@ -86,7 +83,7 @@ bindkey -M emacs '^N' history-substring-search-down
 # `tm irc` will attach to the irc session (if it exists), else it will create it.
 tm() {
   [[ -n "$TMUX" ]] && change="switch-client" || change="attach-session"
-  if [ $1 ]; then 
+  if [ $1 ]; then
     tmux $change -t "$1" 2>/dev/null || (tmux new-session -d -s $1 && tmux $change -t "$1"); return
   fi
   session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --exit-0) &&  tmux $change -t "$session" || echo "No sessions found."
