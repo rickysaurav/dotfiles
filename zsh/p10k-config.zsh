@@ -379,6 +379,8 @@ fi
   typeset -g POWERLEVEL9K_BATTERY_CHARGED_{CONTENT,VISUAL_IDENTIFIER}_EXPANSION=
   # Don't show the remaining time to charge/discharge.
   typeset -g POWERLEVEL9K_BATTERY_VERBOSE=false
+  # Don't show icon over threshold
+  typeset -g POWERLEVEL9K_BATTERY_HIDE_ABOVE_THRESHOLD=50
 
   # Current time color.
   typeset -g POWERLEVEL9K_TIME_FOREGROUND=66

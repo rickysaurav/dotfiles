@@ -1,6 +1,6 @@
 # Created by newuser for 5.4.1
 cat /home/ricky_saurav/.cache/wal/sequences
-export TERMCMD=urxvtc
+export TERMCMD=alacritty
 export GOPATH=~/go
 export EDITOR="emacsclient -c -a \"\""
 export VISUAL=$EDITOR
@@ -21,8 +21,8 @@ if [[ ! -d ~/.zplug ]]; then
 fi
 
 ####source  oh-my-zsh  and zplug ######
-export ZSH=~/.zplug/repos/robbyrussell/oh-my-zsh
-source $ZSH/oh-my-zsh.sh
+# export ZSH=~/.zplug/repos/robbyrussell/oh-my-zsh
+# source $ZSH/oh-my-zsh.sh
 source ~/.zplug/init.zsh
 
 ####PLUGINS#####

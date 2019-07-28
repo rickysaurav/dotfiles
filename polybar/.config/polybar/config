@@ -30,8 +30,8 @@ xcolor15 = ${xrdb:color15}
 ;monitor = eDP-1
 monitor = ${env:MONITOR:} 
 width = 100% 
-height = 3.4%
-border-bottom-size = 5%
+height = 3.0%
+border-bottom-size = 0.2%
 border-bottom-color = ${colors.background-alt}
 background = ${colors.background}
 foreground = ${colors.foreground}
@@ -48,7 +48,7 @@ font-2 = MaterialIcons:size=14;+2
 font-0 = FontAwesome:size=13;+0
 font-1 = "Iosevka Nerd Font:size=13;+0"
 modules-left = powermenu i3
-modules-center = music mpd
+modules-center = music
 modules-right =  memory cpu volume backlight wireless-network wired-network battery date
 ; tray-position = right
 
