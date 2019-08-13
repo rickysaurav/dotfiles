@@ -96,6 +96,11 @@
    #+BEGIN_SRC emacs-lisp
       (setq-default display-line-numbers 'relative)
    #+END_SRC
+** Fringe
+   #+begin_src emacs-lisp
+     ;;adding hook due to daemon mode
+     (add-hook 'after-init-hook (lambda () (set-fringe-mode 0)))
+   #+end_src
 ** Autosave and Backups
    Save to existing file name(no swapfiles or backups),lower character inputs
    and idle time limits before autosave.
@@ -1300,11 +1305,13 @@ VTE emulation in emacs
     #+END_SRC
 *** DAP-GDB/LLDB
     #+BEGIN_SRC emacs-lisp
-     (use-package dap-gdb-lldb
-       :straight dap-mode
-       :after dap-mode
-       :init
-       (setq dap-gdb-lldb-path "~/dap-servers/webfreak.debug-0.22.0/"))
+      (use-package dap-gdb-lldb
+        :straight dap-mode
+        :after dap-mode
+        :config
+        (dap-gdb-lldb-setup))
+      ;; :init
+      ;; (setq dap-gdb-lldb-path "~/dap-servers/webfreak.debug-0.22.0/"))
     #+END_SRC
 
 ** Java

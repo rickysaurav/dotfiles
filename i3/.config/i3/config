@@ -251,7 +251,7 @@ set_from_resource $bg i3wm.color0 #f0f0f0
 client.focused          $bg     $bg     $fg  $bg       $bg
 client.focused_inactive $bg     $bg     $fg  $bg       $bg
 client.unfocused        $bg     $bg     $fg  $bg       $bg
-client.urgent           $bg     $bg     $fg  $bg       $jg
+client.urgent           $bg     $bg     $fg  $bg       $bg
 client.placeholder      $bg     $bg     $fg  $bg       $bg
 
 client.background       $bg
@@ -285,6 +285,9 @@ for_window [class="Pavucontrol"] floating enable
 for_window [class="Lxappearance"] floating enable
 
 ####shortcuts#####
+#workspace switch
+bindsym $mod+p workspace prev
+bindsym $mod+n workspace next
 #bindsym $mod+Shift+x exec $HOME/.config/i3/my_lock.sh
 bindsym $mod+Shift+x exec i3lock-fancy
 bindsym $mod+Shift+w exec networkmanager_dmenu
@@ -295,6 +298,7 @@ bindsym $mod+c exec rofi -rofi -modi "clipboard:greenclip print" -show clipboard
 bindsym $mod+t split toggle
 bindsym Print	exec --no-startup-id scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
 bindsym $mod+shift+s exec i3-msg move workspace to output right
+bindsym $mod+shift+p exec polybar-msg cmd restart
 bindsym Shift+Print exec --no-startup-id scrot -u '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
 #bindsym $mod+Insert exec $screencast
 #bindsym $mod+Delete exec $stoprec

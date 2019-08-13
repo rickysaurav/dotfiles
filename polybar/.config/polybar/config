@@ -27,6 +27,7 @@ xcolor15 = ${xrdb:color15}
 
 
 [bar/top]
+enable-ipc = true
 ;monitor = eDP-1
 monitor = ${env:MONITOR:} 
 width = 100% 
@@ -96,7 +97,7 @@ bar-empty-foreground = ${colors.empty}
 
 [module/battery]
 type = internal/battery
-full-at = 98
+full-at =100
 
 format-charging = <animation-charging> <label-charging>
 format-discharging = <ramp-capacity> <label-discharging>
@@ -155,7 +156,7 @@ ws-icon-0 = "1;"
 ws-icon-1 = "2;"
 ws-icon-2 = "3;"
 ws-icon-3 = "4;"
-ws-icon-4 = "5;"
+ws-icon-4 = "5;"
 ws-icon-5 = "6;"
 ws-icon-6 = "7;"
 ws-icon-7 = "8;"
@@ -302,11 +303,11 @@ label-connected =    %{T3}%local_ip%%{T-}
 label-disconnected-foreground = #66
 
 [module/volume]
-type = internal/volume
-master-soundcard = default
-speaker-soundcard = default
-headphone-soundcard = default
-master-mixer = Master
+type = internal/pulseaudio
+;master-soundcard = default
+;speaker-soundcard = default
+;headphone-soundcard = default
+;master-mixer = Master
 ;speaker-mixer = Speaker
 ;headphone-mixer = Headphone
 ;headphone-id = 9
