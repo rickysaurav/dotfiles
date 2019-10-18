@@ -731,7 +731,7 @@ Transient keymaps library.
         (defun ricky//helm-rg-directory ()
           "function for using helm rg in a directory"
           (interactive)
-          (let* ((ricky//rg-start-directory-name (if (projectile-project-p)(projectile-project-root)(expand-file-name "~")))
+          (let* ((ricky//rg-start-directory-name (if (projectile-project-p)(projectile-project-root) default-directory ))
                  (helm-rg--current-dir (read-directory-name "rg-directory : " ricky//rg-start-directory-name)))
             (helm-rg "")))
         (general-add-advice 'helm-projectile-rg :around #'ricky//helm-projectile-rg-advice))
