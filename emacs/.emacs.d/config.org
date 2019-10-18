@@ -91,6 +91,18 @@
          :defer t
          :after (system-packages use-package ))
    #+END_SRC
+** Autocompile
+#+BEGIN_SRC emacs-lisp
+  (use-package auto-compile
+    :straight t
+    :demand t
+    :init
+    (setq auto-compile-display-buffer nil)
+    (setq load-prefer-newer t)
+    :config
+    (auto-compile-on-load-mode)
+    (auto-compile-on-save-mode))
+#+END_SRC
 * Personal Config Tweaks
 ** Line-numbers
    #+BEGIN_SRC emacs-lisp
@@ -555,7 +567,7 @@ Transient keymaps library.
     ("x" ace-swap-window)
     ("D" ace-delete-window)
     ("d" delete-window)
-    ("m" toggle-maximize-buffer)
+    ("m" toggle-maximize-buffer :exit t)
     ("p" helm-projectile :exit t)
     ("b" helm-mini :exit t)
     ("q" nil))
@@ -664,6 +676,7 @@ Transient keymaps library.
     "" '(:ignore t :which-key "search-prefix")
     "s" 'helm-swoop
     "r" 'helm-rg
+    "d" 'ricky//helm-rg-directory
     "m" 'helm-multi-swoop-all
     "c" 'helm-multi-swoop-current-mode)
    #+END_SRC
@@ -709,17 +722,19 @@ Transient keymaps library.
     #+BEGIN_SRC emacs-lisp
       (use-package helm-rg
         :straight t
-        :commands helm-rg
+        :commands (helm-rg ricky//helm-rg-directory)
         :init
-        (setq helm-rg-default-directory 'projectile-root)
-        :config
-        (defun helm-rg--interpret-starting-dir (default-directory-spec)
-          (pcase-exhaustive default-directory-spec
-            ('projectile-root (projectile-project-root))
-            ('default default-directory)
-            ('git-root (helm-rg--get-git-root))
-            ;; TODO: add a test for this function for all values of the directory spec (see #5)!
-            ((pred stringp) (helm-rg--check-directory-path default-directory-spec)))) )
+        (defun ricky//helm-projectile-rg-advice (old-fun &rest args)
+          "improve helm projectile rg inside project deep directories"
+            (let ((helm-rg--current-dir (projectile-project-root)))
+            (apply old-fun args)))
+        (defun ricky//helm-rg-directory ()
+          "function for using helm rg in a directory"
+          (interactive)
+          (let* ((ricky//rg-start-directory-name (if (projectile-project-p)(projectile-project-root)(expand-file-name "~")))
+                 (helm-rg--current-dir (read-directory-name "rg-directory : " ricky//rg-start-directory-name)))
+            (helm-rg "")))
+        (general-add-advice 'helm-projectile-rg :around #'ricky//helm-projectile-rg-advice))
     #+END_SRC
 ** Helm-projectile
    Helm interface for projectile
