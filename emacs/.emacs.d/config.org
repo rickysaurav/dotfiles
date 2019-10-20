@@ -214,6 +214,8 @@
 Transient keymaps library.
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
+    :init
+    (setq  hydra-hint-display-type 'posframe)
     :straight t
     :defer t)
 #+END_SRC
@@ -282,6 +284,7 @@ Transient keymaps library.
    #+BEGIN_SRC emacs-lisp
       (use-package evil-surround
         :straight t
+        :defer t
         :after evil
         :ghook
         ('prog-mode-hook #'evil-surround-mode 1))
@@ -471,15 +474,19 @@ Transient keymaps library.
 ** Helm-swoop
    Buffer Search utility using helm
    #+BEGIN_SRC emacs-lisp
-  (use-package helm-swoop
-    :straight t
-    :after helm
-    :defer t
-    :general
-    (
-     :keymaps  '(helm-swoop-map)
-     "M-i" 'helm-multi-swoop-all-from-helm-swoop
-     "M-m" 'helm-multi-swoop-current-mode-from-helm-swoop))
+     (use-package helm-swoop
+       :straight t
+       :after helm
+       :defer t
+       :general
+       (
+        :keymaps  '(helm-swoop-map)
+        "M-i" 'helm-multi-swoop-all-from-helm-swoop
+        "M-m" 'helm-multi-swoop-current-mode-from-helm-swoop)
+       (:keymaps 'ricky//search-prefix-map
+         "s" 'helm-swoop
+         "m" 'helm-multi-swoop-all
+         "c" 'helm-multi-swoop-current-mode))
    #+END_SRC
 ** Diminish
    Reduce modeline clutter by diminishing minor modes
@@ -496,10 +503,48 @@ Transient keymaps library.
    #+END_SRC
 ** Hide-mode-line
    #+BEGIN_SRC emacs-lisp
-       (use-package hide-mode-line
-         :straight t
-         :commands hide-mode-line-mode)
+     (use-package hide-mode-line
+       :straight t
+       :commands hide-mode-line-mode
+       :general
+       (:keymaps 'ricky//toggle-prefix-map
+                 "l" 'hide-mode-line-mode))
    #+END_SRC
+** Posframe packages
+*** Flycheck-posframe
+   Dispaly flycheck errors in childframe(requires emacs 26).
+   #+BEGIN_SRC emacs-lisp
+   (use-package flycheck-posframe
+     :straight t
+     :after flycheck
+     :ghook
+     ('flycheck-mode-hook #'flycheck-posframe-mode))
+   #+END_SRC
+*** Helm-posframe
+#+begin_src emacs-lisp
+  (use-package helm-posframe
+    :straight t
+    :after helm
+    :config
+    (helm-posframe-enable))
+#+end_src
+*** Which-key-posframe 
+    #+BEGIN_SRC emacs-lisp
+      (use-package which-key-posframe
+        :straight t
+        :config
+        (which-key-posframe-mode))
+    #+END_SRC
+*** Company-box 
+#+BEGIN_SRC emacs-lisp 
+  (use-package company-box
+    :straight t
+    :general
+    (
+     :keymaps 'company-box-mode-map
+          [remap company-select-next-if-tooltip-visible-or-complete-selection] 'company-box--next-line)
+    :ghook ('company-mode-hook  #'company-box-mode))
+#+END_SRC
 * Keybindings
 ** Window manipulation
 *** Toggle maximize
@@ -663,7 +708,7 @@ Transient keymaps library.
      "f" 'toggle-frame-fullscreen
      "s" 'toggle-scroll-bar
      "t" 'toggle-tool-bar-mode-from-frame
-     "l" 'hide-mode-line-mode
+     ;; "l" 'hide-mode-line-mode
      "c" 'load-theme)
    #+END_SRC
 ** Search shortcuts
@@ -673,13 +718,9 @@ Transient keymaps library.
     :prefix "SPC s"
     :non-normal-prefix "M-SPC s"
     :prefix-map 'ricky//search-prefix-map
-    "" '(:ignore t :which-key "search-prefix")
-    "s" 'helm-swoop
-    "r" 'helm-rg
-    "d" 'ricky//helm-rg-directory
-    "m" 'helm-multi-swoop-all
-    "c" 'helm-multi-swoop-current-mode)
+    "" '(:ignore t :which-key "search-prefix"))
    #+END_SRC
+
 * Project Management
 ** Projectile
    Project management for emacs
@@ -726,7 +767,7 @@ Transient keymaps library.
         :init
         (defun ricky//helm-projectile-rg-advice (old-fun &rest args)
           "improve helm projectile rg inside project deep directories"
-            (let ((helm-rg--current-dir (projectile-project-root)))
+          (let ((helm-rg--current-dir (projectile-project-root)))
             (apply old-fun args)))
         (defun ricky//helm-rg-directory ()
           "function for using helm rg in a directory"
@@ -734,7 +775,11 @@ Transient keymaps library.
           (let* ((ricky//rg-start-directory-name (if (projectile-project-p)(projectile-project-root) default-directory ))
                  (helm-rg--current-dir (read-directory-name "rg-directory : " ricky//rg-start-directory-name)))
             (helm-rg "")))
-        (general-add-advice 'helm-projectile-rg :around #'ricky//helm-projectile-rg-advice))
+        (general-add-advice 'helm-projectile-rg :around #'ricky//helm-projectile-rg-advice)
+        :general
+        (:keymaps 'ricky//search-prefix-map
+                  "r" 'helm-rg
+                  "d" 'ricky//helm-rg-directory        ))
     #+END_SRC
 ** Helm-projectile
    Helm interface for projectile
@@ -824,15 +869,6 @@ Transient keymaps library.
      ('prog-mode-hook #'flycheck-mode)
      )
     #+END_SRC
-** Flycheck-posframe
-   Dispaly flycheck errors in childframe(requires emacs 26).
-   #+BEGIN_SRC emacs-lisp
-   (use-package flycheck-posframe
-     :straight t
-     :after flycheck
-     :ghook
-     ('flycheck-mode-hook #'flycheck-posframe-mode))
-   #+END_SRC
 * Completion
 ** Company
    Code completion package
@@ -843,37 +879,38 @@ Transient keymaps library.
     4. Map C-[0-9] for numbered completion
     5. <C-p> and <C-n> , <tab>and <s-tab> completion navigation
     #+BEGIN_SRC emacs-lisp
-           (use-package company
-             :straight t
-             :defer 2
-             :general
-             (:keymaps 'company-active-map
-              "C-n" (lambda () (interactive) (company-select-next-if-tooltip-visible-or-complete-selection))
-              "C-p" (lambda () (interactive) (company-select-previous))
-              "C-SPC"(lambda()(interactive)(company-complete-common))
-              "<tab>" (lambda () (interactive) (company-select-next-if-tooltip-visible-or-complete-selection))
-              "<backtab>" (lambda () (interactive) (company-select-previous)))
-             :init
-             (setq company-show-numbers t)
-             (setq company-idle-delay 0)
-             (setq company-selection-wrap-around t)
-             ;; Add yasnippet support for all company backends
-             ;; https://github.com/syl20bnr/spacemacs/pull/179
-             (defvar company-mode/enable-yas t
-               "Enable yasnippet for all backends.")
-             (defun company-mode/backend-with-yas (backend)
-               (if (or (not company-mode/enable-yas)
-                       (and (listp backend) (member 'company-yasnippet backend)))
-                   backend
-                 (append (if (consp backend) backend (list backend))
-                         '(:with company-yasnippet))))
-             :config
-             (global-company-mode 1)
-             (dotimes (i 10)
-               (general-def
-                 :keymaps 'company-active-map
-                 (format "C-%d" i) 'company-complete-number))
-             (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)))
+      (use-package company
+        :straight t
+        :defer 2
+        :general
+        (:keymaps 'company-active-map
+         ;; "C-n" (lambda () (interactive) (company-select-next-if-tooltip-visible-or-complete-selection))
+         "C-n" 'company-select-next-if-tooltip-visible-or-complete-selection
+         "C-p" 'company-select-previous
+         "C-SPC" 'company-complete-common
+         "<tab>" 'company-select-next-if-tooltip-visible-or-complete-selection
+         "<backtab>" 'company-select-previous )
+        :init
+        (setq company-show-numbers t)
+        (setq company-idle-delay 0)
+        (setq company-selection-wrap-around t)
+        ;; Add yasnippet support for all company backends
+        ;; https://github.com/syl20bnr/spacemacs/pull/179
+        (defvar company-mode/enable-yas t
+          "Enable yasnippet for all backends.")
+        (defun company-mode/backend-with-yas (backend)
+          (if (or (not company-mode/enable-yas)
+                  (and (listp backend) (member 'company-yasnippet backend)))
+              backend
+            (append (if (consp backend) backend (list backend))
+                    '(:with company-yasnippet))))
+        :config
+        (global-company-mode 1)
+        (dotimes (i 10)
+          (general-def
+            :keymaps 'company-active-map
+            (format "C-%d" i) 'company-complete-number))
+        (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)))
     #+END_SRC
 ** Yasnippet
    Snippet engine for emacs
@@ -893,17 +930,6 @@ Transient keymaps library.
                 "<return>" yas-maybe-expand)
               )
     #+END_SRC
-** Company quickhelp
-   Company mode completion documentation
-   #+BEGIN_SRC emacs-lisp
-       (use-package company-quickhelp
-         :straight t
-         :init
-         (setq company-quickhelp-delay 0.3)
-         :after company
-         :config
-         (company-quickhelp-mode 1))
-   #+END_SRC
 ** Company-flx
    Fuzzy matching for company-capf only.
    #+BEGIN_SRC emacs-lisp
