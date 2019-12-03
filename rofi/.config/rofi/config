@@ -1,16 +1,21 @@
 rofi.theme: ~/.cache/wal/colors-rofi-dark.rasi
-rofi.modi: window,drun,run
+rofi.modi: calc,window,run
 rofi.color-enabled: true
+rofi.show-icons: true
+rofi.terminal: "alacritty";
+rofi.font: Iosevka 20
+rofi.window-match-fields: desktop,class
+rofi.window-format: "{w}    {c}   {t}"
+rofi.sorting-method:fzf
 
 #rofi.fullscreen: true
 #rofi.padding: 300
 
-rofi.font: Iosevka 20 
 
-rofi.display-drun: Run 
-rofi.display-run: Exec 
+# rofi.display-drun: Run
+# rofi.display-run: Exec
 
-rofi.terminal: urxvt
+# rofi.terminal: urxvt
 
 #rofi.separator-style: solid
 #rofi.hide-scrollbar: true

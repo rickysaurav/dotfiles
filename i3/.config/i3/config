@@ -28,6 +28,8 @@ font pango:DejaVu Sans Mono 8
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
+# floating_maximum_size 960 x 540
+#for_window [floating] move position center
 
 # start a terminal
 #bindsym $mod+Return exec i3-sensible-terminal
@@ -291,10 +293,13 @@ bindsym $mod+n workspace next
 #bindsym $mod+Shift+x exec $HOME/.config/i3/my_lock.sh
 bindsym $mod+Shift+x exec i3lock-fancy
 bindsym $mod+Shift+w exec networkmanager_dmenu
-bindsym $mod+d exec rofi -show run -matching fuzzy
-bindsym $mod+shift+d exec rofi -show window -matching fuzzy
+# bindsym $mod+d exec rofi -show run -matching fuzzy
+# bindsym $mod+d exec "rofi -combi-modi window,run -show combi -modi combi -matching fuzzy"
+bindsym $mod+d exec "rofi -combi-modi window,run -show combi -modi combi -matching fuzzy"
+bindsym $mod+shift+d exec rofi -show run -matching fuzzy
 bindsym $mod+m exec bash $HOME/scripts/rofi_layouts.sh
 bindsym $mod+c exec rofi -rofi -modi "clipboard:greenclip print" -show clipboard
+bindsym $mod+equal exec rofi -show calc -modi calc -no-show-match -no-sort -calc-command "echo '{result}' | xclip -sel clip" 
 bindsym $mod+t split toggle
 bindsym Print	exec --no-startup-id scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
 bindsym $mod+shift+s exec i3-msg move workspace to output right
@@ -312,6 +317,7 @@ exec --no-startup-id compton -b --config $HOME/.compton.conf
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 # exec --no-startup-id termite --name dropdown
 # exec --no-startup-id urxvtc -name dropdown
+# exec --no-startup-id alacritty --class dropdown --dimensions 80 20
 exec --no-startup-id alacritty --class dropdown
 exec --no-startup-id libinput-gestures-setup start
 # exec --no-startup-id urxvtc -name ranger_start -e zsh -i -c ranger

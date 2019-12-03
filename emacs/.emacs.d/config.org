@@ -91,18 +91,6 @@
          :defer t
          :after (system-packages use-package ))
    #+END_SRC
-** Autocompile
-#+BEGIN_SRC emacs-lisp
-  (use-package auto-compile
-    :straight t
-    :demand t
-    :init
-    (setq auto-compile-display-buffer nil)
-    (setq load-prefer-newer t)
-    :config
-    (auto-compile-on-load-mode)
-    (auto-compile-on-save-mode))
-#+END_SRC
 * Personal Config Tweaks
 ** Line-numbers
    #+BEGIN_SRC emacs-lisp
@@ -271,13 +259,17 @@ Transient keymaps library.
 ** Unbind Space
    Unbind Space in evil-states to use it as prefix
    #+BEGIN_SRC emacs-lisp
-       (general-unbind '(normal motion operator visual)
-         "SPC")
-       (general-unbind '(compilation-mode-map)
-         "SPC")
-       (general-unbind 'motion 'Info-mode-map "SPC")
-       (general-unbind 'Info-mode-map "SPC")
-       (general-def '(motion normal) 'Info-mode-map "<escape>" 'keyboard-escape-quit)
+     (general-unbind '(normal motion operator visual)
+       "SPC")
+     (general-unbind '(compilation-mode-map)
+       "SPC"
+       "C-d")
+    (general-unbind '(comint-mode-map)
+       "SPC"
+       "C-d")
+     (general-unbind 'motion 'Info-mode-map "SPC")
+     (general-unbind 'Info-mode-map "SPC")
+     (general-def '(motion normal) 'Info-mode-map "<escape>" 'keyboard-escape-quit)
    #+END_SRC
 ** Evil-surround
    Vim surround on emacs
@@ -579,43 +571,43 @@ Transient keymaps library.
 ** Window manipulation hydra
 *** Hydra
 #+BEGIN_SRC emacs-lisp
-  (defhydra hydra-window (:color red
-                          :hint nil)
-    "
-   Split: _v_ert _s_:horz
-  Delete: _o_nly  _D_ace  _d_window
-    Move: _x_swap,_w_window-other
-    Misc: _a_ce _m_aximise
-    Open: _p_rojectile _b_helm-mini
-  "
-    ("h" windmove-left)
-    ("j" windmove-down)
-    ("k" windmove-up)
-    ("l" windmove-right)
-    ("H" hydra-move-splitter-left);fix move splitters
-    ("J" hydra-move-splitter-down)
-    ("K" hydra-move-splitter-up)
-    ("L" hydra-move-splitter-right)
-    ("v" (lambda ()
-           (interactive)
-           (split-window-right)
-           (windmove-right)))
-    ("s" (lambda ()
-           (interactive)
-           (split-window-below)
-           (windmove-down)))
-    ("w" other-window :exit t)
-    ("_" split-window-right)
-    ("|" split-window-below)
-    ("o" delete-other-windows :exit t)
-    ("a" ace-window :exit t)
-    ("x" ace-swap-window)
-    ("D" ace-delete-window)
-    ("d" delete-window)
-    ("m" toggle-maximize-buffer :exit t)
-    ("p" helm-projectile :exit t)
-    ("b" helm-mini :exit t)
-    ("q" nil))
+  ;; (defhydra hydra-window (:color red
+  ;;                         :hint nil)
+  ;;   "
+  ;;  Split: _v_ert _s_:horz
+  ;; Delete: _o_nly  _D_ace  _d_window
+  ;;   Move: _x_swap,_w_window-other
+  ;;   Misc: _a_ce _m_aximise
+  ;;   Open: _p_rojectile _b_helm-mini
+  ;; "
+  ;;   ("h" windmove-left)
+  ;;   ("j" windmove-down)
+  ;;   ("k" windmove-up)
+  ;;   ("l" windmove-right)
+  ;;   ("H" hydra-move-splitter-left);fix move splitters
+  ;;   ("J" hydra-move-splitter-down)
+  ;;   ("K" hydra-move-splitter-up)
+  ;;   ("L" hydra-move-splitter-right)
+  ;;   ("v" (lambda ()
+  ;;          (interactive)
+  ;;          (split-window-right)
+  ;;          (windmove-right)))
+  ;;   ("s" (lambda ()
+  ;;          (interactive)
+  ;;          (split-window-below)
+  ;;          (windmove-down)))
+  ;;   ("w" other-window :exit t)
+  ;;   ("_" split-window-right)
+  ;;   ("|" split-window-below)
+  ;;   ("o" delete-other-windows :exit t)
+  ;;   ("a" ace-window :exit t)
+  ;;   ("x" ace-swap-window)
+  ;;   ("D" ace-delete-window)
+  ;;   ("d" delete-window)
+  ;;   ("m" toggle-maximize-buffer :exit t)
+  ;;   ("p" helm-projectile :exit t)
+  ;;   ("b" helm-mini :exit t)
+  ;;   ("q" nil))
 #+END_SRC
 *** Binding
 #+BEGIN_SRC emacs-lisp
@@ -625,6 +617,44 @@ Transient keymaps library.
               hydra-move-splitter-down
               hydra-move-splitter-up
               hydra-move-splitter-right)
+    :config
+    (defhydra hydra-window (:color red
+                            :hint nil)
+      "
+     Split: _v_ert _s_:horz
+    Delete: _o_nly  _D_ace  _d_window
+      Move: _x_swap,_w_window-other
+      Misc: _a_ce _m_aximise
+      Open: _p_rojectile _b_helm-mini
+    "
+      ("h" windmove-left)
+      ("j" windmove-down)
+      ("k" windmove-up)
+      ("l" windmove-right)
+      ("H" hydra-move-splitter-left);fix move splitters
+      ("J" hydra-move-splitter-down)
+      ("K" hydra-move-splitter-up)
+      ("L" hydra-move-splitter-right)
+      ("v" (lambda ()
+             (interactive)
+             (split-window-right)
+             (windmove-right)))
+      ("s" (lambda ()
+             (interactive)
+             (split-window-below)
+             (windmove-down)))
+      ("w" other-window :exit t)
+      ("_" split-window-right)
+      ("|" split-window-below)
+      ("o" delete-other-windows :exit t)
+      ("a" ace-window :exit t)
+      ("x" ace-swap-window)
+      ("D" ace-delete-window)
+      ("d" delete-window)
+      ("m" toggle-maximize-buffer :exit t)
+      ("p" helm-projectile :exit t)
+      ("b" helm-mini :exit t)
+      ("q" nil))
     :general
     (:states '(normal motion insert emacs)
              :prefix "SPC w"
@@ -817,7 +847,7 @@ Transient keymaps library.
       "0" 'treemacs-select-window
       "1" 'treemacs-delete-other-windows
       "t" 'treemacs
-      "B" 'treemacs-bookmark
+      "b" 'treemacs-bookmark
       "f" 'treemacs-find-file
       "T" 'treemacs-find-tag)
      (:keymaps 'treemacs-mode-map
@@ -890,6 +920,14 @@ Transient keymaps library.
          "C-SPC" 'company-complete-common
          "<tab>" 'company-select-next-if-tooltip-visible-or-complete-selection
          "<backtab>" 'company-select-previous )
+        (:states '(normal motion insert emacs)
+         :prefix "SPC a"
+         :non-normal-prefix "M-SPC a"
+         :prefix-map 'ricky//autocompletemap
+         "" '(:ignore t :which-keey "autocomplete-prefix")
+         "f" 'company-files
+         "o" 'company-other-backend
+         "y" 'company-yasnippet)
         :init
         (setq company-show-numbers t)
         (setq company-idle-delay 0)
@@ -922,7 +960,7 @@ Transient keymaps library.
             (use-package yasnippet
               :straight t
               :straight yasnippet-snippets
-              :defer 3
+              :defer 2
               :config
               (yas-global-mode 1)
               (general-def
@@ -933,12 +971,19 @@ Transient keymaps library.
 ** Company-flx
    Fuzzy matching for company-capf only.
    #+BEGIN_SRC emacs-lisp
-   (use-package company-flx
-     :straight t
-     :after company
-     :config
-     (company-flx-mode +1))
+     ;; (use-package company-flx
+     ;;   :straight t
+     ;;   :after company
+     ;;   :config
+     ;;   (company-flx-mode +1))
    #+END_SRC
+** Company-tabnine
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package company-tabnine
+  ;;   :straight t
+  ;;   :config
+  ;;       (add-to-list 'company-backends #'company-tabnine))
+#+END_SRC
 * Programming Helpers
 ** Smart-parens
    Package for bracket-pair matching
@@ -1022,21 +1067,23 @@ Transient keymaps library.
         :straight t
         :general
         (:states '(normal motion)
-         :prefix "SPC c"
-         "r" 'multi-compile-run
-         )
+                 :prefix "SPC c"
+                 "r" 'multi-compile-run
+                 )
         :init
         (setq multi-compile-completion-system 'helm)
         (setq multi-compile-alist '(
-              (c++-mode . (("c++-thread_run" . "g++ %file-name -pthread -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")
-                           ("c++-run" . "g++ %file-name -std=c++11 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")))
-              (rust-mode . (("build" . "cargo build")
-                           ("run" . "cargo run")))
-              (java-mode . (("java-maven-exec" "mvn exec:java -q -Dexec.mainClass=\"%cname\"" (multi-compile-locate-file-dir "pom.xml"))))
-              ))
+                                    (c++-mode . (("c++-thread_run" . "g++ %file-name -pthread -std=c++17 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")
+                                                 ("c++-run" . "g++ %file-name -std=c++17 -g -D LOCAL_SYS -o %file-sans && time ./%file-sans")))
+                                    (rust-mode . (("build" . "cargo build")
+                                                  ("run" . "cargo run")))
+                                    (java-mode . (("java-maven-exec" "mvn exec:java -q -Dexec.mainClass=\"%cname\"" (multi-compile-locate-file-dir "pom.xml"))))
+                                    (python-mode . (("python run" . "python %file-name < input.txt")
+                                                    ("python to file" . "python %file-name < input.txt > output.txt") ))
+                                    ))
         :config
         (add-to-list 'multi-compile-template
-          '("%cname" . (ricky//get-fully-qualified-class-name)))
+                     '("%cname" . (ricky//get-fully-qualified-class-name)))
         (defun multi-compile-run ()
           "Choice target and start compile."
           (interactive)
@@ -1075,28 +1122,48 @@ Transient keymaps library.
    #+END_SRC
 * Terminal
 ** Vterm
-VTE emulation in emacs
+   VTE emulation in emacs
 #+BEGIN_SRC emacs-lisp
   (use-package vterm
     :straight t
     :commands vterm
     :custom (vterm-install t)
     :config
-    (defun vterm-send-return ()
-      "Sends C-m to the libvterm."
-      (interactive)
-      (process-send-string vterm--process "\C-m"))
-    (defun vterm-send-backtab()
-      "Sends backtab to libvterm"
-      (interactive)
-      (when vterm--term
-        (let ((inhibit-redisplay t)
-              (inhibit-read-only t))
-          (vterm--update vterm--term "<tab>" t nil nil))))
-    (define-key vterm-mode-map [return]  #'vterm-send-return)
-    (define-key vterm-mode-map [backtab]  #'vterm-send-backtab)
-    (evil-set-initial-state 'vterm-mode 'emacs)
+    ;; (defun vterm-send-return ()
+    ;;   "Sends C-m to the libvterm."
+    ;;   (interactive)
+    ;;   (process-send-string vterm--process "\C-m"))
+    ;; (defun vterm-send-backtab()
+    ;;   "Sends backtab to libvterm"
+    ;;   (interactive)
+    ;;   (when vterm--term
+    ;;     (let ((inhibit-redisplay t)
+    ;;           (inhibit-read-only t))
+    ;;       (vterm--update vterm--term "<tab>" t nil nil))))
+    ;; (define-key vterm-mode-map [return]  #'vterm-send-return)
+    ;; (define-key vterm-mode-map [backtab]  #'vterm-send-backtab)
+    (evil-set-initial-state 'vterm-mode 'insert)
     :general
+    (:keymaps 'vterm-mode-map
+              :states 'insert
+              "C-e"      #'vterm--self-insert
+              "C-f"      #'vterm--self-insert
+              "C-a"      #'vterm--self-insert
+              "C-v"      #'vterm--self-insert
+              "C-b"      #'vterm--self-insert
+              "C-w"      #'vterm--self-insert
+              "C-u"      #'vterm--self-insert
+              "C-d"      #'vterm--self-insert
+              "C-n"      #'vterm--self-insert
+              "C-m"      #'vterm--self-insert
+              "C-p"      #'vterm--self-insert
+              "C-j"      #'vterm--self-insert
+              "C-k"      #'vterm--self-insert
+              "C-r"      #'vterm--self-insert
+              "C-t"      #'vterm--self-insert
+              "C-g"      #'vterm--self-insert
+              "C-c"      #'vterm--self-insert
+              "C-SPC"    #'vterm--self-insert)
     (:states '(normal motion insert emacs)
              :prefix "SPC RET"
              :non-normal-prefix "M-SPC RET"
@@ -1109,21 +1176,6 @@ VTE emulation in emacs
      (use-package sudo-edit
        :straight t
        :defer t)
-   #+END_SRC
-** VLFI
-   Emacs package for handling large files
-   #+BEGIN_SRC emacs-lisp
-   (use-package vlf-setup
-     :straight vlf
-     :defer t
-     :init
-     (setq vlf-application 'dont-ask)
-     :general
-     (:states '(normal motion insert emacs)
-               :prefix "SPC v"
-               :non-normal-prefix "M-SPC v"
-               ""'(:keymap vlf-mode-map :package vlf :which-key "vlf-prefix")
-               ))
    #+END_SRC
 ** Webpaste
    Online pastebin service integration
@@ -1147,6 +1199,23 @@ VTE emulation in emacs
     :straight t
     :commands esup)
    #+END_SRC
+** So-long
+   Handle infamous long lines issue in emacs
+#+BEGIN_SRC emacs-lisp
+  (use-package so-long
+    :straight (so-long :host github :repo "hlissner/emacs-so-long" )
+    :defer 4
+    :config
+    (setq so-long-minor-modes (append so-long-minor-modes '(line-number-mode company-mode company-box-mode company-flx-mode diff-auto-refine-mode display-time-mode display-battery-mode electric-indent-mode smartparens-mode tooltip-mode yas-minor-mode save-place-mode mouse-wheel-mode recentf-mode undo-tree-mode show-smartparens-mode)))
+    (global-so-long-mode))
+#+END_SRC
+** Restclient 
+   HTTP client
+#+BEGIN_SRC emacs-lisp 
+  (use-package restclient
+    :straight t
+    :commands restclient-mode)
+#+END_SRC
 * Git
 ** Magit
    Git interface for emacs on steroids
@@ -1179,6 +1248,7 @@ VTE emulation in emacs
 #+BEGIN_SRC emacs-lisp
   (use-package smerge-mode
     :after hydra
+    :defer t
     :config
     (defhydra smerge-hydra
       (:color pink :hint nil :post (smerge-auto-leave))
@@ -1244,25 +1314,40 @@ VTE emulation in emacs
        :init
        (setq lsp-inhibit-message t)
        (setq lsp-prefer-flymake nil)
-       (setq lsp-eldoc-enable-hover t))
+       (setq lsp-eldoc-enable-hover t)
+       :config
+       (add-to-list 'lsp-file-watch-ignored "[/\\\\]\\.ccls-cache$"))
    #+END_SRC
 ** DAP-Mode
    #+BEGIN_SRC emacs-lisp
-   (use-package dap-mode
-     :straight t
-     :after lsp-mode
-     :defer t
-     :commands dap-mode
-     :general
-     (:states '(normal motion)
-              :keymaps 'dap-mode-map
-              :prefix "SPC d"
-              :non-normal-prefix "M-SPC d"
-              "h" '(dap-hydra :which-key "dap-hydra"))
-     :config
-     (dap-ui-mode 1)
-     )
+     (use-package dap-mode
+       :straight t
+       :after lsp-mode
+       :defer t
+       :commands (dap-mode dap-debug)
+       )
    #+END_SRC
+** DAP-UI-Mode
+#+BEGIN_SRC emacs-lisp
+  (use-package dap-ui
+    :straight dap-mode
+    :ghook
+    ('dap-mode-hook 'dap-ui-mode)
+    :custom-face
+    (dap-ui-pending-breakpoint-face ((t :inherit breakpoint-enabled))))
+#+END_SRC
+** DAP-hydra
+#+BEGIN_SRC emacs-lisp
+  (use-package dap-hydra
+    :straight dap-mode
+    :general
+    (:states '(normal motion insert emacs)
+             :keymaps 'dap-mode-map
+             :prefix "SPC d"
+             :non-normal-prefix "M-SPC d"
+              "" '(:ignore t :which-key "dap-prefix")
+             "h" '(dap-hydra :which-key "dap-hydra")))
+#+END_SRC
 ** LSP-UI
    Higher level UI modules for LSP-mode
    #+BEGIN_SRC emacs-lisp
