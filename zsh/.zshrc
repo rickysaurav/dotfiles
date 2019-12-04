@@ -1,16 +1,15 @@
-# Created by newuser for 5.4.1
-cat /home/ricky_saurav/.cache/wal/sequences
+cat $HOME/.cache/wal/sequences
 export TERMCMD=alacritty
 export GOPATH=~/go
 export EDITOR="emacsclient -c -a \"\""
 export VISUAL=$EDITOR
 export ALTERNATE_EDITOR=nvim
-# export PATH=/usr/bin/core_perl:$HOME/.rvm/bin:/usr/lib/w3m:$GOPATH/bin:$HOME/bin:$HOME/.local/bin:$PATH
 export PATH=$HOME/.cargo/bin:$GOPATH/bin:$HOME/.local/bin:$PATH
-# export TERM=xterm-256color
+#export TERM=xterm-256color
 #export TERM=eterm-color
 export FZF_TMUX=1
 ulimit -s 524144
+
 
 ####HISTORY####
 #copied history configuration form oh my zsh
@@ -26,44 +25,45 @@ setopt inc_append_history     # add commands to HISTFILE in order of execution
 setopt share_history          # share command history data
 
 
-####ZPLUG####
-# Check if zplug is installed
-if [[ ! -d ~/.zplug ]]; then
-  git clone https://github.com/zplug/zplug ~/.zplug
-  source ~/.zplug/init.zsh && zplug update --self
+####ZPLUGIN####
+# Check if zplugin is installed
+if [[ ! -d ~/.zplugin ]]; then
+  # mkdir ~/.zplugin
+  git clone https://github.com/zdharma/zplugin.git ~/.zplugin/bin
 fi
 
-####source  oh-my-zsh  and zplug ######
-# export ZSH=~/.zplug/repos/robbyrussell/oh-my-zsh
-# source $ZSH/oh-my-zsh.sh
-source ~/.zplug/init.zsh
+####source zplugin####
+source ~/.zplugin/bin/zplugin.zsh
 
-####PLUGINS#####
-zplug "junegunn/fzf", as:command, hook-build:"./install --all"
-zplug "zsh-users/zsh-history-substring-search", defer:3
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
-zplug "b4b4r07/enhancd", use:init.sh
-zplug "zplug/zplug"
 
-####THEMES######
-if [[ -v fancy &&  -f ~/.p10k-fancy.zsh ]]; then
-    source ~/.p10k-fancy.zsh
-elif [ -f ~/.p10k.zsh ]; then
-    source ~/.p10k.zsh
-else
-    zplug "romkatv/powerlevel10k", use:config/p10k-pure.zsh
-fi
-zplug "romkatv/powerlevel10k", use:powerlevel10k.zsh-theme
+####PLUGINS####
+zplugin ice wait \
+        as:"program" \
+        atclone:"./install --bin" \
+        atpull:"%atclone" \
+        pick:"bin/fzf" \
+        multisrc:"shell/{key-bindings,completion}.zsh"
+zplugin load "junegunn/fzf"
 
-# Install packages that have not been installed yet
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    else
-        echo
-    fi
-fi
+zplugin ice wait pick:"init.sh"
+zplugin load "b4b4r07/enhancd"
+
+
+####THEMES####
+
+zplugin ice wait'!' \
+        lucid \
+        nocd \
+        atload:'source ~/.p10k.zsh; _p9k_precmd' \
+        wrap-track:'_p9k_precmd'
+zplugin load romkatv/powerlevel10k
+
+#TODO: Figure out a way to load different prompts at different conditions
+#unstable
+# zplugin ice load'![[ -v fancy ]]' unload'![[ ! -v fancy ]]'
+# zplugin snippet '~/.p10k-fancy.zsh'
+
+
 
 #####POWERLEVEL9K THEME SETTINGS####
 # POWERLEVEL9K_MODE='nerdfont-complete'
@@ -80,23 +80,8 @@ fi
 # SPACESHIP_BATTERY_THRESHOLD=90
 # SPACESHIP_TIME_FORMAT='%D{%H:%M}'
 
-#####LOAD ######
-zplug load
-
-
-#####FZF########
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+#TODO:convert into snippets for lazy loading
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --ignore-case --hidden --follow --glob "!.git/*" --glob "!.cache/*"'
-if zplug check b4b4r07/enhancd; then
-    # setting if enhancd is available
-    export ENHANCD_FILTER=fzf
-fi
-
-bindkey -M emacs '^P' history-substring-search-up
-bindkey -M emacs '^N' history-substring-search-down
-# tm - create new tmux session, or switch to existing one. Works from within tmux too. (@bag-man)
-# `tm` will allow you to select your tmux session via fzf.
-# `tm irc` will attach to the irc session (if it exists), else it will create it.
 tm() {
   [[ -n "$TMUX" ]] && change="switch-client" || change="attach-session"
   if [ $1 ]; then
