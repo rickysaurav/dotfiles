@@ -46,8 +46,10 @@ zplug "b4b4r07/enhancd", use:init.sh
 zplug "zplug/zplug"
 
 ####THEMES######
-if [ -f ~/p10k-config.zsh ]; then
-    source ~/p10k-config.zsh
+if [[ -v fancy &&  -f ~/.p10k-fancy.zsh ]]; then
+    source ~/.p10k-fancy.zsh
+elif [ -f ~/.p10k.zsh ]; then
+    source ~/.p10k.zsh
 else
     zplug "romkatv/powerlevel10k", use:config/p10k-pure.zsh
 fi
