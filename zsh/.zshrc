@@ -1,3 +1,15 @@
+####ZPLUGIN####
+# Check if zplugin is installed
+if [[ ! -d ~/.zplugin ]]; then
+  # mkdir ~/.zplugin
+  git clone https://github.com/zdharma/zplugin.git ~/.zplugin/bin
+fi
+
+####source zplugin####
+source ~/.zplugin/bin/zplugin.zsh
+
+
+####EXPORT PATH####
 cat $HOME/.cache/wal/sequences
 export TERMCMD=alacritty
 export GOPATH=~/go
@@ -25,19 +37,10 @@ setopt inc_append_history     # add commands to HISTFILE in order of execution
 setopt share_history          # share command history data
 
 
-####ZPLUGIN####
-# Check if zplugin is installed
-if [[ ! -d ~/.zplugin ]]; then
-  # mkdir ~/.zplugin
-  git clone https://github.com/zdharma/zplugin.git ~/.zplugin/bin
-fi
-
-####source zplugin####
-source ~/.zplugin/bin/zplugin.zsh
 
 
 ####PLUGINS####
-zplugin ice wait \
+zplugin ice lucid wait \
         as:"program" \
         atclone:"./install --bin" \
         atpull:"%atclone" \
@@ -45,7 +48,7 @@ zplugin ice wait \
         multisrc:"shell/{key-bindings,completion}.zsh"
 zplugin load "junegunn/fzf"
 
-zplugin ice wait pick:"init.sh"
+zplugin ice lucid wait pick:"init.sh"
 zplugin load "b4b4r07/enhancd"
 
 

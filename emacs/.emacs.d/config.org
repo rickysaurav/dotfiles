@@ -517,8 +517,9 @@ Transient keymaps library.
   (use-package helm-posframe
     :straight t
     :after helm
-    :config
-    (helm-posframe-enable))
+    ;; :config
+    ;; (helm-posframe-enable)
+    )
 #+end_src
 *** Which-key-posframe 
     #+BEGIN_SRC emacs-lisp
