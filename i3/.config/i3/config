@@ -304,7 +304,7 @@ bindsym $mod+t split toggle
 bindsym Print	exec --no-startup-id scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
 bindsym $mod+shift+s exec i3-msg move workspace to output right
 bindsym $mod+shift+p exec polybar-msg cmd restart
-bindsym Shift+Print exec --no-startup-id scrot -u '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
+bindsym --release shift+Print exec --no-startup-id scrot -s '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'
 #bindsym $mod+Insert exec $screencast
 #bindsym $mod+Delete exec $stoprec
 ####autostart####

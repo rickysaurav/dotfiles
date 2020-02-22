@@ -23,15 +23,19 @@
              (eval-print-last-sexp)))
          (load bootstrap-file nil 'nomessage))
     #+END_SRC
-*** Specify built-in packages
-    #+BEGIN_SRC emacs-lisp
-  ( setq straight-built-in-pseudo-packages '(emacs org))
-    #+END_SRC
 *** Install use-package
     #+BEGIN_SRC emacs-lisp
        (straight-use-package 'use-package)
        (setq use-package-verbose t)
     #+END_SRC
+*** ORG
+#+BEGIN_SRC emacs-lisp
+    (use-package org
+      :straight t
+      :ghook
+       ('org-mode-hook 'auto-fill-mode)
+  )
+#+END_SRC
 ** Pre-evaluate all autoloads
    Pre evaluate evaluate all cached autoloads
    #+BEGIN_SRC emacs-lisp
@@ -45,12 +49,14 @@
 ** Exec-path-from shell
    Makes emacs path coherent with shell path
    #+BEGIN_SRC emacs-lisp
-   (use-package exec-path-from-shell
-     :if (or (daemonp) (memq window-system '(mac ns x)))
-     :straight t
-     :defer 1
-     :config
-     (exec-path-from-shell-initialize))
+     (use-package exec-path-from-shell
+       :if (or (daemonp) (memq window-system '(mac ns x)))
+       :straight t
+       :defer 1
+       :init
+       (setq exec-path-from-shell-arguments '("-l"))
+       :config
+       (exec-path-from-shell-initialize))
    #+END_SRC
 ** System-package
    Emacs integration with system package manager
@@ -144,10 +150,11 @@
    #+END_SRC
 ** Indentation settings
    #+BEGIN_SRC emacs-lisp
-            (setq-default tab-width 4
-                          fill-column 80
-                          indent-tabs-mode nil)
-            (add-hook 'org-mode-hook 'auto-fill-mode)
+     (setq-default tab-width 4
+                   fill-column 80)
+     (use-package mode-local
+       :commands setq-mode-local)
+     (setq-mode-local prog-mode indent-tabs-mode nil)
    #+END_SRC
 ** C-indentation
    #+BEGIN_SRC emacs-lisp
@@ -225,51 +232,53 @@ Transient keymaps library.
     1. minibuffer-keyboard-quit to quit all minibuffers
     2. Map [escape] to quit all minibuffers
        #+BEGIN_SRC emacs-lisp
-       (use-package evil
-         :after general
-         :straight t
-         :demand t
-         :init
-         (defun minibuffer-keyboard-quit ()
-           "Abort recursive edit.
-       In Delete Selection mode, if the mark is active, just deactivate it;
-       then it takes a second \\[keyboard-quit] to abort the minibuffer."
-           (interactive)
-           (if (and delete-selection-mode transient-mark-mode mark-active)
-               (setq deactivate-mark  t)
-             (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
-             (abort-recursive-edit)))
-         :general
-         (:states '(insert)
-          "C-n" nil
-          "C-p" nil)
-         :init
-         (setq evil-want-C-u-scroll t)
-         :config
-         (evil-mode 1)
-         (define-key evil-normal-state-map [escape] 'keyboard-quit)
-         (define-key evil-motion-state-map [escape] 'keyboard-quit)
-         (define-key evil-visual-state-map [escape] 'keyboard-quit)
-         (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-         (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-         (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-         (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-         (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit))
+         (use-package evil
+           :after general
+           :straight t
+           :demand t
+           :init
+           (defun minibuffer-keyboard-quit ()
+             "Abort recursive edit.
+         In Delete Selection mode, if the mark is active, just deactivate it;
+         then it takes a second \\[keyboard-quit] to abort the minibuffer."
+             (interactive)
+             (if (and delete-selection-mode transient-mark-mode mark-active)
+                 (setq deactivate-mark  t)
+               (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+               (abort-recursive-edit)))
+           :general
+           (:states '(insert)
+            "C-n" nil
+            "C-p" nil)
+           :init
+           (setq evil-want-C-u-scroll t)
+           :config
+           (evil-mode 1)
+           (define-key evil-normal-state-map [escape] 'keyboard-quit)
+           (define-key evil-motion-state-map [escape] 'keyboard-quit)
+           (define-key evil-visual-state-map [escape] 'keyboard-quit)
+           (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+           (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+           (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+           (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+           (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit))
        #+END_SRC
 ** Unbind Space
    Unbind Space in evil-states to use it as prefix
    #+BEGIN_SRC emacs-lisp
-     (general-unbind '(normal motion operator visual)
+      (general-unbind '(normal motion operator visual)
+        "SPC")
+      (general-unbind '(compilation-mode-map)
+        "SPC"
+        "C-d")
+     (general-unbind '(comint-mode-map)
+        "SPC"
+        "C-d")
+     (general-unbind 'dired-mode-map
        "SPC")
-     (general-unbind '(compilation-mode-map)
-       "SPC"
-       "C-d")
-    (general-unbind '(comint-mode-map)
-       "SPC"
-       "C-d")
-     (general-unbind 'motion 'Info-mode-map "SPC")
-     (general-unbind 'Info-mode-map "SPC")
-     (general-def '(motion normal) 'Info-mode-map "<escape>" 'keyboard-escape-quit)
+      (general-unbind 'motion 'Info-mode-map "SPC")
+      (general-unbind 'Info-mode-map "SPC")
+      (general-def '(motion normal) 'Info-mode-map "<escape>" 'keyboard-escape-quit)
    #+END_SRC
 ** Evil-surround
    Vim surround on emacs
@@ -434,34 +443,35 @@ Transient keymaps library.
 *** Config
     Enable fuzzy matching wherever possible
     #+BEGIN_SRC emacs-lisp
-   (use-package helm
-     :straight t
-     :demand t
-     :general
-     ("M-x" 'helm-M-x
-      "C-x C-f" 'helm-find-files)
-     (:states '(normal motion insert emacs)
-      :prefix "SPC h"
-      :non-normal-prefix "M-SPC h"
-      :prefix-map 'ricky//helm-prefix-map
-      "" '(:ignore t :which-key "helm-prefix")
-      "h" 'helm-apropos
-      "i" 'helm-imenu
-      "k" 'helm-show-kill-ring)
-     :init
-     (setq helm-semantic-fuzzy-match t
-           helm-imenu-fuzzy-match    t
-           helm-locate-fuzzy-match t
-           helm-apropos-fuzzy-match t
-           helm-M-x-fuzzy-match t
-           helm-buffers-fuzzy-matching t
-           helm-recentf-fuzzy-match    t
-           helm-mode-fuzzy-match t
-           helm-completion-in-region-fuzzy-match t
-           helm-window-prefer-horizontal-split 'decide)
-     :diminish helm-mode
-     :config
-     (helm-mode 1))
+         (use-package helm
+           :straight t
+           :demand t
+           :general
+           ("M-x" 'helm-M-x
+            "C-x C-f" 'helm-find-files)
+           (:states '(normal motion insert emacs)
+            :prefix "SPC h"
+            :non-normal-prefix "M-SPC h"
+            :prefix-map 'ricky//helm-prefix-map
+            "" '(:ignore t :which-key "helm-prefix")
+            "h" 'helm-apropos
+            "i" 'helm-imenu
+            "k" 'helm-show-kill-ring)
+           :init
+           (setq helm-semantic-fuzzy-match t
+                 helm-imenu-fuzzy-match    t
+                 helm-locate-fuzzy-match t
+                 helm-apropos-fuzzy-match t
+                 helm-M-x-fuzzy-match t
+                 helm-buffers-fuzzy-matching t
+                 helm-recentf-fuzzy-match    t
+                 helm-mode-fuzzy-match t
+                 helm-completion-in-region-fuzzy-match t
+                 helm-window-prefer-horizontal-split 'decide)
+           :diminish helm-mode
+           :config
+           (add-to-list 'completion-styles (if (version<= emacs-version "27.0") 'helm-flex 'flex))
+           (helm-mode 1))
     #+END_SRC
 ** Helm-swoop
    Buffer Search utility using helm
@@ -517,27 +527,40 @@ Transient keymaps library.
   (use-package helm-posframe
     :straight t
     :after helm
-    ;; :config
+    :init
+    (setq helm-posframe-poshandler 'posframe-poshandler-frame-center)
+    :config
     ;; (helm-posframe-enable)
     )
 #+end_src
-*** Which-key-posframe 
+*** Which-key-posframe
     #+BEGIN_SRC emacs-lisp
       (use-package which-key-posframe
         :straight t
         :config
         (which-key-posframe-mode))
     #+END_SRC
-*** Company-box 
-#+BEGIN_SRC emacs-lisp 
-  (use-package company-box
-    :straight t
-    :general
-    (
-     :keymaps 'company-box-mode-map
-          [remap company-select-next-if-tooltip-visible-or-complete-selection] 'company-box--next-line)
-    :ghook ('company-mode-hook  #'company-box-mode))
+*** Company-box
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package company-box
+  ;;   :straight t
+  ;;   :general
+  ;;   (
+  ;;    :keymaps 'company-box-mode-map
+  ;;        [remap company-select-next-if-tooltip-visible-or-complete-selection] 'company-box--next-line)
+  ;;   :ghook ('company-mode-hook  #'company-box-mode))
 #+END_SRC
+*** Company-posframe
+    #+BEGIN_SRC emacs-lisp
+      (use-package company-posframe
+        :straight t
+        :general
+        (
+         :keymaps 'company-posframe-active-map
+         [remap company-select-next-if-tooltip-visible-or-complete-selection] 'company-select-next)
+        :ghook ('company-mode-hook 'company-posframe-mode))
+    #+END_SRC
+
 * Keybindings
 ** Window manipulation
 *** Toggle maximize
@@ -626,7 +649,7 @@ Transient keymaps library.
     Delete: _o_nly  _D_ace  _d_window
       Move: _x_swap,_w_window-other
       Misc: _a_ce _m_aximise
-      Open: _p_rojectile _b_helm-mini
+      Open: _p_rojectile _b_helm-mini _f_find-files
     "
       ("h" windmove-left)
       ("j" windmove-down)
@@ -655,6 +678,7 @@ Transient keymaps library.
       ("m" toggle-maximize-buffer :exit t)
       ("p" helm-projectile :exit t)
       ("b" helm-mini :exit t)
+      ("f" helm-find-files :exit t)
       ("q" nil))
     :general
     (:states '(normal motion insert emacs)
@@ -729,18 +753,19 @@ Transient keymaps library.
    #+END_SRC
 ** Feature toggle shortcuts
    #+BEGIN_SRC emacs-lisp
-   (general-def
-     :states '(normal motion insert emacs)
-     :prefix "SPC T"
-     :non-normal-prefix "M-SPC T"
-     :prefix-map 'ricky//toggle-prefix-map
-     "" '(:ignore t :which-key "toggle-prefix")
-     "m" 'toggle-menu-bar-mode-from-frame
-     "f" 'toggle-frame-fullscreen
-     "s" 'toggle-scroll-bar
-     "t" 'toggle-tool-bar-mode-from-frame
-     ;; "l" 'hide-mode-line-mode
-     "c" 'load-theme)
+     (general-def
+       :states '(normal motion insert emacs)
+       :prefix "SPC T"
+       :non-normal-prefix "M-SPC T"
+       :prefix-map 'ricky//toggle-prefix-map
+       "" '(:ignore t :which-key "toggle-prefix")
+       "m" 'toggle-menu-bar-mode-from-frame
+       "f" 'toggle-frame-fullscreen
+       "s" 'toggle-scroll-bar
+       "t" 'toggle-tool-bar-mode-from-frame
+       "l" 'hide-mode-line-mode
+       "w" 'whitespace-mode
+       "c" 'load-theme)
    #+END_SRC
 ** Search shortcuts
    #+BEGIN_SRC emacs-lisp
@@ -864,7 +889,6 @@ Transient keymaps library.
 *** Treemacs-projectile
     #+BEGIN_SRC emacs-lisp
       (use-package treemacs-projectile
-        :after treemacs projectile
         :straight t
         :general
         (:keymaps 'ricky//treemacs-mode-map
@@ -1144,6 +1168,7 @@ Transient keymaps library.
     ;; (define-key vterm-mode-map [return]  #'vterm-send-return)
     ;; (define-key vterm-mode-map [backtab]  #'vterm-send-backtab)
     (evil-set-initial-state 'vterm-mode 'insert)
+    (evil-set-initial-state 'comint-mode 'normal)
     :general
     (:keymaps 'vterm-mode-map
               :states 'insert
@@ -1188,11 +1213,12 @@ Transient keymaps library.
 ** PDF-tools
    PDF plugin for emacs
    #+BEGIN_SRC emacs-lisp
-    (use-package pdf-tools
-      :straight t
-      :defer 10
-      :config
-      (pdf-tools-install))
+     (use-package pdf-tools
+       :straight t
+       :mode ("\\.pdf\\'" . pdf-view-mode)
+       :defer 10
+       :config
+       (pdf-tools-install))
    #+END_SRC
 ** Emacs Startup Profiler
    #+BEGIN_SRC emacs-lisp
@@ -1205,17 +1231,39 @@ Transient keymaps library.
 #+BEGIN_SRC emacs-lisp
   (use-package so-long
     :straight (so-long :host github :repo "hlissner/emacs-so-long" )
-    :defer 4
+    :defer 10
     :config
     (setq so-long-minor-modes (append so-long-minor-modes '(line-number-mode company-mode company-box-mode company-flx-mode diff-auto-refine-mode display-time-mode display-battery-mode electric-indent-mode smartparens-mode tooltip-mode yas-minor-mode save-place-mode mouse-wheel-mode recentf-mode undo-tree-mode show-smartparens-mode)))
     (global-so-long-mode))
 #+END_SRC
-** Restclient 
-   HTTP client
-#+BEGIN_SRC emacs-lisp 
-  (use-package restclient
+** Verb
+HTTP client
+#+BEGIN_SRC emacs-lisp
+  (use-package verb
+   :straight t
+    :mode ("\\.verb\\'" . verb-mode))
+#+END_SRC
+** EAF
+#+BEGIN_SRC emacs-lisp
+  (use-package eaf
+    :straight (:host github :repo "manateelazycat/emacs-application-framework" :files ("*"))
+    :defer t)
+#+END_SRC
+** Ranger
+#+BEGIN_SRC emacs-lisp
+  (use-package ranger
     :straight t
-    :commands restclient-mode)
+    :defer t
+    :init
+    (defun ricky//ls-lisp-sanitize-advice (&rest args)
+      "sanitize function has issues with pCloud network mount in 26.3, use 27.0 implementation."
+      (let ((file-alist  (car args)))
+        (if (and (consp (assoc ".." file-alist))
+               (null (cdr (assoc ".." file-alist)))
+               (cdr (assoc "." file-alist)))
+          (setcdr (assoc ".." file-alist) (cdr (assoc "." file-alist))))
+        (rassq-delete-all nil file-alist)))
+    (general-add-advice 'ls-lisp-sanitize :override 'ricky//ls-lisp-sanitize-advice))
 #+END_SRC
 * Git
 ** Magit
@@ -1316,6 +1364,7 @@ Transient keymaps library.
        (setq lsp-inhibit-message t)
        (setq lsp-prefer-flymake nil)
        (setq lsp-eldoc-enable-hover t)
+       (setq lsp-prefer-capf t)
        :config
        (add-to-list 'lsp-file-watch-ignored "[/\\\\]\\.ccls-cache$"))
    #+END_SRC
@@ -1378,11 +1427,11 @@ Transient keymaps library.
 ** Company-lsp
    Company backend for lsp
    #+BEGIN_SRC emacs-lisp
-   (use-package company-lsp
-     :straight t
-     :after (company lsp-mode)
-     :defer t
-     :commands company-lsp)
+     (use-package company-lsp
+       :straight t
+       :after (company lsp-mode)
+       :defer t
+       :commands company-lsp)
    #+END_SRC
 ** Lsp utils
 *** Helm LSP
@@ -1452,8 +1501,7 @@ Transient keymaps library.
       ('java-mode-hook
        (lambda () (require 'lsp-java)(semantic-mode 1)(lsp)))
       :init
-        (setq lsp-java-server-install-dir "~/lsp_servers/jdt-language-server-latest"
-              lsp-ui-sideline-update-mode 'point
+        (setq lsp-ui-sideline-update-mode 'point
               lsp-java-favorite-static-members '( "java.util.stream.Collectors.*" "org.junit.Assert.*" "org.junit.Assume.*" "org.junit.jupiter.api.Assertions.*" "org.junit.jupiter.api.Assumptions.*" "org.junit.jupiter.api.DynamicContainer.*" "org.junit.jupiter.api.DynamicTest.*"))
       (defun ricky//get-java-package-name ()
         "get package name for the current buffer"
@@ -1478,37 +1526,65 @@ Transient keymaps library.
 ** Python
 *** Pipenv
     #+BEGIN_SRC emacs-lisp
-  (use-package pipenv
-    :straight t
-    :ghook
-    ('python-mode-hook #'pipenv-mode))
+      (use-package pipenv
+        :straight t
+        :ghook
+        ('python-mode-hook #'pipenv-mode))
     #+END_SRC
+*** Poetry
+    #+begin_src emacs-lisp
+      ;; (use-package poetry
+      ;;    :straight t
+      ;;    :defer t
+      ;;    :ghook
+      ;;    ('python-mode-hoook #'poetry-tracking-mode))
+    #+end_src
 *** Lsp-ms-python
     #+BEGIN_SRC emacs-lisp
       (use-package lsp-python-ms
         :straight t
         :defer t
-        :config
-        (setq lsp-python-ms-executable
-              "/usr/bin/mspyls")
+        ;; :config
+        ;; (setq lsp-python-ms-executable
+        ;;    "/usr/bin/mspyls")
         :ghook
         ('python-mode-hook
-         (lambda () (require 'lsp-python-ms)(pipenv-activate)(lsp)) t))
+         (lambda () (require 'lsp-python-ms)(pipenv-activate)(lsp)) t)
+        ;; (lambda () (require 'lsp-python-ms)(lsp)) t)
+      )
     #+END_SRC
 ** Rust
    #+BEGIN_SRC emacs-lisp
-  (use-package rust-mode
-    :straight t
-    :ghook
-    ('rust-mode-hook 'lsp))
+     (use-package rust-mode
+       :straight t
+       :mode ("\\.rs\\'" . rust-mode)
+       :ghook
+       ('rust-mode-hook 'lsp))
    #+END_SRC
 ** Javascript
 *** Typescript-mode
     #+BEGIN_SRC emacs-lisp
       (use-package typescript-mode
         :straight t
+        :mode ("\\.ts\\'" . typescript-mode)
+        :ghook
+        ('(javascript-mode-hook typescript-mode-hook) 'lsp)
         :defer t)
     #+END_SRC
     #+BEGIN_SRC emacs-lisp
-      (general-add-hook '(javascript-mode-hook typescript-mode-hook) 'lsp)
+      ;; (general-add-hook '(javascript-mode-hook typescript-mode-hook) 'lsp)
+    #+END_SRC
+** Json
+*** Json mode
+   #+begin_src emacs-lisp
+     (use-package json-mode
+       :straight t
+       :mode ("\\.json\\'" . json-mode))
+   #+end_src
+*** Json navigator
+    #+BEGIN_SRC emacs-lisp
+      (use-package json-navigator
+        :straight t
+        :straight tree-mode
+        :defer t)
     #+END_SRC
