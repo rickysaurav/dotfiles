@@ -288,11 +288,13 @@ for_window [class="Lxappearance"] floating enable
 
 ####shortcuts#####
 #workspace switch
-bindsym $mod+p workspace prev
-bindsym $mod+n workspace next
+# bindsym $mod+p workspace prev
+# bindsym $mod+n workspace next
 #bindsym $mod+Shift+x exec $HOME/.config/i3/my_lock.sh
 bindsym $mod+Shift+x exec i3lock-fancy
-bindsym $mod+Shift+w exec networkmanager_dmenu
+# bindsym $mod+Shift+w exec networkmanager_dmenu
+bindsym $mod+Shift+w exec rofi-network
+bindsym $mod+p exec rofi-power
 # bindsym $mod+d exec rofi -show run -matching fuzzy
 # bindsym $mod+d exec "rofi -combi-modi window,run -show combi -modi combi -matching fuzzy"
 bindsym $mod+d exec "rofi -combi-modi window,run -show combi -modi combi -matching fuzzy"
