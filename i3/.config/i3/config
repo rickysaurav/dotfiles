@@ -174,7 +174,7 @@ bindsym $mod+r mode "resize"
 set $stoprec --no-startup-id killall ffmpeg & killall screenkey
 set $screencast --no-startup-id screenkey & bash ~/scripts/screencast.sh
 set $browser firefox
-
+set $lock_command light-locker-command -l
 
 
 # Pulse Audio controls
@@ -291,7 +291,7 @@ for_window [class="Lxappearance"] floating enable
 # bindsym $mod+p workspace prev
 # bindsym $mod+n workspace next
 #bindsym $mod+Shift+x exec $HOME/.config/i3/my_lock.sh
-bindsym $mod+Shift+x exec i3lock-fancy
+bindsym $mod+Shift+x exec $lock_command
 # bindsym $mod+Shift+w exec networkmanager_dmenu
 bindsym $mod+Shift+w exec rofi-network
 bindsym $mod+p exec rofi-power
@@ -311,7 +311,7 @@ bindsym --release shift+Print exec --no-startup-id scrot -s '%Y-%m-%d-%H-%M-%S_$
 #bindsym $mod+Delete exec $stoprec
 ####autostart####
 # exec --no-startup-id $HOME/.config/i3/my_lock.sh
-exec --no-startup-id i3lock-fancy
+# exec --no-startup-id i3lock-fancy
 exec --no-startup-id nm-applet
 exec --no-startup-id $browser
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
