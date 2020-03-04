@@ -28,14 +28,6 @@
        (straight-use-package 'use-package)
        (setq use-package-verbose t)
     #+END_SRC
-*** ORG
-#+BEGIN_SRC emacs-lisp
-    (use-package org
-      :straight t
-      :ghook
-       ('org-mode-hook 'auto-fill-mode)
-  )
-#+END_SRC
 ** Pre-evaluate all autoloads
    Pre evaluate evaluate all cached autoloads
    #+BEGIN_SRC emacs-lisp
@@ -118,10 +110,10 @@
    #+END_SRC
 ** Misc
    #+BEGIN_SRC emacs-lisp
-      (setq vc-follow-symlinks nil
-            ring-bell-function 'ignore
-            inhibit-startup-screen t)
-      (defalias 'yes-or-no-p 'y-or-n-p)
+	 (setq vc-follow-symlinks nil
+		   ring-bell-function 'ignore
+		   inhibit-startup-screen t)
+	 (defalias 'yes-or-no-p 'y-or-n-p)
    #+END_SRC
 ** Some interface tweaks
    #+BEGIN_SRC emacs-lisp
@@ -209,10 +201,10 @@
 Transient keymaps library.
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
-    :init
-    (setq  hydra-hint-display-type 'posframe)
-    :straight t
-    :defer t)
+	:init
+	(setq  hydra-hint-display-type 'posframe)
+	:straight t
+	:defer t)
 #+END_SRC
 
 ** Which-key
@@ -232,36 +224,37 @@ Transient keymaps library.
     1. minibuffer-keyboard-quit to quit all minibuffers
     2. Map [escape] to quit all minibuffers
        #+BEGIN_SRC emacs-lisp
-         (use-package evil
-           :after general
-           :straight t
-           :demand t
-           :init
-           (defun minibuffer-keyboard-quit ()
-             "Abort recursive edit.
-         In Delete Selection mode, if the mark is active, just deactivate it;
-         then it takes a second \\[keyboard-quit] to abort the minibuffer."
-             (interactive)
-             (if (and delete-selection-mode transient-mark-mode mark-active)
-                 (setq deactivate-mark  t)
-               (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
-               (abort-recursive-edit)))
-           :general
-           (:states '(insert)
-            "C-n" nil
-            "C-p" nil)
-           :init
-           (setq evil-want-C-u-scroll t)
-           :config
-           (evil-mode 1)
-           (define-key evil-normal-state-map [escape] 'keyboard-quit)
-           (define-key evil-motion-state-map [escape] 'keyboard-quit)
-           (define-key evil-visual-state-map [escape] 'keyboard-quit)
-           (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-           (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-           (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-           (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-           (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit))
+		 (use-package evil
+		   :after general
+		   :straight t
+		   :demand t
+		   :init
+		   (defun minibuffer-keyboard-quit ()
+			 "Abort recursive edit.
+		 In Delete Selection mode, if the mark is active, just deactivate it;
+		 then it takes a second \\[keyboard-quit] to abort the minibuffer."
+			 (interactive)
+			 (if (and delete-selection-mode transient-mark-mode mark-active)
+				 (setq deactivate-mark  t)
+			   (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+			   (abort-recursive-edit)))
+		   :general
+		   (:states '(insert)
+			"C-n" nil
+			"C-p" nil)
+		   :init
+		   (setq evil-want-C-u-scroll t)
+		   (setq evil-disable-insert-state-bindings t)
+		   :config
+		   (evil-mode 1)
+		   (define-key evil-normal-state-map [escape] 'keyboard-quit)
+		   (define-key evil-motion-state-map [escape] 'keyboard-quit)
+		   (define-key evil-visual-state-map [escape] 'keyboard-quit)
+		   (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+		   (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+		   (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+		   (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+		   (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit))
        #+END_SRC
 ** Unbind Space
    Unbind Space in evil-states to use it as prefix
@@ -373,6 +366,15 @@ Transient keymaps library.
          :config
          (evilem-default-keybindings "SPC m"))
     #+END_SRC
+* ORG
+*** ORG
+#+BEGIN_SRC emacs-lisp
+    (use-package org
+      :straight t
+      :ghook
+       ('org-mode-hook 'auto-fill-mode)
+  )
+#+END_SRC
 * UI
 ** Spacemacs-theme
    #+BEGIN_SRC emacs-lisp
@@ -401,33 +403,39 @@ Transient keymaps library.
     3. Set line height
     4. Short values for evil-state
        #+BEGIN_SRC emacs-lisp
-       (use-package telephone-line
-       :straight t
-       :ghook
-       ('after-init-hook #'telephone-line-mode)
-       :init
-       (setq telephone-line-lhs
-       '((evil   . (telephone-line-evil-tag-segment))
-           (accent . (telephone-line-vc-segment telephone-line-process-segment telephone-line-projectile-segment))
-           (nil    . (telephone-line-minor-mode-segment))))
-       (setq telephone-line-center-lhs
-           '((nil .())
-           (evil   . (telephone-line-buffer-segment))))
-       (setq telephone-line-center-rhs
-           '((evil   . (telephone-line-major-mode-segment))
-           (nil .())))
-       (setq telephone-line-rhs
-       '((nil    . (telephone-line-flycheck-segment))
-       (accent . (telephone-line-misc-info-segment))
-           (evil   . (telephone-line-airline-position-segment))))
-       (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-           telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
-           telephone-line-primary-right-separator 'telephone-line-cubed-right
-           telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
-       (setq telephone-line-height 24
-           telephone-line-evil-use-short-tag t)
-           )
+		 (use-package telephone-line
+		 :straight t
+		 :ghook
+		 ('after-init-hook #'telephone-line-mode)
+		 :init
+		 (setq telephone-line-lhs
+		 '((evil   . (telephone-line-evil-tag-segment))
+			 (accent . (telephone-line-vc-segment telephone-line-process-segment telephone-line-projectile-segment))
+			 (nil    . (telephone-line-minor-mode-segment))))
+		 (setq telephone-line-center-lhs
+			 '((nil .())
+			 (evil   . (telephone-line-buffer-segment))))
+		 (setq telephone-line-center-rhs
+			 '((evil   . (telephone-line-major-mode-segment))
+			 (nil .())))
+		 (setq telephone-line-rhs
+		 '((nil    . (telephone-line-flycheck-segment))
+		 (accent . (telephone-line-misc-info-segment))
+			 (evil   . (telephone-line-airline-position-segment))))
+		 (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+			 telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
+			 telephone-line-primary-right-separator 'telephone-line-cubed-right
+			 telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
+		 (setq telephone-line-height 24
+			 telephone-line-evil-use-short-tag t)
+			 )
        #+END_SRC
+** Doom-modeline
+   #+BEGIN_SRC emacs-lisp
+	 ;; (use-p
+	 ;;   :straight t
+	 ;;   :init (doom-modeline-mode 1))
+   #+END_SRC
 ** Dashboard
    Vim startify attempt for emacs
    #+BEGIN_SRC emacs-lisp
@@ -1150,50 +1158,50 @@ Transient keymaps library.
    VTE emulation in emacs
 #+BEGIN_SRC emacs-lisp
   (use-package vterm
-    :straight t
-    :commands vterm
-    :custom (vterm-install t)
-    :config
-    ;; (defun vterm-send-return ()
-    ;;   "Sends C-m to the libvterm."
-    ;;   (interactive)
-    ;;   (process-send-string vterm--process "\C-m"))
-    ;; (defun vterm-send-backtab()
-    ;;   "Sends backtab to libvterm"
-    ;;   (interactive)
-    ;;   (when vterm--term
-    ;;     (let ((inhibit-redisplay t)
-    ;;           (inhibit-read-only t))
-    ;;       (vterm--update vterm--term "<tab>" t nil nil))))
-    ;; (define-key vterm-mode-map [return]  #'vterm-send-return)
-    ;; (define-key vterm-mode-map [backtab]  #'vterm-send-backtab)
-    (evil-set-initial-state 'vterm-mode 'insert)
-    (evil-set-initial-state 'comint-mode 'normal)
-    :general
-    (:keymaps 'vterm-mode-map
-              :states 'insert
-              "C-e"      #'vterm--self-insert
-              "C-f"      #'vterm--self-insert
-              "C-a"      #'vterm--self-insert
-              "C-v"      #'vterm--self-insert
-              "C-b"      #'vterm--self-insert
-              "C-w"      #'vterm--self-insert
-              "C-u"      #'vterm--self-insert
-              "C-d"      #'vterm--self-insert
-              "C-n"      #'vterm--self-insert
-              "C-m"      #'vterm--self-insert
-              "C-p"      #'vterm--self-insert
-              "C-j"      #'vterm--self-insert
-              "C-k"      #'vterm--self-insert
-              "C-r"      #'vterm--self-insert
-              "C-t"      #'vterm--self-insert
-              "C-g"      #'vterm--self-insert
-              "C-c"      #'vterm--self-insert
-              "C-SPC"    #'vterm--self-insert)
-    (:states '(normal motion insert emacs)
-             :prefix "SPC RET"
-             :non-normal-prefix "M-SPC RET"
-             "" 'vterm-other-window))
+	:straight t
+	:commands vterm
+	:custom (vterm-install t)
+	:config
+	;; (defun vterm-send-return ()
+	;;   "Sends C-m to the libvterm."
+	;;   (interactive)
+	;;   (process-send-string vterm--process "\C-m"))
+	;; (defun vterm-send-backtab()
+	;;   "Sends backtab to libvterm"
+	;;   (interactive)
+	;;   (when vterm--term
+	;;     (let ((inhibit-redisplay t)
+	;;           (inhibit-read-only t))
+	;;       (vterm--update vterm--term "<tab>" t nil nil))))
+	;; (define-key vterm-mode-map [return]  #'vterm-send-return)
+	;; (define-key vterm-mode-map [backtab]  #'vterm-send-backtab)
+	(evil-set-initial-state 'vterm-mode 'insert)
+	(evil-set-initial-state 'comint-mode 'normal)
+	:general
+	(:keymaps 'vterm-mode-map
+			  :states 'insert
+			  "C-e"      #'vterm--self-insert
+			  "C-f"      #'vterm--self-insert
+			  "C-a"      #'vterm--self-insert
+			  "C-v"      #'vterm--self-insert
+			  "C-b"      #'vterm--self-insert
+			  "C-w"      #'vterm--self-insert
+			  "C-u"      #'vterm--self-insert
+			  "C-d"      #'vterm--self-insert
+			  "C-n"      #'vterm--self-insert
+			  "C-m"      #'vterm--self-insert
+			  "C-p"      #'vterm--self-insert
+			  "C-j"      #'vterm--self-insert
+			  "C-k"      #'vterm--self-insert
+			  "C-r"      #'vterm--self-insert
+			  "C-t"      #'vterm--self-insert
+			  "C-g"      #'vterm--self-insert
+			  "C-c"      #'vterm--self-insert
+			  "C-SPC"    #'vterm--self-insert)
+	(:states '(normal motion insert emacs)
+			 :prefix "SPC RET"
+			 :non-normal-prefix "M-SPC RET"
+			 "" 'vterm-other-window))
 #+END_SRC
 * Misc
 ** Sudo-edit
@@ -1296,12 +1304,12 @@ HTTP client
 ** Smerge mode hydra
 #+BEGIN_SRC emacs-lisp
   (use-package smerge-mode
-    :after hydra
-    :defer t
-    :config
-    (defhydra smerge-hydra
-      (:color pink :hint nil :post (smerge-auto-leave))
-      "
+	:after hydra
+	:defer t
+	:config
+	(defhydra smerge-hydra
+	  (:color pink :hint nil :post (smerge-auto-leave))
+	  "
   ^Move^       ^Keep^               ^Diff^                 ^Other^
   ^^-----------^^-------------------^^---------------------^^-------
   _n_ext       _b_ase               _<_: upper/base        _C_ombine
@@ -1310,119 +1318,135 @@ HTTP client
   ^^           _a_ll                _R_efine
   ^^           _RET_: current       _E_diff
   "
-      ("n" smerge-next)
-      ("p" smerge-prev)
-      ("b" smerge-keep-base)
-      ("u" smerge-keep-upper)
-      ("l" smerge-keep-lower)
-      ("a" smerge-keep-all)
-      ("RET" smerge-keep-current)
-      ("\C-m" smerge-keep-current)
-      ("<" smerge-diff-base-upper)
-      ("=" smerge-diff-upper-lower)
-      (">" smerge-diff-base-lower)
-      ("R" smerge-refine)
-      ("E" smerge-ediff)
-      ("C" smerge-combine-with-next)
-      ("r" smerge-resolve)
-      ("k" smerge-kill-current)
-      ("ZZ" (lambda ()
-              (interactive)
-              (save-buffer)
-              (bury-buffer))
-       "Save and bury buffer" :color blue)
-      ("q" nil "cancel" :color blue))
-    :hook (magit-diff-visit-file . (lambda ()
-                                     (when smerge-mode
-                                       (unpackaged/smerge-hydra/body)))))
+	  ("n" smerge-next)
+	  ("p" smerge-prev)
+	  ("b" smerge-keep-base)
+	  ("u" smerge-keep-upper)
+	  ("l" smerge-keep-lower)
+	  ("a" smerge-keep-all)
+	  ("RET" smerge-keep-current)
+	  ("\C-m" smerge-keep-current)
+	  ("<" smerge-diff-base-upper)
+	  ("=" smerge-diff-upper-lower)
+	  (">" smerge-diff-base-lower)
+	  ("R" smerge-refine)
+	  ("E" smerge-ediff)
+	  ("C" smerge-combine-with-next)
+	  ("r" smerge-resolve)
+	  ("k" smerge-kill-current)
+	  ("ZZ" (lambda ()
+			  (interactive)
+			  (save-buffer)
+			  (bury-buffer))
+	   "Save and bury buffer" :color blue)
+	  ("q" nil "cancel" :color blue))
+	:hook (magit-diff-visit-file . (lambda ()
+									 (when smerge-mode
+									   (unpackaged/smerge-hydra/body)))))
 
 #+END_SRC
 * Language Tools
 ** LSP-Mode
    Language Server Client for Emacs
    #+BEGIN_SRC emacs-lisp
-     (use-package lsp-mode
-       :straight t
-       :defer t
-       :commands lsp
-       :general
-       (:states '(normal motion insert emacs)
-                :keymaps 'lsp-mode-map
-                :prefix "SPC l"
-                :non-normal-prefix "M-SPC l"
-                "" '(:ignore t :which-key "lsp-prefix")
-                "d" '(xref-find-definitions :which-key "definitions")
-                "r" '(xref-find-references :which-key "references")
-                "R" '(lsp-rename :which-key "rename var")
-                "i" '(helm-imenu :which-key "helm-imenu")
-                "f" '(lsp-format-buffer :which-key "format buffer")
-                "p" '(xref-pop-marker-stack :which-key "pop-definition-stack")
-                "." '(lsp-execute-code-action :which-key "code-action")
-                "l" '(lsp-workspace-restart :which-key "restart lsp")
-                )
-       :init
-       (setq lsp-inhibit-message t)
-       (setq lsp-prefer-flymake nil)
-       (setq lsp-eldoc-enable-hover t)
-       (setq lsp-prefer-capf t)
-       :config
-       (add-to-list 'lsp-file-watch-ignored "[/\\\\]\\.ccls-cache$"))
+	 (use-package lsp-mode
+	   :straight t
+	   :defer t
+	   :commands lsp
+	   :init
+	   (setq lsp-inhibit-message t)
+	   (setq lsp-prefer-flymake nil)
+	   (setq lsp-eldoc-enable-hover t)
+	   (setq lsp-prefer-capf t)
+	   ;; (setq lsp-keymap-prefix "SPC l")
+	   :general
+			(:states '(normal motion insert emacs)
+					 :prefix "SPC l"
+					 :non-normal-prefix "M-SPC l"
+					 "" '(:keymap lsp-command-map )
+					;; "d" 'lsp-find-definition
+					;; "." 'lsp-execute-code-action
+					 )
+			(:keymaps 'lsp-command-map
+					"d" 'lsp-find-definition
+					"." 'lsp-execute-code-action
+					 )
+	   :ghook
+	   ('lsp-mode-hook #'lsp-enable-which-key-integration)
+	   :config
+	   (add-to-list 'lsp-file-watch-ignored "[/\\\\]\\.ccls-cache$"))
    #+END_SRC
 ** DAP-Mode
    #+BEGIN_SRC emacs-lisp
-     (use-package dap-mode
-       :straight t
-       :after lsp-mode
-       :defer t
-       :commands (dap-mode dap-debug)
-       )
+	 (use-package dap-mode
+	   :straight t
+	   :defer t
+	   :commands (dap-mode dap-debug)
+	   :general
+	   (:states '(normal motion insert emacs)
+				:prefix "SPC d"
+				:non-normal-prefix "M-SPC d"
+				"" '(:keymap dap-mode-map :package dap-mode :which-key "dap-prefix")
+				)
+	   (:keymaps 'dap-mode-map
+				 "h" '(dap-hydra :which-key "dap-hydra"))
+	   :ghook
+	   ('dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
+	   :config
+	   (dap-mode 1)
+	   )
    #+END_SRC
 ** DAP-UI-Mode
 #+BEGIN_SRC emacs-lisp
   (use-package dap-ui
-    :straight dap-mode
-    :ghook
-    ('dap-mode-hook 'dap-ui-mode)
-    :custom-face
-    (dap-ui-pending-breakpoint-face ((t :inherit breakpoint-enabled))))
+	:straight dap-mode
+	:ghook
+	('dap-mode-hook 'dap-ui-mode)
+	('dap-mode-hook 'dap-ui-controls-mode)
+	:custom-face
+	(dap-ui-pending-breakpoint-face ((t :inherit breakpoint-enabled)))
+	(dap-ui-verified-breakpoint-face ((t :inherit breakpoint-enabled))))
 #+END_SRC
 ** DAP-hydra
 #+BEGIN_SRC emacs-lisp
-  (use-package dap-hydra
-    :straight dap-mode
-    :general
-    (:states '(normal motion insert emacs)
-             :keymaps 'dap-mode-map
-             :prefix "SPC d"
-             :non-normal-prefix "M-SPC d"
-              "" '(:ignore t :which-key "dap-prefix")
-             "h" '(dap-hydra :which-key "dap-hydra")))
+  ;; (use-package dap-hydra
+  ;;   :straight dap-mode
+  ;;   :ghook
+  ;; 	('dap-stopped-hook
+  ;; 		  '(lambda (arg) (call-interactively #'dap-hydra)))
+  ;;   :general
+  ;;   (:states '(normal motion insert emacs)
+  ;; 		   :keymaps 'dap-mode-map
+  ;; 		   :prefix "SPC d"
+  ;; 		   :non-normal-prefix "M-SPC d"
+  ;; 			"" '(:ignore t :which-key "dap-prefix")
+  ;; 		   "h" '(dap-hydra :which-key "dap-hydra")))
 #+END_SRC
 ** LSP-UI
    Higher level UI modules for LSP-mode
    #+BEGIN_SRC emacs-lisp
-   (use-package lsp-ui
-     :straight t
-     :after lsp-mode
-     :defer t
-     :commands lsp-ui-mode
-     :ghook ('lsp-mode-hook #'lsp-ui-mode 1)
-     :general
-     (:keymaps 'lsp-ui-mode-map
-               [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
-               [remap xref-find-references] #'lsp-ui-peek-find-references
-               [remap evil-goto-definition] #'lsp-ui-peek-find-definitions)
-     (:states '(normal motion insert emacs)
-              :keymaps 'lsp-ui-mode-map
-              :prefix "SPC l"
-              :non-normal-prefix "M-SPC l"
-              "s" '(lsp-ui-imenu :which-key "lsp-imenu")
-              )
-     :init
-     (setq lsp-ui-doc-max-height 7
-           lsp-ui-doc-max-width 40
-           lsp-ui-sideline-update-mode 'point
-           lsp-ui-sideline-show-hover nil))
+	 (use-package lsp-ui
+	   :straight t
+	   :after lsp-mode
+	   :defer t
+	   :commands lsp-ui-mode
+	   :ghook ('lsp-mode-hook #'lsp-ui-mode 1)
+	   :general
+	   (:keymaps 'lsp-ui-mode-map
+				 [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
+				 [remap xref-find-references] #'lsp-ui-peek-find-references
+				 [remap evil-goto-definition] #'lsp-ui-peek-find-definitions)
+	   (:states '(normal motion insert emacs)
+				:keymaps 'lsp-ui-mode-map
+				:prefix "SPC l"
+				:non-normal-prefix "M-SPC l"
+				"s" '(lsp-ui-imenu :which-key "lsp-imenu")
+				)
+	   :init
+	   (setq lsp-ui-doc-max-height 7
+			 lsp-ui-doc-max-width 40
+			 lsp-ui-sideline-update-mode 'point
+			 lsp-ui-sideline-show-hover nil))
    #+END_SRC
 ** Company-lsp
    Company backend for lsp
@@ -1436,18 +1460,15 @@ HTTP client
 ** Lsp utils
 *** Helm LSP
     #+BEGIN_SRC emacs-lisp
-      (use-package helm-lsp
-          :straight t
-          :defer t
-          :commands helm-lsp-workspace-symbol
-          :general
-          (:states '(normal motion insert emacs)
-                  :keymaps 'lsp-mode-map
-                  :prefix "SPC l"
-                  :non-normal-prefix "M-SPC l"
-                  "w" '(helm-lsp-workspace-symbol :which-key "workspace-symbol")
-                  )
-          )
+	  (use-package helm-lsp
+		  :straight t
+		  :defer t
+		  :commands helm-lsp-workspace-symbol
+		  :general
+		  (:keymaps 'lsp-command-map
+				  "w" '(helm-lsp-workspace-symbol :which-key "workspace-symbol")
+				  )
+		  )
     #+END_SRC
 *** LSP treemacs
 #+BEGIN_SRC emacs-lisp
@@ -1456,10 +1477,7 @@ HTTP client
     :after (lsp-mode)
     :commands lsp-treemacs-errors-list
     :general
-    (:states '(normal motion insert emacs)
-             :keymaps 'lsp-mode-map
-             :prefix "SPC l"
-             :non-normal-prefix "M-SPC l"
+    (:keymaps 'lsp-command-map
              "e" '(lsp-treemacs-errors-list :which-key "error-list")))
 #+END_SRC
 ** C-family
@@ -1494,34 +1512,36 @@ HTTP client
 *** Lsp-java
     Eclipse JDT-LS client for emacs
     #+BEGIN_SRC emacs-lisp
-    (use-package lsp-java
-      :straight t
-      :defer t
-      :ghook
-      ('java-mode-hook
-       (lambda () (require 'lsp-java)(semantic-mode 1)(lsp)))
-      :init
-        (setq lsp-ui-sideline-update-mode 'point
-              lsp-java-favorite-static-members '( "java.util.stream.Collectors.*" "org.junit.Assert.*" "org.junit.Assume.*" "org.junit.jupiter.api.Assertions.*" "org.junit.jupiter.api.Assumptions.*" "org.junit.jupiter.api.DynamicContainer.*" "org.junit.jupiter.api.DynamicTest.*"))
-      (defun ricky//get-java-package-name ()
-        "get package name for the current buffer"
-        (let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
-          (if (and (listp packages) (eq (length packages) 1))
-              (semantic-tag-name (car packages)))))
-      (defun ricky//get-fully-qualified-class-name ()
-        "returns the fully qualified classname for the current buffer"
-        (interactive "")
-        (concat (ricky//get-java-package-name) "."
-                (file-name-sans-extension
-                 (file-name-nondirectory (buffer-file-name)))))
-      )
+	  (use-package lsp-java
+		:straight t
+		:defer t
+		:ghook
+		('java-mode-hook
+		 (lambda () (require 'lsp-java)(semantic-mode 1)(lsp)))
+		:init
+		  (setq lsp-ui-sideline-update-mode 'point
+				lsp-java-favorite-static-members '( "java.util.stream.Collectors.*" "org.junit.Assert.*" "org.junit.Assume.*" "org.junit.jupiter.api.Assertions.*" "org.junit.jupiter.api.Assumptions.*" "org.junit.jupiter.api.DynamicContainer.*" "org.junit.jupiter.api.DynamicTest.*")
+				lsp-java-maven-download-sources t
+				)
+		(defun ricky//get-java-package-name ()
+		  "get package name for the current buffer"
+		  (let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
+			(if (and (listp packages) (eq (length packages) 1))
+				(semantic-tag-name (car packages)))))
+		(defun ricky//get-fully-qualified-class-name ()
+		  "returns the fully qualified classname for the current buffer"
+		  (interactive "")
+		  (concat (ricky//get-java-package-name) "."
+				  (file-name-sans-extension
+				   (file-name-nondirectory (buffer-file-name)))))
+		)
 
     #+END_SRC
 *** DAP-Java
     #+BEGIN_SRC emacs-lisp
-     (use-package dap-java
-       :straight dap-mode
-       :after lsp-java)
+	  (use-package dap-java
+		:straight dap-mode
+		:after (lsp-java dap-mode))
     #+END_SRC
 ** Python
 *** Pipenv
@@ -1588,3 +1608,78 @@ HTTP client
         :straight tree-mode
         :defer t)
     #+END_SRC
+	
+** Lua 
+*** Lua mode
+   #+begin_src emacs-lisp 
+	 (use-package lua-mode
+	   :straight t 
+	   :mode ("\\.lua\\'" . lua-mode)
+	   :interpreter "lua"
+	   :gfhook 
+	   'ricky//load-lsp-lua-config)
+   #+end_src
+*** lsp lua config 
+	Config for using https://github.com/sumneko/lua-language-server 
+#+BEGIN_SRC  emacs-lisp
+	  (defun ricky//load-lsp-lua-config ()
+		(remove-hook 'lua-mode-hook 'ricky//load-lsp-lua-config)
+		(require 'lsp-mode)
+		(defcustom lsp-lua-awakened-cat nil nil :type (quote boolean))
+		(defcustom lsp-lua-completion-call-snippet "Disable" nil :type (quote (choice (:tag "Disable" "Both" "Replace"))))
+		(defcustom lsp-lua-completion-enable t nil :type (quote boolean))
+		(defcustom lsp-lua-completion-keyword-snippet "Replace" nil :type (quote (choice (:tag "Disable" "Both" "Replace"))))
+		(defcustom lsp-lua-develop-debugger-port 11412 nil :type (quote number))
+		(defcustom lsp-lua-develop-debugger-wait nil nil :type (quote boolean))
+		(defcustom lsp-lua-develop-enable nil nil :type (quote boolean))
+		(defcustom lsp-lua-diagnostics-disable nil nil :type (quote lsp-string-vector))
+		(defcustom lsp-lua-diagnostics-enable t nil :type (quote boolean))
+		(defcustom lsp-lua-diagnostics-globals nil nil :type (quote lsp-string-vector))
+		(defcustom lsp-lua-diagnostics-severity nil nil :type (quote nil))
+		(defcustom lsp-lua-runtime-path ["?.lua" "?/init.lua" "?/?.lua"] nil :type (quote lsp-string-vector))
+		(defcustom lsp-lua-runtime-version "Lua 5.3" nil :type (quote (choice (:tag "Lua 5.1" "Lua 5.2" "Lua 5.3" "Lua 5.4" "LuaJIT"))))
+		(defcustom lsp-lua-workspace-ignore-dir [".vscode"] nil :type (quote lsp-string-vector))
+		(defcustom lsp-lua-workspace-ignore-submodules t nil :type (quote boolean))
+		(defcustom lsp-lua-workspace-library nil nil :type (quote nil))
+		(defcustom lsp-lua-workspace-max-preload 300 nil :type (quote number))
+		(defcustom lsp-lua-workspace-preload-file-size 100 nil :type (quote number))
+		(defcustom lsp-lua-workspace-use-git-ignore t nil :type (quote boolean))
+		(defcustom lsp-lua-server-binary ( expand-file-name "~/.emacs.d/lua-language-server/bin/Linux/lua-language-server") nil :type (quote string))
+		(defcustom lsp-lua-server-main ( expand-file-name "~/.emacs.d/lua-language-server/main.lua") nil :type (quote string))
+		(lsp-register-custom-settings
+		 (quote (("Lua.workspace.useGitIgnore" lsp-lua-workspace-use-git-ignore t)
+				 ("Lua.workspace.preloadFileSize" lsp-lua-workspace-preload-file-size)
+				 ("Lua.workspace.maxPreload" lsp-lua-workspace-max-preload)
+				 ("Lua.workspace.library" lsp-lua-workspace-library)
+				 ("Lua.workspace.ignoreSubmodules" lsp-lua-workspace-ignore-submodules t)
+				 ("Lua.workspace.ignoreDir" lsp-lua-workspace-ignore-dir)
+				 ("Lua.runtime.version" lsp-lua-runtime-version)
+				 ("Lua.runtime.path" lsp-lua-runtime-path)
+				 ("Lua.diagnostics.severity" lsp-lua-diagnostics-severity)
+				 ("Lua.diagnostics.globals" lsp-lua-diagnostics-globals)
+				 ("Lua.diagnostics.enable" lsp-lua-diagnostics-enable t)
+				 ("Lua.diagnostics.disable" lsp-lua-diagnostics-disable)
+				 ("Lua.develop.enable" lsp-lua-develop-enable t)
+				 ("Lua.develop.debuggerWait" lsp-lua-develop-debugger-wait t)
+				 ("Lua.develop.debuggerPort" lsp-lua-develop-debugger-port)
+				 ("Lua.completion.keywordSnippet" lsp-lua-completion-keyword-snippet)
+				 ("Lua.completion.enable" lsp-lua-completion-enable t)
+				 ("Lua.completion.callSnippet" lsp-lua-completion-call-snippet)
+				 ("Lua.awakened.cat" lsp-lua-awakened-cat t))))
+		(lsp-register-client
+		 (make-lsp-client :new-connection (lsp-stdio-connection `(,lsp-lua-server-binary "-E" ,lsp-lua-server-main) (lambda() t))
+						  :major-modes '(lua-mode)
+						  :priority 0 
+						  :server-id 'lua-ls))
+		(add-hook 'lua-mode-hook 'lsp)
+		(lsp))
+#+END_SRC
+** Golang 
+*** Go mode
+   #+begin_src emacs-lisp 
+	 (use-package go-mode
+	   :straight t 
+	   :mode "\\.go\\'"
+	   :gfhook 
+	   'lsp)
+   #+end_src
