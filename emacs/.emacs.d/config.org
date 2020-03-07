@@ -245,6 +245,7 @@ Transient keymaps library.
 		   :init
 		   (setq evil-want-C-u-scroll t)
 		   (setq evil-disable-insert-state-bindings t)
+		   (setq evil-want-C-i-jump nil)
 		   :config
 		   (evil-mode 1)
 		   (define-key evil-normal-state-map [escape] 'keyboard-quit)
