@@ -174,7 +174,8 @@ bindsym $mod+r mode "resize"
 set $stoprec --no-startup-id killall ffmpeg & killall screenkey
 set $screencast --no-startup-id screenkey & bash ~/scripts/screencast.sh
 set $browser firefox
-set $lock_command light-locker-command -l
+# set $lock_command $HOME/.config/i3/my_lock.sh
+set $lock_command i3lock-fancy
 
 
 # Pulse Audio controls

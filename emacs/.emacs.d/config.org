@@ -1433,16 +1433,16 @@ HTTP client
 	   :commands lsp-ui-mode
 	   :ghook ('lsp-mode-hook #'lsp-ui-mode 1)
 	   :general
-	   (:keymaps 'lsp-ui-mode-map
-				 [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
-				 [remap xref-find-references] #'lsp-ui-peek-find-references
-				 [remap evil-goto-definition] #'lsp-ui-peek-find-definitions)
-	   (:states '(normal motion insert emacs)
-				:keymaps 'lsp-ui-mode-map
-				:prefix "SPC l"
-				:non-normal-prefix "M-SPC l"
-				"s" '(lsp-ui-imenu :which-key "lsp-imenu")
-				)
+	   ;; (:keymaps 'lsp-ui-mode-map
+	   ;; 			 [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
+	   ;; 			 [remap xref-find-references] #'lsp-ui-peek-find-references
+	   ;; 			 [remap evil-goto-definition] #'lsp-ui-peek-find-definitions)
+	   ;; (:states '(normal motion insert emacs)
+	   ;; 			:keymaps 'lsp-ui-mode-map
+	   ;; 			:prefix "SPC l"
+	   ;; 			:non-normal-prefix "M-SPC l"
+	   ;; 			"s" '(lsp-ui-imenu :which-key "lsp-imenu")
+	   ;; 			)
 	   :init
 	   (setq lsp-ui-doc-max-height 7
 			 lsp-ui-doc-max-width 40
@@ -1474,12 +1474,14 @@ HTTP client
 *** LSP treemacs
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-treemacs
-    :straight t
-    :after (lsp-mode)
-    :commands lsp-treemacs-errors-list
-    :general
-    (:keymaps 'lsp-command-map
-             "e" '(lsp-treemacs-errors-list :which-key "error-list")))
+	:straight t
+	:after (lsp-mode)
+	:commands lsp-treemacs-errors-list
+	:init
+	(setq lsp-treemacs-error-list-severity 1)
+	:general
+	(:keymaps 'lsp-command-map
+			 "e" '(lsp-treemacs-errors-list :which-key "error-list")))
 #+END_SRC
 ** C-family
 *** Lsp-ccls

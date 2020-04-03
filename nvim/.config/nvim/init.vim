@@ -1,8 +1,8 @@
 let mapleader = "\<Space>"
-let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 set mouse=a
-set shiftwidth=4 tabstop=4 noexpandtab
-"set termguicolors
+set shiftwidth=4 tabstop=4 expandtab
+set termguicolors
+set autochdir
 set autoread
 set incsearch
 set nohlsearch
@@ -14,319 +14,254 @@ set relativenumber
 set number
 set background=dark
 set splitright
+set clipboard+=unnamedplus
 
+" python host prog handling
+let g:loaded_python_provider = 0
+let g:python3_host_prog = '/usr/bin/python'
 
-"vim-plug bootstrap
-if empty(glob('~/.config/nvim/autoload/plug.vim'))
-	silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
-				\ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-	autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+" Dein bootstrap 
+let s:dein_path = glob('~/.cache/dein/repos/github.com/Shougo/dein.vim')
+if  empty(s:dein_path)
+    silent !curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh|sh -s ~/.cache/dein
 endif
 
-"wrapper to update remote python plugins
-function! DoRemote(arg)
-	UpdateRemotePlugins
-endfunction
+" Dein plugin config
+if &compatible
+    set nocompatible
+endif
 
+" Add the dein installation directory into runtimepath
+set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 
-call plug#begin('~/.config/nvim/plugged')
-" Make sure you use single quotes
-" Group dependencies, vim-snippets depends on ultisnips
-"Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
-" On-demand loading
+if dein#load_state('~/.cache/dein')
+    call dein#begin('~/.cache/dein')
 
-" colorscheme plugins start
-Plug 'liuchengxu/space-vim-dark'
-Plug 'kristijanhusak/vim-hybrid-material'
-Plug 'whatyouhide/vim-gotham'
-Plug 'dylanaraps/wal.vim'
-Plug 'frankier/neovim-colors-solarized-truecolor-only'
-Plug 'chriskempson/base16-vim'
-Plug 'flazz/vim-colorschemes'
-" colorscheme plugins end
+    "Plugin manager 
+    call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
+    if !has('nvim')
+        call dein#add('roxma/nvim-yarp')
+        call dein#add('roxma/vim-hug-neovim-rpc')
+    endif
 
+    "Colorschemes
+    call dein#add('liuchengxu/space-vim-theme')
 
-Plug 'Raimondi/delimitMate'
-Plug 'mhinz/vim-startify'
-Plug 'dylanaraps/root.vim'
-Plug 'tpope/vim-surround'
-Plug 'autozimu/LanguageClient-neovim', {
-			\ 'branch': 'next',
-			\ 'do': 'bash install.sh',
-			\ }
-Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
-Plug 'Shougo/neosnippet'| Plug 'shougo/neosnippet-snippets'|Plug 'honza/vim-snippets'
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-Plug 'scrooloose/nerdcommenter'
-Plug 'junegunn/fzf.vim'
-Plug 'easymotion/vim-easymotion'
-Plug 'haya14busa/incsearch.vim'
-Plug 'haya14busa/incsearch-easymotion.vim'
-Plug 'haya14busa/incsearch-fuzzy.vim'
-Plug 'w0rp/ale'
-Plug 'kassio/neoterm'
-Plug 'Chiel92/vim-autoformat'
-Plug 'takac/vim-hardtime'
-Plug 'zchee/deoplete-clang' "dependencies deoplete and libclang python3.
-Plug 'zchee/deoplete-go', {'build': {'unix': 'make'}}
-Plug 'fatih/vim-go'
-Plug 'jodosha/vim-godebug' " Debugger integration via delve
-Plug 'shougo/echodoc.vim'
-Plug 'edkolev/tmuxline.vim'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'sheerun/vim-polyglot'
-Plug 'ryanoasis/vim-devicons'
-Plug 'tpope/vim-fugitive'
-Plug 'ludovicchabant/vim-gutentags'
-Plug 'junegunn/goyo.vim'
-" Add plugins to &runtimepath
-call plug#end()
+    "UI
+    call dein#add('mhinz/vim-startify')
+    call dein#add('itchyny/lightline.vim',
+                \{'hook_add':'source ~/.config/nvim/lightline_rc.vim'})
+
+    "Plugins
+    "Interface
+    call dein#add('Shougo/denite.nvim', 
+                \{ 'on_cmd': 'Denite',
+                \'hook_source':'source ~/.config/nvim/denite_rc.vim'})
+    call dein#add('raghur/fruzzy', 
+                \{
+                \'on_source':['denite.nvim'],
+                \'hook_source':join([
+                \ 'let g:fruzzy#sortonempty = 0',
+                \ 'let g:fruzzy#usenative = 1',
+                \ 'call denite#custom#source("_", "matchers", ["matcher/fruzzy"])'
+                \ ],"\n"),
+                \'hook_post_update' : 'call fruzzy#install()',
+                \})
+    call dein#add('wsdjeg/dein-ui.vim',
+                \{'on_cmd':'DeinUpdate'})
+    "Generic Programming
+    call dein#add('sheerun/vim-polyglot')
+    call dein#add('preservim/nerdcommenter',
+                \{'on_map': ['<Plug>','<leader>c']})
+    call dein#add('tpope/vim-repeat', 
+                \{'on_map' : '.'}) 
+    call dein#add('tpope/vim-surround', 
+                \{'on_map': {'n' : ['cs', 'ds', 'ys'], 'x' : 'S'},
+                \'depends' : 'vim-repeat'})
+    call dein#add('jiangmiao/auto-pairs',
+                \{'on_map' : { 'i' : ['(', '[', '{','<','"',"'"] },
+                \'hook_post_source':'call AutoPairsTryInit()'})
+    "Navigation
+    call dein#add('easymotion/vim-easymotion',{
+                \'on_map': {'n': '<Plug>'},
+                \'hook_add' : join(['map <Leader>m <Plug>(easymotion-prefix)',
+                \'map  / <Plug>(easymotion-sn)',
+                \'omap / <Plug>(easymotion-tn)'],"\n"),
+                \'hook_source' : 'let g:EasyMotion_smartcase = 1'})
+    "Language 
+    call dein#add('neoclide/coc.nvim', {'merged':0, 'rev': 'release'})
+    call dein#add('neoclide/coc-denite',{
+                \'on_source':['denite.nvim'],
+                \   })
+    "Misc 
+    call dein#add('Shougo/neoyank.vim', 
+                \{ 'on_event': 'TextYankPost',
+                \'on_source':['denite.nvim']})
+    call dein#end()
+    call dein#save_state()
+endif
+
 filetype plugin indent on
-syntax on
+syntax enable
 
-
-"root.vim
-let g:root#patterns += ['.myfile','.mmt','pom.xml','.sass-cache', 'Readme.md', 'gulpfile.coffee']
-let g:root#echo = 0
-let g:root#auto = 1
-
-"Airline
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_theme ='wal'
-let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-let g:airline#extensions#tmuxline#enabled = 0
-
-"Neoterm - terminal functionality
-let g:neoterm_default_mod = "vertical"
-
-
-"deoplete - autocompletion
-call deoplete#custom#source('file','min_pattern_length',0)
-let g:deoplete#enable_at_startup = 1
-inoremap <expr> <C-Space> deoplete#mappings#manual_complete()
-set completeopt-=preview
-
-"deoplete-clang setup
-let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
-let g:deoplete#sources#clang#clang_header = '/lib/clang'
-let g:deoplete#sources#clang#std = {'cpp':'c++11'}
-
-"golang - settings for vim-go
-let g:go_highlight_build_constraints = 1
-let g:go_highlight_extra_types = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_structs = 1
-let g:go_highlight_types = 1
-let g:go_fmt_command = "goimports"
-let g:go_auto_type_info = 1
-let g:go_doc_keywordprg_enabled = 0 "important : remove 'K' mapping,lifesaver
-let g:go_fmt_fail_silently = 1
-
-"ALE- async linting neomake alternate
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_linters = {
-			\   'cpp': ['clang'],
-			\}
-"nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-"nmap <silent> <C-j> <Plug>(ale_next_wrap)
-
-"neosnippet - snippet engine
-
-let g:neosnippet#snippets_directory='~/.config/nvim/snippets'
-let g:neosnippet#enable_snipmate_compatibility=1
-let g:neosnippet#enable_completed_snippet = 1
-
-
-"startify - start screen and session management
-let g:startify_session_dir = '~/.config/nvim/sessions'
-"let g:startify_list_order = ['sessions','files', 'dir', 'bookmarks','commands']
-let g:startify_list_order = [
-			\ ['   sessions:'],
-			\ 'sessions',
-			\ ['   MRU:   '],
-			\ 'files',
-			\ ['   MRU directory'],
-			\ 'dir',
-			\ ['  bookmarks:'],
-			\ 'bookmarks',
-			\ ['   commands:'],
-			\ 'commands',
-			\ ]
-let g:startify_update_oldfiles = 1
-let g:startify_session_persistence = 1
-let g:startify_session_delete_buffers = 1
-let g:startify_session_sort = 1
-
-
-"nerdtree
-let NERDTreeHijackNetrw = 0
-
-
-"delimitMate - bracket autocompletion
-let delimitMate_expand_cr = 1
-
-"hardtime - vim training
-let g:hardtime_default_on = 0
-
-"gutentags - tag management
-let g:gutentags_project_root = ['.myfile']
-
-
-"easymotion -
-map  / <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-tn)
-
-" Turn on case insensitive feature
-let g:EasyMotion_smartcase = 1
-
-"Fuzzy easymotion search
-function! s:config_easyfuzzymotion(...) abort
-	return extend(copy({
-				\   'converters': [incsearch#config#fuzzyword#converter()],
-				\   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
-				\   'keymap': {"\<CR>": '<Over>(easymotion)'},
-				\   'is_expr': 0,
-				\   'is_stay': 1
-				\ }), get(a:, 1, {}))
-endfunction
-
-noremap <silent><expr> <Leader>/ incsearch#go(<SID>config_easyfuzzymotion())
-
-
-"neosnippet,deoplete,delimitMate harmony
-
-imap <expr><TAB>
-			\ pumvisible() ? "\<C-n>" :
-			\ neosnippet#expandable_or_jumpable() ?
-			\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-			\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-imap <expr><CR> neosnippet#expandable() ?
-			\ "\<Plug>(neosnippet_expand)" : "\<Plug>delimitMateCR"
-imap <expr><s-TAB>
-			\ pumvisible() ? "\<C-p>" : "\<s-TAB>"
-
-"autoformat
-au BufWrite *.cpp :Autoformat
-au BufWrite *.vim :Autoformat
-au BufWrite *.nvim :Autoformat
-"let g:autoformat_verbosemode=1
-let g:formatdef_clang ="'clang-format -lines='.a:firstline.':'.a:lastline.' --assume-filename=\"'.expand('%:p').'\" -style=file'"
-let g:formatters_cpp = ['clang','clangformat','astyle_cpp']
-
-"echodoc-function signatures in statusbar
-set noshowmode
-let g:echodoc_enable_at_startup = 1
-
-
-
-"maps
-"easy clipboard
-nnoremap <Leader>y "+y
-vnoremap <Leader>y "+y
-nnoremap <Leader>p "+p
-vnoremap <Leader>p "+p
-nnoremap <Leader>P "+P
-vnoremap <Leader>P "+P
-
-"terminal easy exit
-tnoremap II <C-\><C-n>
-nnoremap <Leader>tc :Tclose<CR>
-
-"easy split navigation
-
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-
-"insert mode bindings for navigation
-inoremap <C-h>  <Left>
-inoremap <C-j>  <Down>
-inoremap <C-k>  <Up>
-inoremap <C-l>  <Right>
-
-"easily exit insert mode
-inoremap II <Esc>
-vnoremap v <Esc>
-
-"filetype based execution
-au FileType python :nmap <buffer> <Leader>te w<CR>:execute 'T python '.shellescape(expand('%:p'))<CR>
-au FileType go :nmap <buffer> <Leader>te w<CR>:execute 'T go run '.shellescape(expand('%:p'))<CR>
-au FileType go :nmap <buffer> <Leader>k  :GoDoc<CR>
-au FileType cpp :nmap <buffer> <Leader>te w<CR>:execute 'T g++ '.shellescape(expand('%:p')).' -std=c++11 -D LOCAL_SYS -o '.shellescape(expand('%:p:r')).' && time '.shellescape(expand('%:p:r'))<CR>
-
-"fzf bindings - search
-nnoremap <Leader>hf :History<CR>
-nnoremap <Leader>fo :FZF<CR>
-nnoremap <A-x> :Commands<CR>
-nnoremap <Leader>bt :BTags<CR>
-nnoremap <Leader>gt :Tags<CR>
-nnoremap <Leader>bm :Marks<CR>
-nnoremap <Leader>wl :Windows<CR>
-nnoremap <Leader>hc :History:<CR>
-nnoremap <Leader>hs :History/<CR>
-nnoremap <Leader>HH :Helptags<CR>
-nnoremap <Leader>fh :FZF $HOME<CR>
-
-"move through tabs easily.
-nnoremap J :tabprevious<CR>
-nnoremap K :tabnext<CR>
-
-" open file in a new tab
-nnoremap <Leader>tn :tabedit % <CR>
-" topcoder greed open probem statement using links in new terminal
-function Open_statement(filname)
-	let a:tempfil = fnameescape(a:filname)
-	execute 'tabnew'
-	execute 'terminal elinks '.a:tempfil.'.html'
-endfunction
-nnoremap <Leader>os :call Open_statement(expand('%:p:r'))<CR>
-
-
-" Save whenever switching windows or leaving vim. This is useful when running
-" the tests inside vim without having to save all files first.
-au FocusLost,WinLeave * :silent! wa
-" Trigger autoread when changing buffers or coming back to vim.
-au FocusGained,BufEnter * :silent! !
-map <Leader>r :exe "%s/".expand("<cword>")."/
-
+if dein#check_install()
+    call dein#install()
+endif
+"Dein hook post source handling
+autocmd VimEnter * call dein#call_hook('post_source')
 
 "colorschemes
-"colorscheme gotham
-"colorscheme base16-google-dark
-colorschem wal
+colorscheme space_vim_theme
 
-"languageclient-neovim
-" 'java': ['jdtls', '-data', getcwd()],
-let g:LanguageClient_serverCommands = {
-			\'java': ['jdtls'],
-			\'python':['pyls']
-			\ }
-let g:LanguageClient_loggingLevel = 'DEBUG'
 
-let s:hidden_all = 0
-function! ToggleHiddenAll()
-	if s:hidden_all  == 0
-		let s:hidden_all = 1
-		set laststatus=0
-		set noshowcmd
-		set showtabline=0
-	else
-		let s:hidden_all = 0
-		set laststatus=2
-		set showcmd
-		set showtabline=2
-	endif
-endfunction
+"mappings 
+"Buffers 
+if dein#tap('denite.nvim')
+    map <leader>bl :Denite buffer<CR>
+    map <leader>bb :Denite buffer file/old<CR>
+endif
+map <leader>bn :bnext<CR>
+map <leader>bp :bprevious<CR>
+map <leader>bd :bdelete<CR>
+map <leader>bc :blast<CR>
 
-nnoremap <Leader>T :call ToggleHiddenAll()<CR>
+"Files 
+if dein#tap('denite.nvim')
+    map <leader>ff :Denite file<CR>
+    map <leader>fh :Denite file/old<CR>
+    map <leader>fg :Denite file/point<CR>
+    map <leader>fd :Denite file/rec<CR>
+endif
+map <leader>fy :let @" = expand("%")<CR>
+map <leader>fv :edit $MYVIMRC<CR>
+map <leader>fr :source $MYVIMRC<CR>
 
-"python virtualenv values
-let g:python_host_prog = $HOME.'/.local/share/virtualenvs/neovim2/bin/python'
-let g:python3_host_prog = $HOME.'/.local/share/virtualenvs/neovim3/bin/python'
+"Project
+if dein#tap('denite.nvim')
+    map <leader>pf :DeniteProjectDir file/rec<CR>
+    map <leader>ps :DeniteProjectDir grep<CR>
+endif
+
+"Search 
+if dein#tap('denite.nvim')
+    map <leader>ss :Denite line<CR>
+    map <leader>se :Denite line/external<CR>
+    map <leader>sm :Denite mark<CR>
+    map <leader>so :Denite outline<CR>
+endif
+
+"Denite
+if dein#tap('denite.nvim')
+    map <leader>dd :Denite source<CR>
+    map <leader>dc :Denite command_history command<CR>
+    map <leader>dh :Denite help<CR>
+endif
+
+if (dein#tap('denite.nvim') && dein#call_hook('neoyank.vim'))
+    map <leader>dh :Denite neoyank<CR>
+endif
+
+"Window 
+map <leader>w <C-w>
+
+"Coc-nvim 
+if (dein#tap('coc.nvim'))
+    "Coc-changes 
+    set hidden
+    set nobackup
+    set nowritebackup
+    set updatetime=300
+    set shortmess+=c
+    set signcolumn=yes
+    let g:coc_snippet_next = '<tab>'
+    " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
+    " position. Coc only does snippet and additional edit on confirm.
+    "if has('patch8.1.1068')
+    "" Use `complete_info` if your (Neo)Vim version supports it.
+    "inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+    "else
+    "imap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+    "endif
+    if has('patch8.1.1068')
+        " Use `complete_info` if your (Neo)Vim version supports it.
+        inoremap <expr> <cr> complete_info()["selected"] != "-1" ? coc#_select_confirm() : 
+                    \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"    
+    else
+        imap <expr> <cr> pumvisible() ? coc#_select_confirm() : 
+                    \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"    
+    endif
+
+    " Use K to show documentation in preview window.
+    nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+    function! s:show_documentation()
+        if (index(['vim','help'], &filetype) >= 0)
+            execute 'h '.expand('<cword>')
+        else
+            call CocAction('doHover')
+        endif
+    endfunction
+
+    autocmd CursorHold * silent call CocActionAsync('highlight')
+
+    augroup coc_group
+        autocmd!
+        " Setup formatexpr specified filetype(s).
+        autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+        " Update signature help on jump placeholder.
+        autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+    augroup end
+
+    " Add `:Format` command to format current buffer.
+    command! -nargs=0 Format :call CocAction('format')
+
+    " Add `:Fold` command to fold current buffer.
+    command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+    " Add `:OR` command for organize imports of the current buffer.
+    command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+
+    "Coc mappings 
+    "error navigation
+    nmap <silent> <leader>ep <Plug>(coc-diagnostic-prev-error)
+    nmap <silent> <leader>en <Plug>(coc-diagnostic-next-error)
+    nmap <silent> <leader>eP <Plug>(coc-diagnostic-prev)
+    nmap <silent> <leader>eN <Plug>(coc-diagnostic-next)
+    nmap <silent> <leader>ei <Plug>(coc-diagnostic-info)			
+    if dein#tap('coc-denite') && dein#tap('denite.nvim')
+        nnoremap <silent> <leader>el  :Denite coc-diagnostic
+    else 
+        nnoremap <silent> <leader>el  :<C-u>CocList diagnostics<cr>
+    endif
+    "goto 
+    nmap <silent> <leader>lgd <Plug>(coc-definition)
+    nmap <silent> <leader>lgt <Plug>(coc-type-definition)
+    nmap <silent> <leader>lgi <Plug>(coc-implementation)
+    nmap <silent> <leader>lgr <Plug>(coc-references)
+    nmap <silent> gd <Plug>(coc-definition)
+    nmap <silent> gt <Plug>(coc-type-definition)
+    nmap <silent> gi <Plug>(coc-implementation)
+    nmap <silent> gr <Plug>(coc-references)
+    "refactor
+    xmap <leader>lf  <Plug>(coc-format-selected)
+    nmap <leader>lf  <Plug>(coc-format-selected)
+    "rename
+    nmap <leader>lR <Plug>(coc-rename)
+    "code-action
+    xmap <leader>la  <Plug>(coc-codeaction-selected)
+    nmap <leader>la  <Plug>(coc-codeaction-selected)
+    nmap <leader>l.  <Plug>(coc-codeaction)
+    "symbols 
+    if dein#tap('coc-denite') && dein#tap('denite.nvim')
+        nnoremap <silent> <leader>ls  :<C-u>CocList outline<cr>
+        nnoremap <silent> <leader>lS  :<C-u>CocList -I symbols<cr>
+    else
+        nnoremap <silent> <leader>ls  :<C-u>CocList outline<cr>
+        nnoremap <silent> <leader>lS  :<C-u>CocList -I symbols<cr>
+    endif
+    "function text objects 
+    xmap if <Plug>(coc-funcobj-i)
+    xmap af <Plug>(coc-funcobj-a)
+    omap if <Plug>(coc-funcobj-i)
+    omap af <Plug>(coc-funcobj-a)
+endif
