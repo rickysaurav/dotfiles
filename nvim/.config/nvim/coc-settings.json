@@ -11,6 +11,7 @@
         "pom.xml",
         ".projections.json"
     ],
+    "snippets.userSnippetsDirectory": "~/.config/nvim/snippets",
     "languageserver": {
         "ccls": {
             "command": "ccls",
