@@ -2,8 +2,9 @@ let s:denite_options = {
         \ "start_filter": v:true,
         \ "split": 'floating',
         \ "prompt" : ">",
-        \ "floating-preview": v:true
-      \ }
+        \ "floating-preview": v:true,
+        \ "vertical-preview": v:true
+      \}
 call denite#custom#option("default", s:denite_options)
 augroup user_plugin_denite
 	autocmd!

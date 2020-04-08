@@ -1,5 +1,6 @@
 {
     "suggest.numberSelect": true,
+    "python.jediEnabled": false,
     "coc.preferences.rootPatterns": [
         ".git",
         ".hg",
