@@ -13,6 +13,7 @@
         ".projections.json"
     ],
     "snippets.userSnippetsDirectory": "~/.config/nvim/snippets",
+    "coc.preferences.useQuickfixForLocations": true,
     "languageserver": {
         "ccls": {
             "command": "ccls",

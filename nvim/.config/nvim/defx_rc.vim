@@ -38,6 +38,8 @@ function! s:defx_my_settings() abort
   nnoremap <silent><buffer><expr> C
   \ defx#do_action('toggle_columns',
   \                'mark:indent:icon:filename:type:size:time')
+  nnoremap <silent><buffer><expr> s
+  \ defx#do_action('search')
   nnoremap <silent><buffer><expr> S
   \ defx#do_action('toggle_sort', 'time')
   nnoremap <silent><buffer><expr> d

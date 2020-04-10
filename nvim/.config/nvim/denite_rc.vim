@@ -1,11 +1,32 @@
+let s:quick_move_table= {
+        		\   '0' : 0, '1' : 1, '2' : 2, '3' : 3, '4' : 4,
+        		\   '5' : 5, '6' : 6, '7' : 7, '8' : 8, '9' : 9,
+        		\   'q' : 10, 'w' : 11, 'e' : 12, 'r' : 13, 't' : 14,
+        		\   'y' : 15, 'u' : 16, 'i' : 17, 'o' : 18, 'p' : 19,
+        		\   'a' : 20, 's' : 21, 'd' : 22, 'f' : 23, 'g' : 24,
+        		\   'h' : 25, 'j' : 26, 'k' : 27, 'l' : 28, ';' : 29,
+        		\ }
 let s:denite_options = {
         \ "start_filter": v:true,
+        \ "vertical-preview": v:true,
+        \ "floating-preview": v:true,
         \ "split": 'floating',
         \ "prompt" : ">",
-        \ "floating-preview": v:true,
-        \ "vertical-preview": v:true
+        \ "quick-move-table": s:quick_move_table,
+        \ "auto-action" : "preview"
       \}
-call denite#custom#option("default", s:denite_options)
+call denite#custom#option("_", s:denite_options)
+call denite#custom#source('line', 'matchers', ['matcher/fuzzy'])
+call denite#custom#source('line/external', 'matchers', ['matcher/fuzzy'])
+call denite#custom#var('grep', {
+    \ 'command': ['rg'],
+    \ 'default_opts': ['-i', '--vimgrep', '--no-heading'],
+    \ 'recursive_opts': [],
+    \ 'pattern_opt': ['--regexp'],
+    \ 'separator': ['--'],
+    \ 'final_opts': [],
+    \ })
+call denite#custom#var('file/rec', 'command',['rg','--hidden' ,'--files', '--glob', '!.git'])
 augroup user_plugin_denite
 	autocmd!
 	autocmd FileType denite call s:denite_settings()
@@ -14,7 +35,8 @@ augroup END
 
 " Denite main window settings
 function! s:denite_settings() abort
-	" Denite selection window key mappings
+    set number
+    " Denite selection window key mappings
 	nnoremap <silent><buffer><expr> <CR> denite#do_map('do_action')
 	nnoremap <silent><buffer><expr> i    denite#do_map('open_filter_buffer')
 	nnoremap <silent><buffer><expr> /    denite#do_map('open_filter_buffer')
