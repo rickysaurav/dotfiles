@@ -106,7 +106,7 @@ if dein#load_state('~/.cache/dein')
                 \'merged':0,
                 \'rev': 'release',
                 \'on_event':'InsertEnter',
-                \'on_ft':['python','java','cpp'],
+                \'on_ft':['python','java','cpp','c'],
                 \'hook_add':'let g:coc_global_extensions = ["coc-python","coc-java"]',
                 \'hook_source':join([
                     \'autocmd CursorHold * silent call CocActionAsync("highlight")',
@@ -214,7 +214,7 @@ if (dein#tap('coc.nvim'))
     "else
     "imap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
     "endif
-    if has('patch8.1.1068')
+    if exists('*complete_info')
         " Use `complete_info` if your (Neo)Vim version supports it.
         inoremap <expr> <cr> complete_info()["selected"] != "-1" ? coc#_select_confirm() :
                     \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
@@ -276,8 +276,8 @@ if (dein#tap('coc.nvim'))
     nmap <leader>l.  <Plug>(coc-codeaction)
     "symbols
     if dein#tap('coc-denite') && dein#tap('denite.nvim')
-        nnoremap <silent> <leader>ls  :<C-u>CocList outline<cr>
-        nnoremap <silent> <leader>lS  :<C-u>CocList -I symbols<cr>
+        nnoremap <silent> <leader>ls  :Denite coc-symbols <cr>
+        nnoremap <silent> <leader>lS  :Denite coc-workspace<cr>
     else
         nnoremap <silent> <leader>ls  :<C-u>CocList outline<cr>
         nnoremap <silent> <leader>lS  :<C-u>CocList -I symbols<cr>
