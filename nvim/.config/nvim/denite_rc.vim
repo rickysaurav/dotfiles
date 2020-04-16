@@ -8,12 +8,11 @@ let s:quick_move_table= {
         		\ }
 let s:denite_options = {
         \ "start_filter": v:true,
-        \ "vertical-preview": v:true,
-        \ "floating-preview": v:true,
+        \ "vertical_preview": v:true,
+        \ "floating_preview": v:true,
         \ "split": 'floating',
         \ "prompt" : ">",
-        \ "quick-move-table": s:quick_move_table,
-        \ "auto-action" : "preview"
+        \ "quick_move_table": s:quick_move_table,
       \}
 call denite#custom#option("_", s:denite_options)
 call denite#custom#source('line', 'matchers', ['matcher/fuzzy'])

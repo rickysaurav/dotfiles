@@ -15,6 +15,7 @@ set background=dark
 set splitright
 set clipboard+=unnamedplus
 set formatoptions-=cro
+set inccommand=nosplit
 
 " python host prog handling
 let g:loaded_python_provider = 0
@@ -163,10 +164,13 @@ if dein#tap('denite.nvim')
     map <leader>fg :Denite file/point<CR>
     map <leader>fd :DeniteBufferDir file/rec<CR>
 endif
-map <leader>fy :let @+ = expand('%:p')<CR>>
-map <leader>fY :let @+ = expand('%')<CR>>
+map <leader>fy :let @+ = expand('%')<CR>
 map <leader>fv :edit $MYVIMRC<CR>
 map <leader>fr :source $MYVIMRC<CR>
+if dein#tap('defx.nvim')
+    "open defx tree with pointer to current file
+    map <leader>ft :Defx `getcwd()` -search=`expand('%:p')`<CR>
+endif
 
 "Project
 if dein#tap('denite.nvim')
@@ -408,3 +412,4 @@ au FileType python setlocal makeprg=python\ %:p
 au FileType python map <buffer> <leader>rf :TREPLSendFile<CR>
 au FileType python map <buffer> <leader>rl :TREPLSendLine<CR>
 au FileType python map <buffer> <leader>rr :TREPLSendSelection<CR>
+au FileType python map <buffer> <leader>rt :Ttoggle<CR>

@@ -2,9 +2,13 @@
 let s:defx_options = {
         \ 'split': 'vertical',
         \ 'direction' : 'topleft',
-        \ 'winwidth' : '50'
+        \ 'winwidth' : '50',
+        \ 'show_ignored_files' : v:true
       \}
 call defx#custom#option("default", s:defx_options)
+call defx#custom#option('_', 'drives', [
+\ expand('~/Downloads'), expand('~')
+\ ])
 
 autocmd FileType defx call s:defx_my_settings()
 function! s:defx_my_settings() abort
