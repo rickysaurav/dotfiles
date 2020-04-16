@@ -84,10 +84,14 @@ if dein#load_state('~/.cache/dein')
                 \{'on_map' : { 'i' : ['(', '[', '{','<','"',"'"] },
                 \'hook_post_source':'call AutoPairsTryInit()'})
     "Terminal UI
-    call dein#add('Vigemus/nvimux',{
+    call dein#add('rickysaurav/nvimux',{
                 \'on_cmd':['NvimuxVerticalSplit','NvimuxHorizontalSplit','NvimuxToggleTerm'],
                 \'on_map':{'n':['<leader>t']},
                 \'hook_source': 'call ' . s:SID() . 'nvimux_setup()'})
+    "call dein#add('Vigemus/nvimux',{
+                "\'on_cmd':['NvimuxVerticalSplit','NvimuxHorizontalSplit','NvimuxToggleTerm'],
+                "\'on_map':{'n':['<leader>t']},
+                "\'hook_source': 'call ' . s:SID() . 'nvimux_setup()'})
     call dein#add('kassio/neoterm',{
                 \'on_cmd':['<Plug>','T','Tmap','TREPLSendFile','TREPLSendLine','TREPLSendSelection','Texec','Tnew','Topen','Ttoggle'],
                 \'on_ft':['python','java'],
@@ -106,20 +110,18 @@ if dein#load_state('~/.cache/dein')
                 \'merged':0,
                 \'rev': 'release',
                 \'on_event':'InsertEnter',
-                \'on_ft':['python','java','cpp','c'],
+                \'on_func' :'coc#config',
+                \'on_cmd' : ['CocConfig','CocAction','CocCommand'],
+                \'on_ft':['python','java','cpp','c','lua'],
                 \'hook_add':'let g:coc_global_extensions = ["coc-python","coc-java"]',
-                \'hook_source':join([
-                    \'autocmd CursorHold * silent call CocActionAsync("highlight")',
-                    \'augroup coc_group',
-                    \'autocmd!',
-                    \'autocmd FileType typescript,json setl formatexpr=CocAction("formatSelected")',
-                    \'autocmd User CocJumpPlaceholder call CocActionAsync("showSignatureHelp")',
-                    \'augroup end'
-                    \],"\n")
+                \'hook_source':'call ' . s:SID() . 'coc_nvim_setup()'
                 \})
-    call dein#add('neoclide/coc-denite',{
+    call dein#add('rickysaurav/coc-denite',{
                 \'on_source':['coc.nvim','denite.nvim'],
                 \   })
+    "call dein#add('neoclide/coc-denite',{
+                "\'on_source':['coc.nvim','denite.nvim'],
+                "\   })
     "Misc
     call dein#add('Shougo/neoyank.vim',
                 \{ 'on_event': 'TextYankPost',
@@ -196,6 +198,25 @@ endif
 map <leader>w <C-w>
 
 "Coc-nvim
+function! s:coc_nvim_setup() abort
+    autocmd CursorHold * silent call CocActionAsync("highlight")
+    augroup coc_group
+        autocmd!
+        autocmd FileType typescript,json setl formatexpr=CocAction("formatSelected")
+        autocmd User CocJumpPlaceholder call CocActionAsync("showSignatureHelp")
+    augroup end
+    let lua_lsp = glob('~/.cache/nvim/nvim_lsp/sumneko_lua/lua-language-server')
+    if !empty(lua_lsp)
+        call coc#config('languageserver', {
+            \ 'lua-language-server': {
+            \     'cwd': lua_lsp,
+            \     'command': lua_lsp . '/bin/Linux/lua-language-server',
+            \     'args': ['-E', '-e', 'LANG="en"', lua_lsp . '/main.lua'],
+            \     'filetypes': ['lua'],
+            \ }
+        \ })
+    endif
+endfunction
 if (dein#tap('coc.nvim'))
     "Coc-changes
     set hidden
@@ -297,6 +318,12 @@ local nvimux = require('nvimux')
 -- Nvimux configuration
 nvimux.config.set_all{
   prefix = '<leader>t',
+  local_prefix = {
+    n = '<leader>t',
+    v = '<leader>t',
+    i = '<A-Space>t',
+    t = '<A-Space>t',
+  },
   --TODO:Find a way to wrap lua commands under dein#tap
   new_window = 'enew|term',
   new_window_buffer = 'single',
@@ -379,4 +406,3 @@ au FileType python setlocal makeprg=python\ %:p
 au FileType python map <buffer> <leader>rf :TREPLSendFile<CR>
 au FileType python map <buffer> <leader>rl :TREPLSendLine<CR>
 au FileType python map <buffer> <leader>rr :TREPLSendSelection<CR>
-
