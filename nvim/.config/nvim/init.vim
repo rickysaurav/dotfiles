@@ -225,7 +225,9 @@ if (dein#tap('coc.nvim'))
     set updatetime=300
     set shortmess+=c
     set signcolumn=yes
-    set tagfunc=CocTagFunc
+    if exists("&tagfunc")
+        set tagfunc=CocTagFunc
+    endif
     let g:coc_snippet_next = '<tab>'
     " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
     " position. Coc only does snippet and additional edit on confirm.
