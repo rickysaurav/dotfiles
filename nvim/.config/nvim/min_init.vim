@@ -1,33 +1,42 @@
-let s:quick_move_table= {
-        		\   '0' : 0, '1' : 1, '2' : 2, '3' : 3, '4' : 4,
-        		\   '5' : 5, '6' : 6, '7' : 7, '8' : 8, '9' : 9,
-        		\   'q' : 10, 'w' : 11, 'e' : 12, 'r' : 13, 't' : 14,
-        		\   'y' : 15, 'u' : 16, 'i' : 17, 'o' : 18, 'p' : 19,
-        		\   'a' : 20, 's' : 21, 'd' : 22, 'f' : 23, 'g' : 24,
-        		\   'h' : 25, 'j' : 26, 'k' : 27, 'l' : 28, ';' : 29,
-        		\ }
+let s:dein_path = glob('~/.cache/dein/repos/github.com/Shougo/dein.vim')
+if  empty(s:dein_path)
+    silent !curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh|sh -s ~/.cache/dein
+endif
+
+if &compatible
+    set nocompatible
+endif
+
+set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
+
+if dein#load_state('~/.cache/dein')
+    call dein#begin('~/.cache/dein')
+    call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
+    call dein#add('Shougo/denite.nvim')
+    call dein#end()
+    call dein#save_state()
+endif
+
+filetype plugin indent on
+syntax enable
+
+if dein#check_install()
+    call dein#install()
+endif
+
+call dein#source(['denite.nvim'])
+
 let s:denite_options = {
-        \"start_filter": v:true,
+        \ "start_filter": v:true,
         \ "vertical_preview": v:true,
         \ "floating_preview": v:true,
         \ "split": 'floating',
         \ "prompt" : ">",
-        \ "quick_move_table": s:quick_move_table,
-        \ "auto_action" : "preview",
-        \ "match_highlight":v:true
+        \ "auto_action" : "preview"
       \}
+
 call denite#custom#option("_", s:denite_options)
-call denite#custom#source('line', 'matchers', ['matcher/fuzzy'])
-call denite#custom#source('line/external', 'matchers', ['matcher/fuzzy'])
-call denite#custom#var('grep', {
-    \ 'command': ['rg'],
-    \ 'default_opts': ['-i', '--vimgrep', '--no-heading'],
-    \ 'recursive_opts': [],
-    \ 'pattern_opt': ['--regexp'],
-    \ 'separator': ['--'],
-    \ 'final_opts': [],
-    \ })
-call denite#custom#var('file/rec', 'command',['rg','--hidden' ,'--files', '--glob', '!.git'])
+
 augroup user_plugin_denite
 	autocmd!
 	autocmd FileType denite call s:denite_settings()
@@ -61,26 +70,20 @@ function! s:denite_filter_settings() abort
 	" Denite Filter window key mappings
 	nmap <silent><buffer> <Esc>       <Plug>(denite_filter_quit)
 	imap <silent><buffer> <Esc>       <Plug>(denite_filter_quit)
-	nmap <silent><buffer> <C-c>       <Plug>(denite_filter_quit)
-	imap <silent><buffer> <C-c>       <Plug>(denite_filter_quit)
 	imap <silent><buffer><expr> <Tab>   denite#do_map('choose_action')
 	inoremap <silent><buffer><expr> <C-t> denite#do_map('do_action', 'tabopen')
     inoremap <silent><buffer><expr> <C-v> denite#do_map('do_action', 'vsplit')
     inoremap <silent><buffer><expr> <C-s> denite#do_map('do_action', 'split')
 	inoremap <silent><buffer><expr> <C-y>   denite#do_map('do_action', 'yank')
 	inoremap <silent><buffer><expr> <CR> denite#do_map('do_action')
-    inoremap <silent><buffer> <C-n> <Esc>
-	        \:call denite#move_to_parent()<CR>
-	        \:call cursor(line('.')+1,0)<CR>
-	        \:call denite#move_to_filter()<CR>A
-    inoremap <silent><buffer> <C-p> <Esc>
-	        \:call denite#move_to_parent()<CR>
-	        \:call cursor(line('.')-1,0)<CR>
-	        \:call denite#move_to_filter()<CR>A
+    inoremap <silent><buffer> <C-n>
+            \ <Esc><C-w>p:call cursor(line('.')+1,0)<CR><C-w>pA
+	inoremap <silent><buffer> <C-p>
+		\ <Esc><C-w>p:call cursor(line('.')-1,0)<CR><C-w>pA
 endfunction
 
 " Denite-preview window settings
 function! s:denite_preview() abort
 	" Window options
-	setlocal nocursorline colorcolumn= signcolumn=no nonumber nolist nospell
+	setlocal nocursorline colorcolumn= signcolumn=no nonumber nolist nospell nomodifiable
 endfunction

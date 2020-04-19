@@ -43,10 +43,6 @@ if dein#load_state('~/.cache/dein')
 
     "Plugin manager
     call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
-    if !has('nvim')
-        call dein#add('roxma/nvim-yarp')
-        call dein#add('roxma/vim-hug-neovim-rpc')
-    endif
 
     "Colorschemes
     call dein#add('liuchengxu/space-vim-theme')
@@ -61,7 +57,7 @@ if dein#load_state('~/.cache/dein')
 
     "Plugins
     "Interface
-    call dein#add('Shougo/denite.nvim',
+    call dein#add('rickysaurav/denite.nvim',
                 \{ 'on_cmd': ['Denite', 'DeniteBufferDir','DeniteCursorWord','DeniteProjectDir'],
                 \'hook_source':'source ~/.config/nvim/denite_rc.vim'})
     call dein#add('uiiaoo/java-syntax.vim',{'on_ft':'java'})
@@ -85,20 +81,26 @@ if dein#load_state('~/.cache/dein')
                 \{'on_map' : { 'i' : ['(', '[', '{','<','"',"'"] },
                 \'hook_post_source':'call AutoPairsTryInit()'})
     "Terminal UI
-    call dein#add('rickysaurav/nvimux',{
+    call dein#add('Vigemus/nvimux',{
                 \'on_cmd':['NvimuxVerticalSplit','NvimuxHorizontalSplit','NvimuxToggleTerm'],
                 \'on_map':{'n':['<leader>t']},
                 \'hook_source': 'call ' . s:SID() . 'nvimux_setup()'})
-    "call dein#add('Vigemus/nvimux',{
-                "\'on_cmd':['NvimuxVerticalSplit','NvimuxHorizontalSplit','NvimuxToggleTerm'],
-                "\'on_map':{'n':['<leader>t']},
-                "\'hook_source': 'call ' . s:SID() . 'nvimux_setup()'})
-    call dein#add('kassio/neoterm',{
-                \'on_cmd':['<Plug>','T','Tmap','TREPLSendFile','TREPLSendLine','TREPLSendSelection','Texec','Tnew','Topen','Ttoggle'],
-                \'on_ft':['python','java'],
-                \'hook_add':'let g:neoterm_default_mod = "botright"',
-                \'augroup':'set_repl_cmd'
-                \})
+    call dein#add('Vigemus/iron.nvim',{
+                \ 'on_cmd':['<Plug>','IronRepl','IronReplHere','IronRestart','IronSend!','IronSend','IronFocus','IronWatchCurrentFile','IronUnwatchCurrentFile'],
+                \ 'hook_add':join(['let g:iron_map_defaults = 0',
+                \    'let g:iron_map_extended = 0',
+                \    'au FileType python nmap <buffer> <leader>rs    <Plug>(iron-send-motion)',
+                \    'au FileType python vmap <buffer> <leader>rs    <Plug>(iron-visual-send)',
+                \    'au FileType python nmap <buffer> <leader>rr    <Plug>(iron-repeat-cmd)',
+                \    'au FileType python nmap <buffer> <leader>rl    <Plug>(iron-send-lines)',
+                \    'au FileType python nmap <buffer> <leader>rt    :IronRepl<CR>',
+                \    'au FileType python nmap <buffer> <leader>r<CR> <Plug>(iron-cr)',
+                \    'au FileType python nmap <buffer> <leader>ri    <plug>(iron-interrupt)',
+                \    'au FileType python nmap <buffer> <leader>rq    <Plug>(iron-exit)',
+                \    'au FileType python nmap <buffer> <leader>rc    <Plug>(iron-clear)',
+                \    'au FileType python nmap <buffer> <leader>rR    :IronRestart<CR>'],"\n"),
+                \ 'hook_source':'call ' . s:SID() . 'iron_setup()',
+                \ })
     "Navigation
     call dein#add('easymotion/vim-easymotion',{
                 \'on_map': {'n': '<Plug>'},
@@ -109,24 +111,31 @@ if dein#load_state('~/.cache/dein')
     "Language
     call dein#add('neoclide/coc.nvim', {
                 \'merged':0,
-                \'rev': 'release',
+                \'build': 'yarn install --frozen-lockfile',
                 \'on_event':'InsertEnter',
                 \'on_func' :'coc#config',
                 \'on_cmd' : ['CocConfig','CocAction','CocCommand'],
-                \'on_ft':['python','java','cpp','c','lua'],
+                \'on_ft':['python','java','cpp','c','lua','vim'],
                 \'hook_add':'let g:coc_global_extensions = ["coc-python","coc-java"]',
                 \'hook_source':'call ' . s:SID() . 'coc_nvim_setup()'
                 \})
-    call dein#add('rickysaurav/coc-denite',{
+    call dein#add('neoclide/coc-denite',{
                 \'on_source':['coc.nvim','denite.nvim'],
                 \   })
-    "call dein#add('neoclide/coc-denite',{
-                "\'on_source':['coc.nvim','denite.nvim'],
-                "\   })
     "Misc
     call dein#add('Shougo/neoyank.vim',
                 \{ 'on_event': 'TextYankPost',
                 \'on_source':['denite.nvim']})
+    "Markdown
+    call dein#add('godlygeek/tabular',{
+                \ 'on_source':['vim-markdown']
+                \ })
+    call dein#add('plasticboy/vim-markdown',{
+                \ 'on_ft':['markdown'],
+                \ 'hook_add': join(['let g:vim_markdown_no_default_key_mappings = 1'],"\n")
+                \ })
+    call dein#add('iamcco/markdown-preview.nvim', {'on_ft': ['markdown', 'pandoc.markdown', 'rmd'],
+					\ 'build': 'sh -c "cd app & yarn install"' })
     call dein#end()
     call dein#save_state()
 endif
@@ -309,12 +318,36 @@ if (dein#tap('coc.nvim'))
         nnoremap <silent> <leader>ls  :<C-u>CocList outline<cr>
         nnoremap <silent> <leader>lS  :<C-u>CocList -I symbols<cr>
     endif
+    "coc-jumps
+    if dein#tap('coc-denite') && dein#tap('denite.nvim')
+        nnoremap <silent> <leader>lj  :Denite coc-jump-locations<cr>
+    else
+        nnoremap <silent> <leader>lj  :<C-u>CocList location<cr>
+    endif
+
     "function text objects
     xmap if <Plug>(coc-funcobj-i)
     xmap af <Plug>(coc-funcobj-a)
     omap if <Plug>(coc-funcobj-i)
     omap af <Plug>(coc-funcobj-a)
 endif
+
+"iron.nvim
+function! s:iron_init() abort
+endfunction
+
+function s:iron_setup() abort
+lua << EOF
+    local iron = require('iron')
+    iron.core.set_config {
+        preferred = {
+            python = "ipython",
+        },
+        repl_open_cmd = function(buff) vim.api.nvim_command('botright vertical 100 split' .. '| ' .. buff .. ' | set wfw') end
+    }
+EOF
+endfunction
+
 "nvimux
 "
 function! s:nvimux_setup() abort
@@ -378,7 +411,7 @@ else
     cnoremap <A-f>  <S-Right>
 endif
 
-"Toggle stuff 
+"Toggle stuff
 let s:hidden_all = 0
 function! ToggleHiddenAll()
 	if s:hidden_all  == 0
@@ -409,7 +442,7 @@ au FileType cpp setlocal makeprg=g\+\+\ %:p\ -g\ -std\=c\+\+11\ -D\ LOCAL_SYS\ -
 
 "python
 au FileType python setlocal makeprg=python\ %:p
-au FileType python map <buffer> <leader>rf :TREPLSendFile<CR>
-au FileType python map <buffer> <leader>rl :TREPLSendLine<CR>
-au FileType python map <buffer> <leader>rr :TREPLSendSelection<CR>
-au FileType python map <buffer> <leader>rt :Ttoggle<CR>
+"au FileType python map <buffer> <leader>rf :TREPLSendFile<CR>
+"au FileType python map <buffer> <leader>rl :TREPLSendLine<CR>
+"au FileType python map <buffer> <leader>rr :TREPLSendSelection<CR>
+"au FileType python map <buffer> <leader>rt :Ttoggle<CR>
