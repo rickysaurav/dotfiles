@@ -57,7 +57,7 @@ if dein#load_state('~/.cache/dein')
                 \'let g:startify_change_to_vcs_root=1'],"\n")})
     call dein#add('itchyny/lightline.vim',
                 \{'hook_add':'source ~/.config/nvim/lightline_rc.vim'})
-    call dein#add('edkolev/tmuxline.vim', {'on_cmd':'TmuxLine'})
+    call dein#add('rickysaurav/tmuxline.vim', {'on_cmd':'TmuxLine'})
     "Plugins
     "Interface
     call dein#add('rickysaurav/denite.nvim',
