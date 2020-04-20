@@ -5,7 +5,7 @@ function! LightlineReadonly()
     return &readonly ? '' : ''
 endfunction
 let g:lightline = {
-            \ 'colorscheme': 'darcula',
+            \ 'colorscheme': 'one',
             \ 'component': {
             \   'lineinfo': ' %3l:%-2v',
             \ },

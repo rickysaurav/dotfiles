@@ -45,7 +45,10 @@ if dein#load_state('~/.cache/dein')
     call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
 
     "Colorschemes
-    call dein#add('liuchengxu/space-vim-theme')
+    "call dein#add('liuchengxu/space-vim-theme',{'hook_add': 'colorscheme space_vim_theme'})
+    call dein#add('rakr/vim-one',{'hook_add': 'colorscheme one'})
+    "Profiling
+    call dein#add('dstein64/vim-startuptime',{'on_cmd':'StartupTime'})
 
     "UI
     call dein#add('mhinz/vim-startify',{
@@ -54,7 +57,7 @@ if dein#load_state('~/.cache/dein')
                 \'let g:startify_change_to_vcs_root=1'],"\n")})
     call dein#add('itchyny/lightline.vim',
                 \{'hook_add':'source ~/.config/nvim/lightline_rc.vim'})
-
+    call dein#add('edkolev/tmuxline.vim', {'on_cmd':'TmuxLine'})
     "Plugins
     "Interface
     call dein#add('rickysaurav/denite.nvim',
@@ -151,8 +154,6 @@ endif
 autocmd VimEnter * call dein#call_hook('post_source')
 
 
-"colorschemes
-colorscheme space_vim_theme
 
 
 "mappings
