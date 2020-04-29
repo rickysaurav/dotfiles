@@ -312,7 +312,7 @@ bindsym --release shift+Print exec --no-startup-id scrot -s '%Y-%m-%d-%H-%M-%S_$
 #bindsym $mod+Delete exec $stoprec
 ####autostart####
 # exec --no-startup-id $HOME/.config/i3/my_lock.sh
-# exec --no-startup-id i3lock-fancy
+ exec --no-startup-id $lock_command
 exec --no-startup-id nm-applet
 exec --no-startup-id $browser
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc

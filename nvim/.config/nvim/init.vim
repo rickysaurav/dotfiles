@@ -60,7 +60,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('rickysaurav/tmuxline.vim', {'on_cmd':'TmuxLine'})
     "Plugins
     "Interface
-    call dein#add('rickysaurav/denite.nvim',
+    call dein#add('shougo/denite.nvim',
                 \{ 'on_cmd': ['Denite', 'DeniteBufferDir','DeniteCursorWord','DeniteProjectDir'],
                 \'hook_source':'source ~/.config/nvim/denite_rc.vim'})
     call dein#add('uiiaoo/java-syntax.vim',{'on_ft':'java'})
