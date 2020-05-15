@@ -1,4 +1,3 @@
-rofi.theme: ~/.cache/wal/colors-rofi-dark.rasi
 rofi.modi: calc,window,run
 rofi.color-enabled: true
 rofi.show-icons: true
@@ -7,17 +6,4 @@ rofi.font: Iosevka 20
 rofi.window-match-fields: desktop,class
 rofi.window-format: "{w}    {c}   {t}"
 rofi.sorting-method:fzf
-
-#rofi.fullscreen: true
-#rofi.padding: 300
-
-
-# rofi.display-drun: Run
-# rofi.display-run: Exec
-
-# rofi.terminal: urxvt
-
-#rofi.separator-style: solid
-#rofi.hide-scrollbar: true
-#rofi.bw: 0
-#rofi.color-enabled: true
+rofi.theme: /usr/share/rofi/themes/android_notification.rasi
