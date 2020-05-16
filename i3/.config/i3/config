@@ -316,7 +316,7 @@ bindsym --release shift+Print exec --no-startup-id scrot -s '%Y-%m-%d-%H-%M-%S_$
 exec --no-startup-id nm-applet
 exec --no-startup-id $browser
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
-exec --no-startup-id compton -b --config $HOME/.compton.conf
+exec --no-startup-id picom
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 # exec --no-startup-id termite --name dropdown
 # exec --no-startup-id urxvtc -name dropdown
