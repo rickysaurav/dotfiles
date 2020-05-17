@@ -16,12 +16,17 @@ let s:denite_options = {
         \ "auto_action" : "preview",
         \ "match_highlight":v:true
       \}
+
+function! s:denite_quickfix()
+  call denite#call_map('toggle_select_all')
+  call denite#call_map('do_action', 'quickfix')
+endfunction
 call denite#custom#option("_", s:denite_options)
-call denite#custom#source('line', 'matchers', ['matcher/fuzzy'])
-call denite#custom#source('line/external', 'matchers', ['matcher/fuzzy'])
+"call denite#custom#source('line', 'matchers', ['matcher/fuzzy'])
+"call denite#custom#source('line/external', 'matchers', ['matcher/fuzzy'])
 call denite#custom#var('grep', {
     \ 'command': ['rg'],
-    \ 'default_opts': ['-i', '--vimgrep', '--no-heading'],
+    \ 'default_opts': ['-i', '--vimgrep', '--no-heading','--hidden'],
     \ 'recursive_opts': [],
     \ 'pattern_opt': ['--regexp'],
     \ 'separator': ['--'],
@@ -48,7 +53,7 @@ function! s:denite_settings() abort
 	nnoremap <silent><buffer><expr> v   denite#do_map('do_action', 'vsplit')
 	nnoremap <silent><buffer><expr> s   denite#do_map('do_action', 'split')
 	nnoremap <silent><buffer><expr> '    denite#do_map('quick_move')
-	nnoremap <silent><buffer><expr> q    denite#do_map('quit')
+    nnoremap <silent><buffer> q :<C-u>call <SID>denite_quickfix()<CR>
 	nnoremap <silent><buffer><expr> r    denite#do_map('redraw')
 	nnoremap <silent><buffer><expr> y   denite#do_map('do_action', 'yank')
 	nnoremap <silent><buffer><expr> <Esc>   denite#do_map('quit')

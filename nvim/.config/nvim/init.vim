@@ -2,9 +2,6 @@ let mapleader = "\<Space>"
 set mouse=a
 set shiftwidth=4 tabstop=4 expandtab
 set termguicolors
-set autoread
-set incsearch
-set nohlsearch
 set scrolloff=10
 set showmatch
 set noswapfile
@@ -14,8 +11,22 @@ set number
 set background=dark
 set splitright
 set clipboard+=unnamedplus
-set formatoptions-=cro
-set inccommand=nosplit
+set nohlsearch
+if has('nvim')
+    set inccommand=nosplit
+endif
+
+if !has('nvim')
+    set autoread
+    set incsearch
+endif
+
+"autosave/load setup
+" Save whenever switching windows or leaving vim. This is useful when running
+" the tests inside vim without having to save all files first.
+au FocusLost,WinLeave * :silent! wa
+" Trigger autoread when changing buffers or coming back to vim.
+au FocusGained,BufEnter * :silent! !
 
 " python host prog handling
 let g:loaded_python_provider = 0
@@ -46,20 +57,22 @@ if dein#load_state('~/.cache/dein')
 
     "Colorschemes
     "call dein#add('liuchengxu/space-vim-theme',{'hook_add': 'colorscheme space_vim_theme'})
-    call dein#add('rakr/vim-one',{'hook_add': 'colorscheme one'})
+    call dein#add('rakr/vim-one',{'on_event':['FocusLost','CursorHold'],'hook_source': 'colorscheme one'})
     "Profiling
     call dein#add('dstein64/vim-startuptime',{'on_cmd':'StartupTime'})
 
     "UI
-    call dein#add('mhinz/vim-startify',{
-                \'hook_add':join([
-                \'let g:startify_change_to_dir=0',
-                \'let g:startify_change_to_vcs_root=1'],"\n")})
+    "call dein#add('mhinz/vim-startify',{
+                "\'hook_add':join([
+                "\'let g:startify_change_to_dir=0',
+                "\'let g:startify_change_to_vcs_root=1'],"\n")})
     call dein#add('itchyny/lightline.vim',
-                \{'hook_add':'source ~/.config/nvim/lightline_rc.vim'})
+                \{'on_event':['FocusLost','CursorHold'],
+                \'hook_source':'source ~/.config/nvim/lightline_rc.vim'})
     call dein#add('rickysaurav/tmuxline.vim', {'on_cmd':'TmuxLine'})
     "Plugins
     "Interface
+    call dein#add('liuchengxu/vim-clap', { 'on_cmd':'Clap' ,'hook_post_update': ':Clap install-binary!' })
     call dein#add('shougo/denite.nvim',
                 \{ 'on_cmd': ['Denite', 'DeniteBufferDir','DeniteCursorWord','DeniteProjectDir'],
                 \'hook_source':'source ~/.config/nvim/denite_rc.vim'})
@@ -71,6 +84,11 @@ if dein#load_state('~/.cache/dein')
     call dein#add('Shougo/defx.nvim',{
                 \'on_cmd':'Defx',
                 \'hook_source':'source ~/.config/nvim/defx_rc.vim'})
+    call dein#add('kristijanhusak/defx-icons', {'on_source':'defx.nvim'})
+    call dein#add('kristijanhusak/defx-git', {'on_source':'defx.nvim'})
+    "Git
+    call dein#add('tpope/vim-fugitive', { 'on_cmd': [ 'Git', 'Gstatus', 'Gwrite', 'Glog', 'Gcommit', 'Gblame', 'Ggrep', 'Gdiff', 'G'] })
+
     "Generic Programming
     call dein#add('sheerun/vim-polyglot')
     call dein#add('preservim/nerdcommenter',
@@ -92,16 +110,7 @@ if dein#load_state('~/.cache/dein')
                 \ 'on_cmd':['<Plug>','IronRepl','IronReplHere','IronRestart','IronSend!','IronSend','IronFocus','IronWatchCurrentFile','IronUnwatchCurrentFile'],
                 \ 'hook_add':join(['let g:iron_map_defaults = 0',
                 \    'let g:iron_map_extended = 0',
-                \    'au FileType python nmap <buffer> <leader>rs    <Plug>(iron-send-motion)',
-                \    'au FileType python vmap <buffer> <leader>rs    <Plug>(iron-visual-send)',
-                \    'au FileType python nmap <buffer> <leader>rr    <Plug>(iron-repeat-cmd)',
-                \    'au FileType python nmap <buffer> <leader>rl    <Plug>(iron-send-lines)',
-                \    'au FileType python nmap <buffer> <leader>rt    :IronRepl<CR>',
-                \    'au FileType python nmap <buffer> <leader>r<CR> <Plug>(iron-cr)',
-                \    'au FileType python nmap <buffer> <leader>ri    <plug>(iron-interrupt)',
-                \    'au FileType python nmap <buffer> <leader>rq    <Plug>(iron-exit)',
-                \    'au FileType python nmap <buffer> <leader>rc    <Plug>(iron-clear)',
-                \    'au FileType python nmap <buffer> <leader>rR    :IronRestart<CR>'],"\n"),
+                \],"\n"),
                 \ 'hook_source':'call ' . s:SID() . 'iron_setup()',
                 \ })
     "Navigation
@@ -119,7 +128,7 @@ if dein#load_state('~/.cache/dein')
                 \'on_func' :'coc#config',
                 \'on_cmd' : ['CocConfig','CocAction','CocCommand'],
                 \'on_ft':['python','java','cpp','c','lua','vim'],
-                \'hook_add':'let g:coc_global_extensions = ["coc-python","coc-java"]',
+                \'hook_add':'let g:coc_global_extensions = ["coc-python","coc-java","coc-vimlsp","coc-markdownlint","coc-explorer","coc-snippets"]',
                 \'hook_source':'call ' . s:SID() . 'coc_nvim_setup()'
                 \})
     call dein#add('neoclide/coc-denite',{
@@ -129,23 +138,20 @@ if dein#load_state('~/.cache/dein')
     call dein#add('Shougo/neoyank.vim',
                 \{ 'on_event': 'TextYankPost',
                 \'on_source':['denite.nvim']})
+    "Runner
+    call dein#add('skywind3000/asyncrun.vim' ,{'on_cmd': ['AsyncRun', 'AsyncStop'] })
+    call dein#add('skywind3000/asynctasks.vim',{'on_cmd': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] })
     "Markdown
-    call dein#add('godlygeek/tabular',{
-                \ 'on_source':['vim-markdown']
-                \ })
-    call dein#add('plasticboy/vim-markdown',{
-                \ 'on_ft':['markdown'],
-                \ 'hook_add': join(['let g:vim_markdown_no_default_key_mappings = 1'],"\n")
-                \ })
     call dein#add('iamcco/markdown-preview.nvim', {'on_ft': ['markdown', 'pandoc.markdown', 'rmd'],
 					\ 'build': 'sh -c "cd app & yarn install"' })
     call dein#end()
     call dein#save_state()
 endif
 
-filetype plugin indent on
-syntax enable
-
+if !has('nvim')
+    filetype plugin indent on
+    syntax enable
+endif
 
 if dein#check_install()
     call dein#install()
@@ -180,6 +186,10 @@ map <leader>fr :source $MYVIMRC<CR>
 if dein#tap('defx.nvim')
     "open defx tree with pointer to current file
     map <leader>ft :Defx `getcwd()` -search=`expand('%:p')`<CR>
+endif
+
+if dein#tap('coc.nvim')
+    map <leader>x :CocCommand explorer<CR>
 endif
 
 "Project
@@ -334,7 +344,17 @@ if (dein#tap('coc.nvim'))
 endif
 
 "iron.nvim
-function! s:iron_init() abort
+function! Iron_init() abort
+    nmap <buffer> <leader>rs    <Plug>(iron-send-motion),
+    vmap <buffer> <leader>rs    <Plug>(iron-visual-send),
+    nmap <buffer> <leader>rr    <Plug>(iron-repeat-cmd),
+    nmap <buffer> <leader>rl    <Plug>(iron-send-lines),
+    nmap <buffer> <leader>rt    :IronRepl<CR>,
+    nmap <buffer> <leader>r<CR> <Plug>(iron-cr),
+    nmap <buffer> <leader>ri    <plug>(iron-interrupt),
+    nmap <buffer> <leader>rq    <Plug>(iron-exit),
+    nmap <buffer> <leader>rc    <Plug>(iron-clear),
+    nmap <buffer> <leader>rR    :IronRestart<CR>
 endfunction
 
 function s:iron_setup() abort
@@ -430,20 +450,3 @@ endfunction
 
 nnoremap <Leader>T :call ToggleHiddenAll()<CR>
 
-"autosave/load setup
-" Save whenever switching windows or leaving vim. This is useful when running
-" the tests inside vim without having to save all files first.
-au FocusLost,WinLeave * :silent! wa
-" Trigger autoread when changing buffers or coming back to vim.
-au FocusGained,BufEnter * :silent! !
-"filetype setup
-
-"cpp
-au FileType cpp setlocal makeprg=g\+\+\ %:p\ -g\ -std\=c\+\+11\ -D\ LOCAL_SYS\ -o\ %:p:r\ &&\ time\ %:p:r
-
-"python
-au FileType python setlocal makeprg=python\ %:p
-"au FileType python map <buffer> <leader>rf :TREPLSendFile<CR>
-"au FileType python map <buffer> <leader>rl :TREPLSendLine<CR>
-"au FileType python map <buffer> <leader>rr :TREPLSendSelection<CR>
-"au FileType python map <buffer> <leader>rt :Ttoggle<CR>
