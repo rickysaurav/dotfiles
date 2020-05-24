@@ -4,19 +4,34 @@ endfunction
 function! LightlineReadonly()
     return &readonly ? '' : ''
 endfunction
+function! LightlineCurrentTime()
+    return strftime("%H:%M")
+endfunction
+function! LightlineFugitive()
+    if exists('*FugitiveHead')
+        let branch = FugitiveHead()
+        return branch !=# '' ? ''.branch : ''
+    endif
+    return ''
+endfunction
+
+
 let g:lightline = {
             \ 'colorscheme': 'one',
             \ 'component': {
             \   'lineinfo': ' %3l:%-2v',
+            \   'currenttime':'%{strftime("%H:%M")}'
             \ },
             \ 'active': {
             \   'left': [ [ 'mode', 'paste' ],
-            \             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
+            \             [ 'gitbranch','cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ]],
+            \   'right': [['lineinfo'], ['currenttime'], ['fileformat', 'fileencoding', 'filetype']]
             \ },
             \ 'component_function': {
             \   'readonly': 'LightlineReadonly',
             \   'cocstatus': 'coc#status',
-            \   'currentfunction': 'CocCurrentFunction'
+            \   'currentfunction': 'CocCurrentFunction',
+            \   'gitbranch':'LightlineFugitive'
             \ },
             \ 'separator': { 'left': '', 'right': '' },
             \ 'subseparator': { 'left': '', 'right': '' }

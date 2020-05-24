@@ -57,7 +57,7 @@ if dein#load_state('~/.cache/dein')
 
     "Colorschemes
     "call dein#add('liuchengxu/space-vim-theme',{'hook_add': 'colorscheme space_vim_theme'})
-    call dein#add('rakr/vim-one',{'on_event':['FocusLost','CursorHold'],'hook_source': 'colorscheme one'})
+    call dein#add('rakr/vim-one',{'on_event':['FocusLost','CursorHold'],'hook_source': "colorscheme one\ndoau ColorScheme"})
     "Profiling
     call dein#add('dstein64/vim-startuptime',{'on_cmd':'StartupTime'})
 
@@ -128,7 +128,7 @@ if dein#load_state('~/.cache/dein')
                 \'on_func' :'coc#config',
                 \'on_cmd' : ['CocConfig','CocAction','CocCommand'],
                 \'on_ft':['python','java','cpp','c','lua','vim'],
-                \'hook_add':'let g:coc_global_extensions = ["coc-python","coc-java","coc-vimlsp","coc-markdownlint","coc-explorer","coc-snippets"]',
+                \'hook_add':'let g:coc_global_extensions = ["coc-python","coc-java","coc-vimlsp","coc-markdownlint","coc-explorer","coc-snippets","coc-clangd"]',
                 \'hook_source':'call ' . s:SID() . 'coc_nvim_setup()'
                 \})
     call dein#add('neoclide/coc-denite',{

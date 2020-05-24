@@ -14,7 +14,6 @@ let s:denite_options = {
         \ "prompt" : ">",
         \ "quick_move_table": s:quick_move_table,
         \ "auto_action" : "preview",
-        \ "match_highlight":v:true
       \}
 
 function! s:denite_quickfix()

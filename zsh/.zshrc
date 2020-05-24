@@ -31,6 +31,13 @@ zinit id-as'normal-prompt' nocd lucid \
 zinit ice lucid wait
 zinit snippet $HOME/del_init.zsh
 
+###SYNTAX###
+zinit wait lucid for \
+ atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
+    zdharma/fast-syntax-highlighting \
+ blockf \
+    zsh-users/zsh-completions
+
 ####PLUGINS####
 zinit ice lucid wait \
         as:"program" \
@@ -43,6 +50,8 @@ zinit load "junegunn/fzf"
 zinit ice lucid wait pick:"init.sh"
 zinit load "b4b4r07/enhancd"
 
+zinit ice lucid wait pick:"fzf-tab.zsh"
+zinit load "Aloxaf/fzf-tab"
 
 # Lazy compinit
 zinit id-as'compinit' wait:'0c' nocd lucid \
