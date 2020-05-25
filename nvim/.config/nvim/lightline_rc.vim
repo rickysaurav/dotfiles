@@ -1,12 +1,7 @@
-function! CocCurrentFunction()
-    return get(b:, 'coc_current_function', '')
-endfunction
 function! LightlineReadonly()
     return &readonly ? '' : ''
 endfunction
-function! LightlineCurrentTime()
-    return strftime("%H:%M")
-endfunction
+
 function! LightlineFugitive()
     if exists('*FugitiveHead')
         let branch = FugitiveHead()
@@ -24,8 +19,8 @@ let g:lightline = {
             \ },
             \ 'active': {
             \   'left': [ [ 'mode', 'paste' ],
-            \             [ 'gitbranch','cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ]],
-            \   'right': [['lineinfo'], ['currenttime'], ['fileformat', 'fileencoding', 'filetype']]
+            \             [ 'gitbranch', 'readonly', 'filename', 'modified','cocstatus']],
+            \   'right': [['filetype'], ['currenttime'], ['fileformat', 'fileencoding']]
             \ },
             \ 'component_function': {
             \   'readonly': 'LightlineReadonly',
