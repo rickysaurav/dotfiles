@@ -107,12 +107,17 @@ if dein#load_state('~/.cache/dein')
                 \'on_map':{'n':['<leader>t']},
                 \'hook_source': 'call ' . s:SID() . 'nvimux_setup()'})
     call dein#add('Vigemus/iron.nvim',{
-                \ 'on_cmd':['<Plug>','IronRepl','IronReplHere','IronRestart','IronSend!','IronSend','IronFocus','IronWatchCurrentFile','IronUnwatchCurrentFile'],
+                \ 'on_cmd':['IronRepl','IronReplHere','IronRestart','IronSend!','IronSend','IronFocus','IronWatchCurrentFile','IronUnwatchCurrentFile'],
+                \ 'on_map':{'n':['<Plug>']},
                 \ 'hook_add':join(['let g:iron_map_defaults = 0',
                 \    'let g:iron_map_extended = 0',
                 \],"\n"),
                 \ 'hook_source':'call ' . s:SID() . 'iron_setup()',
                 \ })
+    call dein#add('bfredl/nvim-luadev',{
+                \'on_cmd':['Luadev'],
+                \'on_map':{'n':['<Plug>']}
+                \})
     "Navigation
     call dein#add('easymotion/vim-easymotion',{
                 \'on_map': {'n': '<Plug>'},
@@ -345,15 +350,15 @@ endif
 
 "iron.nvim
 function! Iron_init() abort
-    nmap <buffer> <leader>rs    <Plug>(iron-send-motion),
-    vmap <buffer> <leader>rs    <Plug>(iron-visual-send),
-    nmap <buffer> <leader>rr    <Plug>(iron-repeat-cmd),
-    nmap <buffer> <leader>rl    <Plug>(iron-send-lines),
-    nmap <buffer> <leader>rt    :IronRepl<CR>,
-    nmap <buffer> <leader>r<CR> <Plug>(iron-cr),
-    nmap <buffer> <leader>ri    <plug>(iron-interrupt),
-    nmap <buffer> <leader>rq    <Plug>(iron-exit),
-    nmap <buffer> <leader>rc    <Plug>(iron-clear),
+    nmap <buffer> <leader>rs    <Plug>(iron-send-motion)
+    vmap <buffer> <leader>rs    <Plug>(iron-visual-send)
+    nmap <buffer> <leader>rr    <Plug>(iron-repeat-cmd)
+    nmap <buffer> <leader>rl    <Plug>(iron-send-lines)
+    nmap <buffer> <leader>rt    :IronRepl<CR>
+    nmap <buffer> <leader>r<CR> <Plug>(iron-cr)
+    nmap <buffer> <leader>ri    <plug>(iron-interrupt)
+    nmap <buffer> <leader>rq    <Plug>(iron-exit)
+    nmap <buffer> <leader>rc    <Plug>(iron-clear)
     nmap <buffer> <leader>rR    :IronRestart<CR>
 endfunction
 

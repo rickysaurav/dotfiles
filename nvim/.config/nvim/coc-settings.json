@@ -21,7 +21,9 @@
             "allow_different_nesting": true
         }
     },
-    "clangd.arguments": ["-header-insertion=never"],
+    "clangd.arguments": [
+        "-header-insertion=never"
+    ],
     "languageserver": {
         "ccls": {
             "enable": false,
