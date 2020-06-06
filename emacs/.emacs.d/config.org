@@ -10,18 +10,19 @@
 ** Bootstrap
 *** Install straight.el
     #+BEGIN_SRC emacs-lisp
-       (defvar bootstrap-version)
-       (let ((bootstrap-file
-              (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-             (bootstrap-version 5))
-         (unless (file-exists-p bootstrap-file)
-           (with-current-buffer
-               (url-retrieve-synchronously
-                "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-                'silent 'inhibit-cookies)
-             (goto-char (point-max))
-             (eval-print-last-sexp)))
-         (load bootstrap-file nil 'nomessage))
+	  (setq straight-repository-branch "develop")
+	  (defvar bootstrap-version)
+	  (let ((bootstrap-file
+			 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+			(bootstrap-version 5))
+		(unless (file-exists-p bootstrap-file)
+		  (with-current-buffer
+			  (url-retrieve-synchronously
+			   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+			   'silent 'inhibit-cookies)
+			(goto-char (point-max))
+			(eval-print-last-sexp)))
+		(load bootstrap-file nil 'nomessage))
     #+END_SRC
 *** Install use-package
     #+BEGIN_SRC emacs-lisp
@@ -1389,8 +1390,8 @@ HTTP client
 				:non-normal-prefix "M-SPC d"
 				"" '(:keymap dap-mode-map :package dap-mode :which-key "dap-prefix")
 				)
-	   (:keymaps 'dap-mode-map
-				 "h" '(dap-hydra :which-key "dap-hydra"))
+	   ;; (:keymaps 'dap-mode-map
+	   ;; 			 "h" '(dap-hydra :which-key "dap-hydra")))
 	   :ghook
 	   ('dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
 	   :config
