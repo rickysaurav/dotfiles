@@ -92,6 +92,8 @@ if dein#load_state('~/.cache/dein')
                 \'hook_source':'source ~/.config/nvim/defx_rc.vim'})
     call dein#add('kristijanhusak/defx-icons', {'on_source':'defx.nvim'})
     call dein#add('kristijanhusak/defx-git', {'on_source':'defx.nvim'})
+    call dein#add('kyazdani42/nvim-web-devicons') 
+    call dein#add('kyazdani42/nvim-tree.lua',{'on_cmd':'LuaTreeToggle','augroup':'LuaTree'})
     "Git
     call dein#add('tpope/vim-fugitive', { 'on_cmd': [ 'Git', 'Gstatus', 'Gwrite', 'Glog', 'Gcommit', 'Gblame', 'Ggrep', 'Gdiff', 'G'] })
 
@@ -139,7 +141,7 @@ if dein#load_state('~/.cache/dein')
                 \'on_func' :'coc#config',
                 \'on_cmd' : ['CocConfig','CocAction','CocCommand'],
                 \'on_ft':['python','java','cpp','c','lua','vim'],
-                \'hook_add':'let g:coc_global_extensions = ["coc-python","coc-java","coc-vimlsp","coc-markdownlint","coc-explorer","coc-snippets","coc-clangd"]',
+                \'hook_add':'let g:coc_global_extensions = ["coc-python","coc-java","coc-vimlsp","coc-markdownlint","coc-snippets","coc-clangd"]',
                 \'hook_source':'call ' . s:SID() . 'coc_nvim_setup()'
                 \})
     call dein#add('neoclide/coc-denite',{
@@ -211,7 +213,7 @@ if dein#tap('defx.nvim')
 endif
 
 if dein#tap('coc.nvim')
-    noremap <leader>x :CocCommand explorer<CR>
+    noremap <leader>x :LuaTreeToggle<CR>
 endif
 
 "Project
