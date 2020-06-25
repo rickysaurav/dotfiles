@@ -12,14 +12,7 @@ set background=dark
 set splitright
 set clipboard+=unnamedplus
 set nohlsearch
-if has('nvim')
-    set inccommand=nosplit
-endif
-
-if !has('nvim')
-    set autoread
-    set incsearch
-endif
+set inccommand=nosplit
 
 "autosave/load setup
 " Save whenever switching windows or leaving vim. This is useful when running
@@ -62,10 +55,6 @@ if dein#load_state('~/.cache/dein')
     call dein#add('dstein64/vim-startuptime',{'on_cmd':'StartupTime'})
 
     "UI
-    "call dein#add('mhinz/vim-startify',{
-                "\'hook_add':join([
-                "\'let g:startify_change_to_dir=0',
-                "\'let g:startify_change_to_vcs_root=1'],"\n")})
     call dein#add('itchyny/lightline.vim',
                 \{'on_event':['FocusLost','CursorHold'],
                 \'hook_source':'source ~/.config/nvim/lightline_rc.vim'})
@@ -79,26 +68,28 @@ if dein#load_state('~/.cache/dein')
                 \'hook_add': join(['let g:clap_provider_grep_opts="-H --no-heading --vimgrep --smart-case --hidden"',
                 \'autocmd User ClapOnExit call lightline#update()'],"\n")
                 \})
-    call dein#add('shougo/denite.nvim',
-                \{ 'on_cmd': ['Denite', 'DeniteBufferDir','DeniteCursorWord','DeniteProjectDir'],
-                \'hook_source':'source ~/.config/nvim/denite_rc.vim'})
     call dein#add('uiiaoo/java-syntax.vim',{'on_ft':'java'})
     call dein#add('wsdjeg/dein-ui.vim',
                 \{'on_cmd':'DeinUpdate'})
     call dein#add('liuchengxu/vim-which-key', {'on_cmd':['WhichKey', 'WhichKey!'],'hook_add':'nnoremap <silent> <leader> :WhichKey "<Space>"<CR>'})
     "file explorer
-    call dein#add('Shougo/defx.nvim',{
-                \'on_cmd':'Defx',
-                \'hook_source':'source ~/.config/nvim/defx_rc.vim'})
-    call dein#add('kristijanhusak/defx-icons', {'on_source':'defx.nvim'})
-    call dein#add('kristijanhusak/defx-git', {'on_source':'defx.nvim'})
     call dein#add('kyazdani42/nvim-web-devicons') 
-    call dein#add('kyazdani42/nvim-tree.lua',{'on_cmd':'LuaTreeToggle','augroup':'LuaTree'})
+    "call dein#add('~/repos/nvim-tree.lua',{
+    call dein#add('rickysaurav/nvim-tree.lua',{
+                \'on_cmd':'LuaTreeToggle',
+                \'augroup':'LuaTree',
+                \'hook_add':join([
+                \'let g:lua_tree_follow = 1',
+                \'let g:lua_tree_disable_keybindings = 1',
+                \'let g:lua_tree_icons = {"default": ""}'],"\n"),
+                \})
     "Git
     call dein#add('tpope/vim-fugitive', { 'on_cmd': [ 'Git', 'Gstatus', 'Gwrite', 'Glog', 'Gcommit', 'Gblame', 'Ggrep', 'Gdiff', 'G'] })
 
-    "Generic Programming
+    "Syntax
     call dein#add('sheerun/vim-polyglot')
+
+    "Generic Programming
     call dein#add('preservim/nerdcommenter',
                 \{'on_map': ['<Plug>','<leader>c']})
     call dein#add('tpope/vim-repeat',
@@ -144,16 +135,9 @@ if dein#load_state('~/.cache/dein')
                 \'hook_add':'let g:coc_global_extensions = ["coc-python","coc-java","coc-vimlsp","coc-markdownlint","coc-snippets","coc-clangd"]',
                 \'hook_source':'call ' . s:SID() . 'coc_nvim_setup()'
                 \})
-    call dein#add('neoclide/coc-denite',{
-                \'on_source':['coc.nvim','denite.nvim'],
-                \   })
     call dein#add('vn-ki/coc-clap',{
                 \'on_source':['coc.nvim','vim-clap'],
                 \   })
-    "Misc
-    call dein#add('Shougo/neoyank.vim',
-                \{ 'on_event': 'TextYankPost',
-                \'on_source':['denite.nvim']})
     "Runner
     call dein#add('skywind3000/asyncrun.vim' ,{'on_cmd': ['AsyncRun', 'AsyncStop'] })
     call dein#add('skywind3000/asynctasks.vim',{'on_cmd': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] })
@@ -162,11 +146,6 @@ if dein#load_state('~/.cache/dein')
 					\ 'build': 'sh -c "cd app & yarn install"' })
     call dein#end()
     call dein#save_state()
-endif
-
-if !has('nvim')
-    filetype plugin indent on
-    syntax enable
 endif
 
 if dein#check_install()
@@ -183,9 +162,6 @@ autocmd VimEnter * call dein#call_hook('post_source')
 if dein#tap('vim-clap')
     noremap <leader>bl :Clap buffers<CR>
     noremap <leader>bb :Clap history<CR>
-elseif dein#tap('denite.nvim')
-    noremap <leader>bl :Denite buffer<CR>
-    noremap <leader>bb :Denite buffer file/old<CR>
 endif
 noremap <leader>bn :bnext<CR>
 noremap <leader>bp :bprevious<CR>
@@ -197,79 +173,39 @@ if dein#tap('vim-clap')
     noremap <leader>fh :Clap history<CR>
     noremap <leader>fd :Clap files --hidden<CR>
     noremap <leader>ff :Clap filer<CR>
-elseif dein#tap('denite.nvim')
-    noremap <leader>ff :DeniteBufferDir file<CR>
-    noremap <leader>fh :Denite file/old<CR>
-    noremap <leader>fg :Denite file/point<CR>
-    noremap <leader>fd :DeniteBufferDir file/rec<CR>
 endif
 
 noremap <leader>fy :let @+ = expand('%')<CR>
 noremap <leader>fv :edit $MYVIMRC<CR>
 noremap <leader>fr :source $MYVIMRC<CR>
-if dein#tap('defx.nvim')
-    "open defx tree with pointer to current file
-    noremap <leader>ft :Defx `getcwd()` -search=`expand('%:p')`<CR>
-endif
 
-if dein#tap('coc.nvim')
+if dein#tap('nvim-tree.lua')
     noremap <leader>x :LuaTreeToggle<CR>
 endif
 
-"Project
 if dein#tap('vim-clap')
+"Project
     noremap <leader>pf :Clap files --hidden<CR>
     noremap <leader>ps :Clap grep<CR>
-elseif dein#tap('denite.nvim')
-    noremap <leader>pf :DeniteProjectDir file/rec<CR>
-    noremap <leader>ps :DeniteProjectDir grep:::!<CR>
-endif
-
 "Search
-if dein#tap('vim-clap')
     noremap <leader>ss :Clap blines<CR>
     noremap <leader>sj :Clap jumps<CR>
     noremap <leader>se :Clap lines<CR>
     noremap <leader>sm :Clap maps<CR>
     noremap <leader>sM :Clap marks<CR>
     noremap <leader>so :Clap tags<CR>
-elseif dein#tap('denite.nvim')
-    noremap <leader>ss :Denite line<CR>
-    noremap <leader>sj :Denite jump<CR>
-    noremap <leader>se :Denite line/external<CR>
-    noremap <leader>sm :Denite mark<CR>
-    noremap <leader>so :Denite outline<CR>
-endif
-
 "commands
-if dein#tap('vim-clap')
-    noremap <leader>cc :Clap command_history<CR>
-    noremap <leader>cl :Clap command<CR>
-    noremap <leader>ch :Clap command_history<CR>
-elseif dein#tap('denite.nvim')
-    noremap <leader>cc :Denite command_history command<CR>
-    noremap <leader>cl :Denite command<CR>
-    noremap <leader>ch :Denite command_history<CR>
-endif
-
+    noremap <leader>lc :Clap command_history<CR>
+    noremap <leader>ll :Clap command<CR>
+    noremap <leader>lh :Clap command_history<CR>
 "help
-if dein#tap('vim-clap')
     noremap <leader>hh :Clap help_tags<CR>
-elseif dein#tap('denite.nvim')
-    noremap <leader>hh :Denite help<CR>
-endif
-
 "sources
-if dein#tap('vim-clap')
     noremap <leader>ll :Clap providers<CR>
-elseif dein#tap('denite.nvim')
-    noremap <leader>ll :Denite source<CR>
-endif
-
-if dein#tap('vim-clap')
+"yanks
     noremap <leader>yy :Clap yanks<CR>
-elseif (dein#tap('denite.nvim') && dein#tap('neoyank.vim'))
-    noremap <leader>yy :Denite neoyank<CR>
+"windows
+    noremap <leader>w/ :Clap windows<CR>
 endif
 
 "Window
@@ -346,8 +282,6 @@ if (dein#tap('coc.nvim'))
     nmap <silent> <leader>ei <Plug>(coc-diagnostic-info)
     if dein#tap('coc-clap') && dein#tap('vim-clap')
         nnoremap <silent> <leader>el  :Clap coc_diagnostics<CR>
-    elseif dein#tap('coc-denite') && dein#tap('denite.nvim')
-        nnoremap <silent> <leader>el  :Denite coc-diagnostic<CR>
     else
         nnoremap <silent> <leader>el  :<C-u>CocList diagnostics<cr>
     endif
@@ -375,11 +309,10 @@ if (dein#tap('coc.nvim'))
     endif
     "symbols
     if dein#tap('coc-clap') && dein#tap('vim-clap')
-        nnoremap <silent> <leader>ls  :Clap coc_outline<cr>
+        nnoremap <silent> <leader>ls  :<C-u>CocList outline<cr>
+        "not working
+        "nnoremap <silent> <leader>ls  :Clap coc_outline<cr>
         nnoremap <silent> <leader>lS  :Clap coc_symbols<cr>
-    elseif dein#tap('coc-denite') && dein#tap('denite.nvim')
-        nnoremap <silent> <leader>ls  :Denite coc-symbols <cr>
-        nnoremap <silent> <leader>lS  :Denite coc-workspace<cr>
     else
         nnoremap <silent> <leader>ls  :<C-u>CocList outline<cr>
         nnoremap <silent> <leader>lS  :<C-u>CocList -I symbols<cr>
@@ -387,8 +320,6 @@ if (dein#tap('coc.nvim'))
     "coc-jumps
     if dein#tap('coc-clap') && dein#tap('vim-clap')
         nnoremap <silent> <leader>lj  :Clap coc_location<cr>
-    elseif dein#tap('coc-denite') && dein#tap('denite.nvim')
-        nnoremap <silent> <leader>lj  :Denite coc-jump-locations<cr>
     else
         nnoremap <silent> <leader>lj  :<C-u>CocList location<cr>
     endif
@@ -477,17 +408,10 @@ cnoremap <C-n> <Down>
 " recall previous (older) command-line
 cnoremap <C-p> <Up>
 
-if !has('nvim')
-    " back one word
-    cnoremap <Esc><C-B> <S-Left>
-    " forward one word
-    cnoremap <Esc><C-F> <S-Right>
-else
-    " back one word
-    cnoremap <A-b>  <S-Left>
-    " forward one word
-    cnoremap <A-f>  <S-Right>
-endif
+" back one word
+cnoremap <A-b>  <S-Left>
+" forward one word
+cnoremap <A-f>  <S-Right>
 
 "Toggle stuff
 let s:hidden_all = 0
