@@ -88,7 +88,11 @@ if dein#load_state('~/.cache/dein')
 
     "Syntax
     call dein#add('sheerun/vim-polyglot')
-
+    call dein#add('nvim-treesitter/nvim-treesitter',{
+                \'merged':0,
+                \'augroup': 'NvimTreesitter',
+                \'hook_source':'call '. s:SID(). 'treesitter_setup()',
+                \'on_ft':['cpp','c','python','java','lua','json']})
     "Generic Programming
     call dein#add('preservim/nerdcommenter',
                 \{'on_map': ['<Plug>','<leader>c']})
@@ -153,7 +157,6 @@ if dein#check_install()
 endif
 "Dein hook post source handling
 autocmd VimEnter * call dein#call_hook('post_source')
-
 
 
 
@@ -392,6 +395,41 @@ nvimux.bootstrap()
 EOF
 endfunction
 
+
+function s:treesitter_setup() abort
+lua << EOF
+require'nvim-treesitter.configs'.setup {
+ highlight = {
+        enable = true,                    -- false will disable the whole extension
+    },
+    incremental_selection = {
+        enable = true,
+        keymaps = {                       -- mappings for incremental selection (visual mappings)
+          init_selection = 'gni',         -- maps in normal mode to init the node/scope selection
+          node_incremental = "gnn",       -- increment to the upper named parent
+          scope_incremental = "gns",      -- increment to the upper scope (as defined in locals.scm)
+          node_decremental = "grp",       -- decrement to the previous node
+        }
+    },
+    refactor = {
+      highlight_defintions = {
+        enable = true
+      },
+      smart_rename = {
+        enable = true,
+        smart_rename = "gR"              -- mapping to rename reference under cursor
+      },
+      navigation = {
+        enable = true,
+        goto_definition = "gnd",          -- mapping to go to definition of symbol under cursor
+        list_definitions = "gnD"          -- mapping to list all definitions in current file
+      }
+    },
+    ensure_installed = {'lua','c','cpp','json','java','python','bash'} -- one of 'all', 'language', or a list of languages
+}
+EOF
+endfunction
+
 "Commandline mode emacs-mapings
 " start of line
 cnoremap <C-a>  <Home>
@@ -430,3 +468,4 @@ function! ToggleHiddenAll()
 endfunction
 
 nnoremap <Leader>T :call ToggleHiddenAll()<CR>
+
