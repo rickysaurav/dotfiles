@@ -92,7 +92,8 @@ if dein#load_state('~/.cache/dein')
                 \'merged':0,
                 \'augroup': 'NvimTreesitter',
                 \'hook_source':'call '. s:SID(). 'treesitter_setup()',
-                \'on_ft':['cpp','c','python','java','lua','json']})
+                \'on_cmd' :['TSInstall','TSBufEnable','TSEnableAll','TSModuleInfo'],
+                \'on_ft':['cpp','c','python','java','lua','json','markdown']})
     "Generic Programming
     call dein#add('preservim/nerdcommenter',
                 \{'on_map': ['<Plug>','<leader>c']})
@@ -306,7 +307,7 @@ if (dein#tap('coc.nvim'))
     xmap <leader>la  <Plug>(coc-codeaction-selected)
     nmap <leader>la  <Plug>(coc-codeaction-selected)
     if dein#tap('coc-clap') && dein#tap('vim-clap')
-        nnoremap <leader>l.  :Clap coc_actions
+        nnoremap <leader>l.  :Clap coc_actions<cr>
     else 
         nnoremap <silent> <leader>l.  :<C-u>CocList action<cr>
     endif
@@ -468,4 +469,3 @@ function! ToggleHiddenAll()
 endfunction
 
 nnoremap <Leader>T :call ToggleHiddenAll()<CR>
-
