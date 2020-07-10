@@ -49,15 +49,21 @@ if dein#load_state('~/.cache/dein')
     call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
 
     "Colorschemes
-    "call dein#add('liuchengxu/space-vim-theme',{'hook_add': 'colorscheme space_vim_theme'})
-    call dein#add('rakr/vim-one',{'on_event':['FocusLost','CursorHold'],'hook_source': "colorscheme one\ndoau ColorScheme"})
+    "call dein#add('liuchengxu/space-vim-theme',{
+                "\'on_event':['FocusLost','CursorHold'],
+                "\'hook_source': "colorscheme space_vim_theme\ndoau ColorScheme"
+                "\})
+    call dein#add('rakr/vim-one',{
+                \'on_event':['FocusLost','CursorHold'],
+                \'hook_source': "colorscheme one\ndoau ColorScheme"
+                \})
     "Profiling
     call dein#add('dstein64/vim-startuptime',{'on_cmd':'StartupTime'})
 
     "UI
     call dein#add('itchyny/lightline.vim',
                 \{'on_event':['FocusLost','CursorHold'],
-                \'hook_source':'source ~/.config/nvim/lightline_rc.vim'})
+                \'hook_source':'call lightline#setup#config()'})
     call dein#add('rickysaurav/tmuxline.vim', {'on_cmd':'TmuxLine'})
     "Plugins
     "Interface
@@ -68,10 +74,12 @@ if dein#load_state('~/.cache/dein')
                 \'hook_add': join(['let g:clap_provider_grep_opts="-H --no-heading --vimgrep --smart-case --hidden"',
                 \'autocmd User ClapOnExit call lightline#update()'],"\n")
                 \})
-    call dein#add('uiiaoo/java-syntax.vim',{'on_ft':'java'})
     call dein#add('wsdjeg/dein-ui.vim',
                 \{'on_cmd':'DeinUpdate'})
-    call dein#add('liuchengxu/vim-which-key', {'on_cmd':['WhichKey', 'WhichKey!'],'hook_add':'nnoremap <silent> <leader> :WhichKey "<Space>"<CR>'})
+    call dein#add('liuchengxu/vim-which-key', {
+                \'on_cmd':['WhichKey', 'WhichKey!'],
+                \'hook_add':'nnoremap <silent> <leader> :WhichKey "<Space>"<CR>'
+                \})
     "file explorer
     call dein#add('kyazdani42/nvim-web-devicons') 
     "call dein#add('~/repos/nvim-tree.lua',{
@@ -84,14 +92,16 @@ if dein#load_state('~/.cache/dein')
                 \'let g:lua_tree_icons = {"default": ""}'],"\n"),
                 \})
     "Git
-    call dein#add('tpope/vim-fugitive', { 'on_cmd': [ 'Git', 'Gstatus', 'Gwrite', 'Glog', 'Gcommit', 'Gblame', 'Ggrep', 'Gdiff', 'G'] })
+    call dein#add('tpope/vim-fugitive', { 
+                \'on_cmd': [ 'Git', 'Gstatus', 'Gwrite', 'Glog', 'Gcommit', 'Gblame', 'Ggrep', 'Gdiff', 'G'] 
+                \})
 
     "Syntax
     call dein#add('sheerun/vim-polyglot')
     call dein#add('nvim-treesitter/nvim-treesitter',{
                 \'merged':0,
                 \'augroup': 'NvimTreesitter',
-                \'hook_source':'call '. s:SID(). 'treesitter_setup()',
+                \'hook_source':'lua require"config.tree_sitter".setup()',
                 \'on_cmd' :['TSInstall','TSBufEnable','TSEnableAll','TSModuleInfo'],
                 \'on_ft':['cpp','c','python','java','lua','json','markdown']})
     "Generic Programming
@@ -109,14 +119,14 @@ if dein#load_state('~/.cache/dein')
     call dein#add('Vigemus/nvimux',{
                 \'on_cmd':['NvimuxVerticalSplit','NvimuxHorizontalSplit','NvimuxToggleTerm'],
                 \'on_map':{'n':['<leader>t']},
-                \'hook_source': 'call ' . s:SID() . 'nvimux_setup()'})
+                \'hook_source': 'lua require"config.nvimux".setup()'})
     call dein#add('Vigemus/iron.nvim',{
                 \ 'on_cmd':['IronRepl','IronReplHere','IronRestart','IronSend!','IronSend','IronFocus','IronWatchCurrentFile','IronUnwatchCurrentFile'],
                 \ 'on_map':{'n':['<Plug>']},
                 \ 'hook_add':join(['let g:iron_map_defaults = 0',
                 \    'let g:iron_map_extended = 0',
                 \],"\n"),
-                \ 'hook_source':'call ' . s:SID() . 'iron_setup()',
+                \ 'hook_source':'lua require "config.iron".setup()',
                 \ })
     call dein#add('bfredl/nvim-luadev',{
                 \'on_cmd':['Luadev'],
@@ -144,11 +154,17 @@ if dein#load_state('~/.cache/dein')
                 \'on_source':['coc.nvim','vim-clap'],
                 \   })
     "Runner
-    call dein#add('skywind3000/asyncrun.vim' ,{'on_cmd': ['AsyncRun', 'AsyncStop'] })
-    call dein#add('skywind3000/asynctasks.vim',{'on_cmd': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] })
+    call dein#add('skywind3000/asyncrun.vim' ,{
+                \'on_cmd': ['AsyncRun', 'AsyncStop'] 
+                \})
+    call dein#add('skywind3000/asynctasks.vim',{
+                \'on_cmd': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] 
+                \})
     "Markdown
-    call dein#add('iamcco/markdown-preview.nvim', {'on_ft': ['markdown', 'pandoc.markdown', 'rmd'],
-					\ 'build': 'sh -c "cd app & yarn install"' })
+    call dein#add('iamcco/markdown-preview.nvim', {
+                \'on_ft': ['markdown', 'pandoc.markdown', 'rmd'],
+				\ 'build': 'sh -c "cd app & yarn install"' 
+                \})
     call dein#end()
     call dein#save_state()
 endif
@@ -349,88 +365,6 @@ function! Iron_init() abort
     nmap <buffer> <leader>rR    :IronRestart<CR>
 endfunction
 
-function s:iron_setup() abort
-lua << EOF
-    local iron = require('iron')
-    iron.core.set_config {
-        preferred = {
-            python = "ipython",
-        },
-        repl_open_cmd = function(buff) vim.api.nvim_command('botright vertical 100 split' .. '| ' .. buff .. ' | set wfw') end
-    }
-EOF
-endfunction
-
-"nvimux
-"
-function! s:nvimux_setup() abort
-lua << EOF
-local nvimux = require('nvimux')
-
--- Nvimux configuration
-nvimux.config.set_all{
-  prefix = '<leader>t',
-  local_prefix = {
-    n = '<leader>t',
-    v = '<leader>t',
-    i = '<A-Space>t',
-    t = '<A-Space>t',
-  },
-  --TODO:Find a way to wrap lua commands under dein#tap
-  new_window = 'enew|term',
-  new_window_buffer = 'single',
-  quickterm_command='enew|term',
-  quickterm_direction = 'botright',
-  quickterm_orientation = 'vertical',
-  quickterm_scope = 't',
-}
-
--- Nvimux custom bindings
-nvimux.bindings.bind_all{
-  {'-', ':NvimuxHorizontalSplit', {'n', 'v', 'i', 't'}},
-  {'\\|', ':NvimuxVerticalSplit', {'n', 'v', 'i', 't'}},
-}
-
--- Required so nvimux sets the mappings correctly
-nvimux.bootstrap()
-EOF
-endfunction
-
-
-function s:treesitter_setup() abort
-lua << EOF
-require'nvim-treesitter.configs'.setup {
- highlight = {
-        enable = true,                    -- false will disable the whole extension
-    },
-    incremental_selection = {
-        enable = true,
-        keymaps = {                       -- mappings for incremental selection (visual mappings)
-          init_selection = 'gni',         -- maps in normal mode to init the node/scope selection
-          node_incremental = "gnn",       -- increment to the upper named parent
-          scope_incremental = "gns",      -- increment to the upper scope (as defined in locals.scm)
-          node_decremental = "grp",       -- decrement to the previous node
-        }
-    },
-    refactor = {
-      highlight_defintions = {
-        enable = true
-      },
-      smart_rename = {
-        enable = true,
-        smart_rename = "gR"              -- mapping to rename reference under cursor
-      },
-      navigation = {
-        enable = true,
-        goto_definition = "gnd",          -- mapping to go to definition of symbol under cursor
-        list_definitions = "gnD"          -- mapping to list all definitions in current file
-      }
-    },
-    ensure_installed = {'lua','c','cpp','json','java','python','bash'} -- one of 'all', 'language', or a list of languages
-}
-EOF
-endfunction
-
 "Commandline mode emacs-mapings
 " start of line
 cnoremap <C-a>  <Home>
@@ -452,20 +386,4 @@ cnoremap <A-b>  <S-Left>
 " forward one word
 cnoremap <A-f>  <S-Right>
 
-"Toggle stuff
-let s:hidden_all = 0
-function! ToggleHiddenAll()
-	if s:hidden_all  == 0
-		let s:hidden_all = 1
-		set laststatus=0
-		set noshowcmd
-		set showtabline=0
-	else
-		let s:hidden_all = 0
-		set laststatus=2
-		set showcmd
-		set showtabline=1
-	endif
-endfunction
-
-nnoremap <Leader>T :call ToggleHiddenAll()<CR>
+nnoremap <Leader>T :call custom_utils#toggleHiddenAll()<CR>
