@@ -9,4 +9,11 @@ killall -q polybar
 while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
 
 # Launch bar1 and bar2
-polybar -c ~/.config/polybar/config.ini main &
+if type "xrandr"; then
+  for m in $(polybar --list-monitors | cut -d":" -f1); do
+      MONITOR=$m polybar -c ~/.config/polybar/config.ini main &
+  done
+else
+    polybar -c ~/.config/polybar/config.ini main &
+fi
+
