@@ -1,2 +1,2 @@
 setlocal makeprg=python\ %:p
-call Iron_init()
+lua require "config.iron".attach_to_buffer()

@@ -12,5 +12,6 @@ nnoremap <buffer> R :lua require"tree".on_keypress("rename")<cr>
 nnoremap <buffer> T :lua require"tree".on_keypress("preview")<cr>
 nnoremap <buffer> Y :lua require"tree".on_keypress("copy")<cr>
 nnoremap <buffer> P :lua require"tree".on_keypress("paste")<cr>
+nnoremap <buffer> X :lua require"tree".on_keypress("cut")<cr>
 nnoremap <buffer> q :LuaTreeClose
 nnoremap <buffer> gx :lua require"tree".xdg_open()<cr>

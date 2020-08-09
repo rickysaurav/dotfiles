@@ -41,13 +41,12 @@ endif
 
 " Add the dein installation directory into runtimepath
 set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
-
 if dein#load_state('~/.cache/dein')
     call dein#begin('~/.cache/dein')
 
     "Plugin manager
     call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
-
+    
     "Colorschemes
     "call dein#add('liuchengxu/space-vim-theme',{
                 "\'on_event':['FocusLost','CursorHold'],
@@ -81,9 +80,7 @@ if dein#load_state('~/.cache/dein')
                 \'hook_add':'nnoremap <silent> <leader> :WhichKey "<Space>"<CR>'
                 \})
     "file explorer
-    call dein#add('kyazdani42/nvim-web-devicons') 
-    "call dein#add('~/repos/nvim-tree.lua',{
-    call dein#add('rickysaurav/nvim-tree.lua',{
+    call dein#add('kyazdani42/nvim-tree.lua',{
                 \'on_cmd':'LuaTreeToggle',
                 \'augroup':'LuaTree',
                 \'hook_add':join([
@@ -91,11 +88,11 @@ if dein#load_state('~/.cache/dein')
                 \'let g:lua_tree_disable_keybindings = 1',
                 \'let g:lua_tree_icons = {"default": ""}'],"\n"),
                 \})
+    call dein#add('kyazdani42/nvim-web-devicons',{"on_source":"nvim-tree.lua"}) 
     "Git
     call dein#add('tpope/vim-fugitive', { 
                 \'on_cmd': [ 'Git', 'Gstatus', 'Gwrite', 'Glog', 'Gcommit', 'Gblame', 'Ggrep', 'Gdiff', 'G'] 
                 \})
-
     "Syntax
     call dein#add('sheerun/vim-polyglot')
     call dein#add('nvim-treesitter/nvim-treesitter',{
@@ -103,7 +100,7 @@ if dein#load_state('~/.cache/dein')
                 \'augroup': 'NvimTreesitter',
                 \'hook_source':'lua require"config.tree_sitter".setup()',
                 \'on_cmd' :['TSInstall','TSBufEnable','TSEnableAll','TSModuleInfo'],
-                \'on_ft':['cpp','c','python','java','lua','json','markdown']})
+                \'on_ft':['cpp','c','python','java','lua','json','markdown','typescript']})
     "Generic Programming
     call dein#add('preservim/nerdcommenter',
                 \{'on_map': ['<Plug>','<leader>c']})
@@ -112,8 +109,8 @@ if dein#load_state('~/.cache/dein')
     call dein#add('tpope/vim-surround',
                 \{'on_map': {'n' : ['cs', 'ds', 'ys'], 'x' : 'S'},
                 \'depends' : 'vim-repeat'})
-    call dein#add('jiangmiao/auto-pairs',
-                \{'on_map' : { 'i' : ['(', '[', '{','<','"',"'"] },
+    call dein#add('jiangmiao/auto-pairs',{
+                \'on_map' : { 'i' : ['(', '[', '{','<','"',"'"] },
                 \'hook_post_source':'call AutoPairsTryInit()'})
     "Terminal UI
     call dein#add('Vigemus/nvimux',{
@@ -155,6 +152,7 @@ if dein#load_state('~/.cache/dein')
                 \   })
     "Runner
     call dein#add('skywind3000/asyncrun.vim' ,{
+                \'hook_add':'let g:asyncrun_open = 6',
                 \'on_cmd': ['AsyncRun', 'AsyncStop'] 
                 \})
     call dein#add('skywind3000/asynctasks.vim',{
@@ -350,40 +348,34 @@ if (dein#tap('coc.nvim'))
     omap if <Plug>(coc-funcobj-i)
     omap af <Plug>(coc-funcobj-a)
 endif
-
-"iron.nvim
-function! Iron_init() abort
-    nmap <buffer> <leader>rs    <Plug>(iron-send-motion)
-    vmap <buffer> <leader>rs    <Plug>(iron-visual-send)
-    nmap <buffer> <leader>rr    <Plug>(iron-repeat-cmd)
-    nmap <buffer> <leader>rl    <Plug>(iron-send-lines)
-    nmap <buffer> <leader>rt    :IronRepl<CR>
-    nmap <buffer> <leader>r<CR> <Plug>(iron-cr)
-    nmap <buffer> <leader>ri    <plug>(iron-interrupt)
-    nmap <buffer> <leader>rq    <Plug>(iron-exit)
-    nmap <buffer> <leader>rc    <Plug>(iron-clear)
-    nmap <buffer> <leader>rR    :IronRestart<CR>
-endfunction
-
 "Commandline mode emacs-mapings
 " start of line
+inoremap <C-a>  <Home>
 cnoremap <C-a>  <Home>
 " back one character
+inoremap <C-b>  <Left>
 cnoremap <C-b>  <Left>
 " delete character under cursor
+inoremap <C-c> <Del>
 cnoremap <C-c> <Del>
 " end of line
+inoremap <C-d> <End>
 cnoremap <C-d> <End>
 " forward one character
+inoremap <C-f> <Right>
 cnoremap <C-f> <Right>
 " recall newer command-line
+inoremap <C-n> <Down>
 cnoremap <C-n> <Down>
 " recall previous (older) command-line
+inoremap <C-p> <Up>
 cnoremap <C-p> <Up>
 
 " back one word
+inoremap <A-b>  <S-Left>
 cnoremap <A-b>  <S-Left>
 " forward one word
+inoremap <A-f>  <S-Right>
 cnoremap <A-f>  <S-Right>
 
 nnoremap <Leader>T :call custom_utils#toggleHiddenAll()<CR>

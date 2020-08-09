@@ -30,7 +30,7 @@ function M.setup()
                 list_definitions = "gnD"          -- mapping to list all definitions in current file
             }
         },
-        ensure_installed = {'lua','c','cpp','json','java','python','bash'} -- one of 'all', 'language', or a list of languages
+        ensure_installed = {'lua','c','cpp','json','java','python','bash','typescript'} -- one of 'all', 'language', or a list of languages
     }
 end
 
