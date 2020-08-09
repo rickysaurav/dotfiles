@@ -13,6 +13,9 @@ set splitright
 set clipboard+=unnamedplus
 set nohlsearch
 set inccommand=nosplit
+set updatetime=300
+set completeopt=menuone,noinsert,noselect
+
 
 "autosave/load setup
 " Save whenever switching windows or leaving vim. This is useful when running
@@ -150,19 +153,37 @@ if dein#load_state('~/.cache/dein')
                 \'omap / <Plug>(easymotion-tn)'],"\n"),
                 \'hook_source' : 'let g:EasyMotion_smartcase = 1'})
     "Language
-    call dein#add('neoclide/coc.nvim', {
+    "call dein#add('~/repos/nvim-lsp',{
+    call dein#add('neovim/nvim-lsp',{
+                \'on_ft':['cpp','c','python','lua','vim','json','typescript','rust','java'],
                 \'merged':0,
-                \'build': 'yarn install --frozen-lockfile',
-                \'on_event':'InsertEnter',
-                \'on_func' :'coc#config',
-                \'on_cmd' : ['CocConfig','CocAction','CocCommand'],
-                \'on_ft':['python','java','cpp','c','lua','vim'],
-                \'hook_add':'let g:coc_global_extensions = ["coc-python","coc-java","coc-vimlsp","coc-markdownlint","coc-snippets","coc-clangd"]',
-                \'hook_source':'call ' . s:SID() . 'coc_nvim_setup()'
+                \'hook_source':'lua require"config.lsp".setup()'})
+    call dein#add('nvim-lua/diagnostic-nvim',{
+                \'merged':0,
+                \'on_source':'nvim-lsp',
+                \'on_command':['OpenDiagnostic','PrevDiagnosticCycle','NextDiagnosticCycle'],
+                \'hook_add':join([
+                \'let g:diagnostic_enable_virtual_text = 1',
+                \'let g:space_before_virtual_text = 5',
+                \'let g:diagnostic_insert_delay = 1'
+                \],"\n"),
                 \})
-    call dein#add('vn-ki/coc-clap',{
-                \'on_source':['coc.nvim','vim-clap'],
-                \   })
+    call dein#add('nvim-lua/lsp-status.nvim',{
+                \'merged':0,
+                \'on_source':'nvim-lsp',
+                \})
+    "completion
+    call dein#add('nvim-lua/completion-nvim',{
+                \'on_event':'InsertEnter',
+                \'hook_add':join(['let g:completion_auto_change_source = 1','let g:completion_enable_snippet = "vim-vsnip"'],"\n"),
+                \'hook_post_source':join([
+                \'autocmd BufEnter * lua require"config.completion_nvim".on_attach()',
+                \'doautocmd BufEnter'],"\n")})
+    call dein#add('steelsojka/completion-buffers',{'on_source':'completion-nvim'})
+    call dein#add('hrsh7th/vim-vsnip',{
+                \'hook_add':'let g:vsnip_snippet_dir="~/.config/nvim/snippets/"',
+                \'on_source':'completion-nvim'})
+    call dein#add('hrsh7th/vim-vsnip-integ',{'on_source':'completion-nvim'})
     "Runner
     call dein#add('skywind3000/asyncrun.vim' ,{
                 \'hook_add':'let g:asyncrun_open = 6',
@@ -242,125 +263,6 @@ endif
 "Window
 noremap <leader>w <C-w>
 
-"Coc-nvim
-function! s:coc_nvim_setup() abort
-    autocmd CursorHold * silent call CocActionAsync("highlight")
-    augroup coc_group
-        autocmd!
-        autocmd FileType typescript,json setl formatexpr=CocAction("formatSelected")
-        autocmd User CocJumpPlaceholder call CocActionAsync("showSignatureHelp")
-    augroup end
-    let lua_lsp = glob('~/.cache/nvim/nvim_lsp/sumneko_lua/lua-language-server')
-    if !empty(lua_lsp)
-        call coc#config('languageserver', {
-            \ 'lua-language-server': {
-            \     'cwd': lua_lsp,
-            \     'command': lua_lsp . '/bin/Linux/lua-language-server',
-            \     'args': ['-E', '-e', 'LANG="en"', lua_lsp . '/main.lua'],
-            \     'filetypes': ['lua'],
-            \ }
-        \ })
-    endif
-endfunction
-if (dein#tap('coc.nvim'))
-    "Coc-changes
-    set hidden
-    set nobackup
-    set nowritebackup
-    set updatetime=300
-    set shortmess+=c
-    set signcolumn=yes
-    if exists("&tagfunc")
-        set tagfunc=CocTagFunc
-    endif
-    let g:coc_snippet_next = '<tab>'
-    if exists('*complete_info')
-        " Use `complete_info` if your (Neo)Vim version supports it.
-        inoremap <expr> <cr> complete_info()["selected"] != "-1" ? coc#_select_confirm() :
-                    \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-    else
-        imap <expr> <cr> pumvisible() ? coc#_select_confirm() :
-                    \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-    endif
-
-    " Use K to show documentation in preview window.
-    nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-    function! s:show_documentation()
-        if (index(['vim','help'], &filetype) >= 0)
-            execute 'h '.expand('<cword>')
-        else
-            call CocAction('doHover')
-        endif
-    endfunction
-
-
-    " Add `:Format` command to format current buffer.
-    command! -nargs=0 Format :call CocAction('format')
-
-    " Add `:Fold` command to fold current buffer.
-    command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-    " Add `:OR` command for organize imports of the current buffer.
-    command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-    "Coc mappings
-    "error navigation
-    nmap <silent> <leader>ep <Plug>(coc-diagnostic-prev-error)
-    nmap <silent> <leader>en <Plug>(coc-diagnostic-next-error)
-    nmap <silent> <leader>eP <Plug>(coc-diagnostic-prev)
-    nmap <silent> <leader>eN <Plug>(coc-diagnostic-next)
-    nmap <silent> <leader>ei <Plug>(coc-diagnostic-info)
-    if dein#tap('coc-clap') && dein#tap('vim-clap')
-        nnoremap <silent> <leader>el  :Clap coc_diagnostics<CR>
-    else
-        nnoremap <silent> <leader>el  :<C-u>CocList diagnostics<cr>
-    endif
-    "goto
-    nmap <silent> <leader>lgd <Plug>(coc-definition)
-    nmap <silent> <leader>lgt <Plug>(coc-type-definition)
-    nmap <silent> <leader>lgi <Plug>(coc-implementation)
-    nmap <silent> <leader>lgr <Plug>(coc-references)
-    nmap <silent> gd <Plug>(coc-definition)
-    nmap <silent> gy <Plug>(coc-type-definition)
-    nmap <silent> gi <Plug>(coc-implementation)
-    nmap <silent> gr <Plug>(coc-references)
-    "refactor
-    xmap <leader>lf  <Plug>(coc-format-selected)
-    nmap <leader>lf  <Plug>(coc-format-selected)
-    "rename
-    nmap <leader>lR <Plug>(coc-rename)
-    "code-action
-    xmap <leader>la  <Plug>(coc-codeaction-selected)
-    nmap <leader>la  <Plug>(coc-codeaction-selected)
-    if dein#tap('coc-clap') && dein#tap('vim-clap')
-        nnoremap <leader>l.  :Clap coc_actions<cr>
-    else 
-        nnoremap <silent> <leader>l.  :<C-u>CocList action<cr>
-    endif
-    "symbols
-    if dein#tap('coc-clap') && dein#tap('vim-clap')
-        nnoremap <silent> <leader>ls  :<C-u>CocList outline<cr>
-        "not working
-        "nnoremap <silent> <leader>ls  :Clap coc_outline<cr>
-        nnoremap <silent> <leader>lS  :Clap coc_symbols<cr>
-    else
-        nnoremap <silent> <leader>ls  :<C-u>CocList outline<cr>
-        nnoremap <silent> <leader>lS  :<C-u>CocList -I symbols<cr>
-    endif
-    "coc-jumps
-    if dein#tap('coc-clap') && dein#tap('vim-clap')
-        nnoremap <silent> <leader>lj  :Clap coc_location<cr>
-    else
-        nnoremap <silent> <leader>lj  :<C-u>CocList location<cr>
-    endif
-
-    "function text objects
-    xmap if <Plug>(coc-funcobj-i)
-    xmap af <Plug>(coc-funcobj-a)
-    omap if <Plug>(coc-funcobj-i)
-    omap af <Plug>(coc-funcobj-a)
-endif
 "Commandline mode emacs-mapings
 " start of line
 inoremap <C-a>  <Home>
@@ -396,3 +298,14 @@ inoremap <A-BS> <C-w>
 cnoremap <A-BS> <C-w>
 
 nnoremap <Leader>T :call custom_utils#toggleHiddenAll()<CR>
+
+
+"snippet mappings
+imap <expr> <Tab>   vsnip#available(1)  ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+smap <expr> <Tab>   vsnip#available(1)  ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+imap <expr> <S-Tab> vsnip#available(-1) ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+smap <expr> <S-Tab> vsnip#available(-1) ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+
+
+imap <c-k> <Plug>(completion_prev_source) "use <c-k> to switch to next completion
+imap <c-j> <Plug>(completion_next_source) "use <c-j> to switch to previous completion

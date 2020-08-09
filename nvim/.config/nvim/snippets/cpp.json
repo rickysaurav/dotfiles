@@ -1,0 +1,79 @@
+{
+    "case": {
+        "prefix": [
+            "case"
+        ],
+        "description": "case",
+        "body": [
+            "cout<<\"Case #\"<<tt<<\": \"<<${1:ans}<<NL;${0}"
+        ]
+    },
+    "norm": {
+        "prefix": [
+            "norm"
+        ],
+        "description": "cp",
+        "body": [
+            "#include<bits/stdc++.h>",
+            "using namespace std;",
+            "typedef long long ll",
+            "typedef pair<ll,ll> pll;",
+            "#define fillm(a,val) memset(a,val,sizeof(a))",
+            "#define NL \"\\n\"",
+            "const ll mod = 1000000007;",
+            "const ll maxn = ${1:100005};",
+            "const ll inf = 1ll<<50;",
+            "int main()",
+            "{",
+            "#ifdef LOCAL_SYS",
+            "    freopen(\"input.txt\",\"r\",stdin);",
+            "#endif",
+            "    ios_base::sync_with_stdio(false);",
+            "    cin.tie(NULL);",
+            "    ${0}",
+            "    return 0;",
+            "}"
+        ]
+    },
+    "outp": {
+        "prefix": [
+            "outp"
+        ],
+        "description": "files",
+        "body": [
+            "#ifdef LOCAL_SYS",
+            "    freopen(\"input.txt\",\"r\",stdin);",
+            "#endif"
+        ]
+    },
+    "powm": {
+        "prefix": [
+            "powm"
+        ],
+        "description": "modpow",
+        "body": [
+            "ll powmod(ll base, ll exp,ll mod)",
+            "{",
+            "    ll res = 1;",
+            "    while(exp)",
+            "    {",
+            "        if(exp&1)",
+            "            res = (res*base)%mod;",
+            "        base = (base*base)%mod;",
+            "        exp>>=1;",
+            "    }",
+            "    return res;",
+            "}",
+            "${0}"
+        ]
+    },
+    "phak": {
+        "prefix": [
+            "phak"
+        ],
+        "description": "phak",
+        "body": [
+            "cout<<\"phak\"<<endl;"
+        ]
+    }
+}
