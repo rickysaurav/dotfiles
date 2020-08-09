@@ -172,6 +172,9 @@ if dein#load_state('~/.cache/dein')
                 \'merged':0,
                 \'on_source':'nvim-lsp',
                 \})
+    "debugger
+    call dein#add('mfussenegger/nvim-dap', {'merged':0,'on_ft':['cpp','python']})
+    
     "completion
     call dein#add('nvim-lua/completion-nvim',{
                 \'on_event':'InsertEnter',
