@@ -88,7 +88,7 @@ if dein#load_state('~/.cache/dein')
                 \'let g:lua_tree_disable_keybindings = 1',
                 \'let g:lua_tree_icons = {"default": ""}'],"\n"),
                 \})
-    call dein#add('kyazdani42/nvim-web-devicons',{"on_source":"nvim-tree.lua"}) 
+    call dein#add('kyazdani42/nvim-web-devicons',{"merged":0}) 
     "Git
     call dein#add('tpope/vim-fugitive', { 
                 \'on_cmd': [ 'Git', 'Gstatus', 'Gwrite', 'Glog', 'Gcommit', 'Gblame', 'Ggrep', 'Gdiff', 'G'] 
