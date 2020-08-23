@@ -64,6 +64,9 @@ if dein#load_state('~/.cache/dein')
                 \{'on_event':['FocusLost','CursorHold'],
                 \'hook_source':'call lightline#setup#config()'})
     call dein#add('rickysaurav/tmuxline.vim', {'on_cmd':'TmuxLine'})
+    call dein#add('dm1try/golden_size', {
+                \'on_event':'WinEnter',
+                \'hook_source':'lua require "config.golden_size".setup()'})
     "Plugins
     "Interface
     call dein#add('liuchengxu/vim-clap', 
