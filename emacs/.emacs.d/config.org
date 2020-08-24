@@ -1147,7 +1147,7 @@ Transient keymaps library.
      ;;   :config
      ;;     (setq org-agenda-files '("~/orgfiles/agenda")))
 
-     (setq org-agenda-files '("~/orgfiles/agenda/schedule.org"))
+     (setq org-agenda-files '("~/pCloudDrive/org/agenda"))
    #+END_SRC
 ** Reveal.js
    #+BEGIN_SRC emacs-lisp
