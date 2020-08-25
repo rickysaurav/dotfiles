@@ -1,5 +1,7 @@
 local api = vim.api
+local golden_size = require("golden_size")
 
+local M = {}
 api.nvim_set_var("golden_size_off", 0)
 
 local ignored_buftypes = {quickfix = true}
@@ -24,12 +26,14 @@ local function golden_size_ignore()
     return api.nvim_get_var("golden_size_off")
 end
 
-local golden_size = require("golden_size")
--- set the callbacks, preserve the defaults
-golden_size.set_ignore_callbacks({
-  { golden_size_ignore },
-  { ignore_by_buftype  },
-  { ignore_by_filetype },
-  { golden_size.ignore_float_windows }, -- default one, ignore float windows
-  { golden_size.ignore_by_window_flag }, -- default one, ignore windows with w:ignore_gold_size=1
-})
+function M.setup()
+    -- set the callbacks, preserve the defaults
+    golden_size.set_ignore_callbacks({
+      { golden_size_ignore },
+      { ignore_by_buftype  },
+      { ignore_by_filetype },
+      { golden_size.ignore_float_windows }, -- default one, ignore float windows
+      { golden_size.ignore_by_window_flag }, -- default one, ignore windows with w:ignore_gold_size=1
+    })
+end
+return M
