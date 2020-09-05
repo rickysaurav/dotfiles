@@ -317,6 +317,7 @@ exec --no-startup-id nm-applet
 exec --no-startup-id $browser
 exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
 exec --no-startup-id picom
+exec --no-startup-id pcloud
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 # exec --no-startup-id termite --name dropdown
 # exec --no-startup-id urxvtc -name dropdown
