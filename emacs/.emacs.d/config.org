@@ -371,11 +371,14 @@ Transient keymaps library.
 * ORG
 *** ORG
 #+BEGIN_SRC emacs-lisp
-    (use-package org
-      :straight t
-      :ghook
-       ('org-mode-hook 'auto-fill-mode)
-  )
+	  (use-package org
+		:straight t
+		:init
+		(setq org-agenda-files '("~/pCloudDrive/org/agenda"))
+		:ghook
+		('org-mode-hook 'auto-fill-mode)
+		:config
+	)
 #+END_SRC
 * UI
 ** Spacemacs-theme
@@ -1147,7 +1150,6 @@ Transient keymaps library.
      ;;   :config
      ;;     (setq org-agenda-files '("~/orgfiles/agenda")))
 
-     (setq org-agenda-files '("~/pCloudDrive/org/agenda"))
    #+END_SRC
 ** Reveal.js
    #+BEGIN_SRC emacs-lisp
