@@ -381,4 +381,8 @@ cnoremap <A-b>  <S-Left>
 inoremap <A-f>  <S-Right>
 cnoremap <A-f>  <S-Right>
 
+" recall previous (older) command-line
+inoremap <A-BS> <C-w>
+cnoremap <A-BS> <C-w>
+
 nnoremap <Leader>T :call custom_utils#toggleHiddenAll()<CR>
