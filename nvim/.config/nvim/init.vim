@@ -79,6 +79,18 @@ if dein#load_state('~/.cache/dein')
                 \'hook_add': join(['let g:clap_provider_grep_opts="-H --no-heading --vimgrep --smart-case --hidden"',
                 \'autocmd User ClapOnExit call lightline#update()'],"\n")
                 \})
+    call dein#add('nvim-lua/popup.nvim',{
+                \'merged':0,
+                \'on_source':['telescope.nvim']})
+    call dein#add('nvim-lua/plenary.nvim',{
+                \'merged':0,
+                \'on_source':['telescope.nvim']})
+    call dein#add('nvim-lua/telescope.nvim',{
+                \'hook_source':'command! -nargs=1 Telescope :lua require "config.telescope" .telescope(<f-args>)',
+                \'hook_add': 'cmap <C-R> <Plug>(TelescopeFuzzyCommandSearch)',
+                \'on_cmd':['Telescope'],
+                \'on_map':['<Plug>'],
+                \'merged':0})
     call dein#add('wsdjeg/dein-ui.vim',
                 \{'on_cmd':'DeinUpdate'})
     call dein#add('liuchengxu/vim-which-key', {
@@ -215,9 +227,11 @@ autocmd VimEnter * call dein#call_hook('post_source')
 "mappings
 "Buffers
 if dein#tap('vim-clap')
-    noremap <leader>bl :Clap buffers<CR>
-    noremap <leader>bb :Clap history<CR>
+    "noremap <leader>bl :Clap buffers<CR>
+    "noremap <leader>bb :Clap history<CR>
 endif
+noremap <leader>bl :Telescope buffers<CR>
+noremap <leader>bb :Telescope oldfiles<CR>
 noremap <leader>bn :bnext<CR>
 noremap <leader>bp :bprevious<CR>
 noremap <leader>bd :bdelete<CR>
@@ -225,10 +239,13 @@ noremap <leader>bc <C-^><CR>
 
 "Files
 if dein#tap('vim-clap')
-    noremap <leader>fh :Clap history<CR>
-    noremap <leader>fd :Clap files --hidden<CR>
-    noremap <leader>ff :Clap filer<CR>
+    "noremap <leader>fh :Clap history<CR>
+    "noremap <leader>fd :Clap files --hidden<CR>
+    "noremap <leader>ff :Clap filer<CR>
 endif
+noremap <leader>fh :Telescope oldfiles<CR>
+noremap <leader>fd :Telescope find_files<CR>
+noremap <leader>ff :Clap filer<CR>
 
 noremap <leader>fy :let @+ = expand('%')<CR>
 noremap <leader>fv :edit $MYVIMRC<CR>
@@ -240,19 +257,19 @@ endif
 
 if dein#tap('vim-clap')
 "Project
-    noremap <leader>pf :Clap files --hidden<CR>
-    noremap <leader>ps :Clap grep<CR>
+    "noremap <leader>pf :Clap files --hidden<CR>
+    "noremap <leader>ps :Clap grep<CR>
 "Search
-    noremap <leader>ss :Clap blines<CR>
+    "noremap <leader>ss :Clap blines<CR>
     noremap <leader>sj :Clap jumps<CR>
     noremap <leader>se :Clap lines<CR>
     noremap <leader>sm :Clap maps<CR>
-    noremap <leader>sM :Clap marks<CR>
-    noremap <leader>so :Clap tags<CR>
+    "noremap <leader>sM :Clap marks<CR>
+    "noremap <leader>so :Clap tags<CR>
 "commands
-    noremap <leader>lc :Clap command_history<CR>
-    noremap <leader>ll :Clap command<CR>
-    noremap <leader>lh :Clap command_history<CR>
+    "noremap <leader>lc :Clap command_history<CR>
+    "noremap <leader>ll :Clap command<CR>
+    "noremap <leader>lh :Clap command_history<CR>
 "help
     noremap <leader>hh :Clap help_tags<CR>
 "sources
@@ -262,6 +279,22 @@ if dein#tap('vim-clap')
 "windows
     noremap <leader>w/ :Clap windows<CR>
 endif
+
+"Project
+noremap <leader>pf :Telescope find_files<CR>
+noremap <leader>ps :Telescope live_grep<CR>
+
+"Search
+noremap <leader>ss :Telescope current_buffer_fuzzy_find<CR>
+noremap <leader>so :Telescope treesitter<CR>
+noremap <leader>sM :Telescope marks<CR>
+noremap <leader>sq :Telescope quickfix<CR>
+noremap <leader>sl :Telescope loclist<CR>
+
+"commands
+noremap <leader>lc :Telescope command_history<CR>
+noremap <leader>lh :Telescope command_history<CR>
+noremap <leader>lx :Telescope commands<CR>
 
 "Window
 noremap <leader>w <C-w>

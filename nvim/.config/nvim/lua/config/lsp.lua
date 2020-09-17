@@ -20,7 +20,7 @@ local lsp_keymap = {
         [ "gW" ]    = "vim.lsp.buf.workspace_symbol()",
         [ "<c-k>" ] = "vim.lsp.buf.signature_help()",
         [ "K" ]     = "vim.lsp.buf.hover()",
-        ["<leader>lr"] = "vim.lsp.buf.rename()",
+        ["<leader>lR"] = "vim.lsp.buf.rename()",
         ["<leader>lf"] = "vim.lsp.buf.range_formatting()",
         ["<leader>lF"] = "vim.lsp.buf.formatting()",
         ["<leader>l."] = "vim.lsp.buf.code_action()"
@@ -35,6 +35,15 @@ local diagnostic_keymap = {
         ["<leader>el"] = ":OpenDiagnostic",
         ["<leader>en"] = ":PrevDiagnosticCycle",
         ["<leader>ep"] = ":NextDiagnosticCycle"
+    }
+}
+
+local telescope_keymap = {
+    n = {
+        ["<leader>lw"] = ":Telescope lsp_document_symbols",
+        ["<leader>lW"] = ":Telescope lsp_workspace_symbols",
+        ["<leader>l."] = ":Telescope lsp_code_actions",
+        ["<leader>lr"] = ":Telescope lsp_references"
     }
 }
 
@@ -59,10 +68,21 @@ local function set_diagnostic_keymap()
     end
 end
 
+local function set_telescope_keymap()
+    for mode,map in pairs(telescope_keymap) do
+        for k,v in pairs(map) do
+            api.nvim_buf_set_keymap(0, mode , k, v..'<CR>', {
+                    nowait = true, noremap = true, silent = true
+                })
+        end
+    end
+end
+
 
 local function attach_functions(client)
     set_lsp_keymap()
     set_diagnostic_keymap()
+    set_telescope_keymap()
     diagnostic.on_attach()
     lsp_status.on_attach(client)
 end
@@ -111,7 +131,7 @@ local function ensure_installed(servers)
                 local install_info = server_module.install_info()
                 if not install_info.is_installed then
                     print(server.." not installed . Starting installation. ")
-                    nvim_err_writeln(server.." not installed . Starting installation. ")
+                    api.nvim_err_writeln(server.." not installed . Starting installation. ")
                     api.nvim_command("LspInstall "..server)
                 end
             end
