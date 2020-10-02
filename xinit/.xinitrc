@@ -1,4 +1,3 @@
-wal --backend haishoku -t -i $HOME/wallpapers/ &
-wal --theme random_dark&
+wal --theme base16-onedark&
 xrdb -merge $HOME/.Xresources
 exec i3

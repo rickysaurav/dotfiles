@@ -29,7 +29,7 @@ setopt share_history          # share command history data
 setopt globdots
 
 ####PYWAL COLORSCHEME####
-cat $HOME/.cache/wal/sequences
+#cat $HOME/.cache/wal/sequences
 
 
 ####FZF CONFIG####
