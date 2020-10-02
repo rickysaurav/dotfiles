@@ -470,15 +470,16 @@
 ** Diminish
    Reduce modeline clutter by diminishing minor modes
    #+BEGIN_SRC emacs-lisp
-       (use-package diminish
-         :straight t
-         :commands diminish
-         :init
-         (diminish 'undo-tree-mode)
-         (diminish 'abbrev-mode)
-         (diminish 'rainbow-mode)
-         (diminish 'eldoc-mode)
-         (diminish 'auto-fill-mode))
+     (use-package diminish
+       :straight t
+       :commands diminish
+       :init
+       (diminish 'auto-revert-mode)
+       (diminish 'undo-tree-mode)
+       (diminish 'abbrev-mode)
+       (diminish 'rainbow-mode)
+       (diminish 'eldoc-mode)
+       (diminish 'auto-fill-mode))
    #+END_SRC
 ** Hide-mode-line
    #+BEGIN_SRC emacs-lisp
@@ -531,6 +532,7 @@
     #+BEGIN_SRC emacs-lisp
       (use-package company-posframe
         :straight t
+        :diminish 'company-posframe-mode
         :general
         (
          :keymaps 'company-posframe-active-map
@@ -957,16 +959,17 @@
     Using general-def instead of :general since yas-maybe-expand is a variable
     which is defined only after autoload.
     #+BEGIN_SRC emacs-lisp
-            (use-package yasnippet
-              :straight t
-              :straight yasnippet-snippets
-              :defer 2
-              :config
-              (yas-global-mode 1)
-              (general-def
-                :keymaps 'yas-minor-mode-map
-                "<return>" yas-maybe-expand)
-              )
+      (use-package yasnippet
+        :straight t
+        :straight yasnippet-snippets
+        :diminish 'yas-minor-mode
+        :defer 2
+        :config
+        (yas-global-mode 1)
+        (general-def
+          :keymaps 'yas-minor-mode-map
+          "<return>" yas-maybe-expand)
+        )
     #+END_SRC
 * Programming Helpers
 ** Smart-parens
@@ -1238,11 +1241,11 @@
        :defer t
        :commands lsp
        :init
-       (setq lsp-inhibit-message t)
-       (setq lsp-prefer-flymake nil)
-       (setq lsp-eldoc-enable-hover t)
-       (setq lsp-prefer-capf t)
-       ;; (setq lsp-keymap-prefix "SPC l")
+       (setq lsp-enable-file-watchers nil)
+       (setq gc-cons-threshold 100000000)
+       (setq read-process-output-max (* 4096 4096)) ;; 1mb
+       (setq lsp-completion-provider :capf)
+       (setq lsp-headerline-breadcrumb-enable t)
        :general
             (:states '(normal motion insert emacs)
                      :prefix "SPC l"
@@ -1257,64 +1260,15 @@
                      )
        :ghook
        ('lsp-mode-hook #'lsp-enable-which-key-integration)
-       :config
-       (add-to-list 'lsp-file-watch-ignored "[/\\\\]\\.ccls-cache$"))
+     )
    #+END_SRC
-** DAP-Mode
-   #+BEGIN_SRC emacs-lisp
-     (use-package dap-mode
-       :straight t
-       :defer t
-       :commands (dap-mode dap-debug)
-       :general
-       (:states '(normal motion insert emacs)
-                :prefix "SPC d"
-                :non-normal-prefix "M-SPC d"
-                "" '(:keymap dap-mode-map :package dap-mode :which-key "dap-prefix")
-                )
-       ;; (:keymaps 'dap-mode-map
-       ;;            "h" '(dap-hydra :which-key "dap-hydra")))
-       :ghook
-       ('dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
-       :config
-       (dap-mode 1)
-       )
-   #+END_SRC
-** DAP-UI-Mode
-#+BEGIN_SRC emacs-lisp
-  (use-package dap-ui
-    :straight dap-mode
-    :ghook
-    ('dap-mode-hook 'dap-ui-mode)
-    ('dap-mode-hook 'dap-ui-controls-mode)
-    :custom-face
-    (dap-ui-pending-breakpoint-face ((t :inherit breakpoint-enabled)))
-    (dap-ui-verified-breakpoint-face ((t :inherit breakpoint-enabled))))
-#+END_SRC
-** DAP-hydra
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package dap-hydra
-  ;;   :straight dap-mode
-  ;;   :ghook
-  ;;    ('dap-stopped-hook
-  ;;          '(lambda (arg) (call-interactively #'dap-hydra)))
-  ;;   :general
-  ;;   (:states '(normal motion insert emacs)
-  ;;           :keymaps 'dap-mode-map
-  ;;           :prefix "SPC d"
-  ;;           :non-normal-prefix "M-SPC d"
-  ;;            "" '(:ignore t :which-key "dap-prefix")
-  ;;           "h" '(dap-hydra :which-key "dap-hydra")))
-#+END_SRC
 ** LSP-UI
    Higher level UI modules for LSP-mode
    #+BEGIN_SRC emacs-lisp
      (use-package lsp-ui
        :straight t
-       :after lsp-mode
        :defer t
        :commands lsp-ui-mode
-       :ghook ('lsp-mode-hook #'lsp-ui-mode 1)
        :general
        ;; (:keymaps 'lsp-ui-mode-map
        ;;            [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
@@ -1327,19 +1281,8 @@
        ;;           "s" '(lsp-ui-imenu :which-key "lsp-imenu")
        ;;           )
        :init
-       (setq lsp-ui-doc-max-height 7
-             lsp-ui-doc-max-width 40
-             lsp-ui-sideline-update-mode 'point
+       (setq lsp-ui-sideline-update-mode 'point
              lsp-ui-sideline-show-hover nil))
-   #+END_SRC
-** Company-lsp
-   Company backend for lsp
-   #+BEGIN_SRC emacs-lisp
-     (use-package company-lsp
-       :straight t
-       :after (company lsp-mode)
-       :defer t
-       :commands company-lsp)
    #+END_SRC
 ** Lsp utils
 *** Helm LSP
@@ -1364,32 +1307,54 @@
     (setq lsp-treemacs-error-list-severity 1)
     :general
     (:keymaps 'lsp-command-map
-             "e" '(lsp-treemacs-errors-list :which-key "error-list")))
+             "e" '(lsp-treemacs-errors-list :which-key "error-list"))
+    :config
+    (lsp-treemacs-sync-mode 1)
+    )
 #+END_SRC
-** C-family
-*** Lsp-ccls
+
+** DAP-Mode
+   #+BEGIN_SRC emacs-lisp
+     (use-package dap-mode
+       :straight t
+       :after lsp-mode
+       :defer t
+       :commands (dap-mode dap-debug)
+       :ghook
+       ('dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
+       :config
+       (dap-auto-configure-mode 1)
+       )
+   #+END_SRC
+** DAP-utils
     #+BEGIN_SRC emacs-lisp
-      (use-package ccls
-        :straight t
-        :ensure-system-package((ccls . ccls-git))
-        :defer t
-        :init
-          (setq ccls-executable "/usr/bin/ccls")
-          (setq ccls-cache-dir ".ccls-cache")
-          (setq ccls-args '("--log-file=/tmp/ccls.log" "-v=2"))
-          (setq ccls-extra-init-params '(:index (:comments 2) :completion (:detailedLabel t)))
-          (setq ccls-sem-highlight-method 'font-lock)
+      (use-package dap-ui
+        :straight dap-mode
         :ghook
-        ('(c-mode-hook c++-mode-hook objc-mode-hook)
-          (lambda () (require 'ccls) (lsp))))
+        ('dap-mode-hook 'dap-ui-mode)
+        ('dap-mode-hook 'tooltip-mode)
+        ('dap-mode-hook 'dap-ui-controls-mode)
+        :custom-face
+        (dap-ui-pending-breakpoint-face ((t :inherit breakpoint-enabled)))
+        (dap-ui-verified-breakpoint-face ((t :inherit breakpoint-enabled))))
+    #+END_SRC
+** C-family
+*** LSP 
+    #+BEGIN_SRC  emacs-lisp
+      (use-package clients/lsp-clangd
+        :straight lsp-mode
+        :init
+        (setq lsp-clients-clangd-args '("--background-index" "-header-insertion=never"))
+        :ghook
+        ('(c-mode-hook c++-mode-hook objc-mode-hook) 'lsp)
+        )
     #+END_SRC
 *** DAP-GDB/LLDB
     #+BEGIN_SRC emacs-lisp
-      (use-package dap-gdb-lldb
+      (use-package dap-cpptools
         :straight dap-mode
-        :after dap-mode
         :config
-        (dap-gdb-lldb-setup))
+        (dap-cpptools-setup))
       ;; :init
       ;; (setq dap-gdb-lldb-path "~/dap-servers/webfreak.debug-0.22.0/"))
     #+END_SRC
@@ -1402,26 +1367,13 @@
         :straight t
         :defer t
         :ghook
-        ('java-mode-hook
-         (lambda () (require 'lsp-java)(semantic-mode 1)(lsp)))
+        ('java-mode-hook 'lsp)
         :init
-          (setq lsp-ui-sideline-update-mode 'point
-                lsp-java-favorite-static-members '( "java.util.stream.Collectors.*" "org.junit.Assert.*" "org.junit.Assume.*" "org.junit.jupiter.api.Assertions.*" "org.junit.jupiter.api.Assumptions.*" "org.junit.jupiter.api.DynamicContainer.*" "org.junit.jupiter.api.DynamicTest.*")
+          (setq lsp-java-favorite-static-members '( "java.util.stream.Collectors.*" "org.junit.Assert.*" "org.junit.Assume.*" "org.junit.jupiter.api.Assertions.*" "org.junit.jupiter.api.Assumptions.*" "org.junit.jupiter.api.DynamicContainer.*" "org.junit.jupiter.api.DynamicTest.*")
                 lsp-java-maven-download-sources t
+                lsp-java-content-provider-preferred "fernflower"
                 )
-        (defun ricky//get-java-package-name ()
-          "get package name for the current buffer"
-          (let ((packages (semantic-brute-find-tag-by-class 'package (current-buffer))))
-            (if (and (listp packages) (eq (length packages) 1))
-                (semantic-tag-name (car packages)))))
-        (defun ricky//get-fully-qualified-class-name ()
-          "returns the fully qualified classname for the current buffer"
-          (interactive "")
-          (concat (ricky//get-java-package-name) "."
-                  (file-name-sans-extension
-                   (file-name-nondirectory (buffer-file-name)))))
-        )
-
+          )
     #+END_SRC
 *** DAP-Java
     #+BEGIN_SRC emacs-lisp
@@ -1445,20 +1397,22 @@
       ;;    :ghook
       ;;    ('python-mode-hoook #'poetry-tracking-mode))
     #+end_src
-*** Lsp-ms-python
+*** Lsp-pyright
+#+BEGIN_SRC  emacs-lisp
+  (use-package lsp-pyright
+    :straight t
+    :hook (python-mode . (lambda ()
+                            (require 'lsp-pyright)
+                            (lsp))))  ; or lsp-deferred
+#+END_SRC
+
+*** DAP-python
     #+BEGIN_SRC emacs-lisp
-      (use-package lsp-python-ms
-        :straight t
-        :defer t
-        ;; :config
-        ;; (setq lsp-python-ms-executable
-        ;;    "/usr/bin/mspyls")
-        :ghook
-        ('python-mode-hook
-         (lambda () (require 'lsp-python-ms)(pipenv-activate)(lsp)) t)
-        ;; (lambda () (require 'lsp-python-ms)(lsp)) t)
-      )
+      (use-package dap-python
+      :straight dap-mode
+      :after (lsp-pyright dap-mode))
     #+END_SRC
+
 ** Rust
    #+BEGIN_SRC emacs-lisp
      (use-package rust-mode
@@ -1477,15 +1431,15 @@
         ('(javascript-mode-hook typescript-mode-hook) 'lsp)
         :defer t)
     #+END_SRC
-    #+BEGIN_SRC emacs-lisp
-      ;; (general-add-hook '(javascript-mode-hook typescript-mode-hook) 'lsp)
-    #+END_SRC
 ** Json
 *** Json mode
    #+begin_src emacs-lisp
      (use-package json-mode
        :straight t
-       :mode ("\\.json\\'" . json-mode))
+       :mode ("\\.json\\'" . json-mode)
+       :ghook
+       ('json-mode-hook 'lsp)
+       )
    #+end_src
 *** Json navigator
     #+BEGIN_SRC emacs-lisp
@@ -1503,63 +1457,8 @@
        :mode ("\\.lua\\'" . lua-mode)
        :interpreter "lua"
        :gfhook 
-       'ricky//load-lsp-lua-config)
+       'lsp)
    #+end_src
-*** lsp lua config 
-    Config for using https://github.com/sumneko/lua-language-server 
-#+BEGIN_SRC  emacs-lisp
-      (defun ricky//load-lsp-lua-config ()
-        (remove-hook 'lua-mode-hook 'ricky//load-lsp-lua-config)
-        (require 'lsp-mode)
-        (defcustom lsp-lua-awakened-cat nil nil :type (quote boolean))
-        (defcustom lsp-lua-completion-call-snippet "Disable" nil :type (quote (choice (:tag "Disable" "Both" "Replace"))))
-        (defcustom lsp-lua-completion-enable t nil :type (quote boolean))
-        (defcustom lsp-lua-completion-keyword-snippet "Replace" nil :type (quote (choice (:tag "Disable" "Both" "Replace"))))
-        (defcustom lsp-lua-develop-debugger-port 11412 nil :type (quote number))
-        (defcustom lsp-lua-develop-debugger-wait nil nil :type (quote boolean))
-        (defcustom lsp-lua-develop-enable nil nil :type (quote boolean))
-        (defcustom lsp-lua-diagnostics-disable nil nil :type (quote lsp-string-vector))
-        (defcustom lsp-lua-diagnostics-enable t nil :type (quote boolean))
-        (defcustom lsp-lua-diagnostics-globals nil nil :type (quote lsp-string-vector))
-        (defcustom lsp-lua-diagnostics-severity nil nil :type (quote nil))
-        (defcustom lsp-lua-runtime-path ["?.lua" "?/init.lua" "?/?.lua"] nil :type (quote lsp-string-vector))
-        (defcustom lsp-lua-runtime-version "Lua 5.3" nil :type (quote (choice (:tag "Lua 5.1" "Lua 5.2" "Lua 5.3" "Lua 5.4" "LuaJIT"))))
-        (defcustom lsp-lua-workspace-ignore-dir [".vscode"] nil :type (quote lsp-string-vector))
-        (defcustom lsp-lua-workspace-ignore-submodules t nil :type (quote boolean))
-        (defcustom lsp-lua-workspace-library nil nil :type (quote nil))
-        (defcustom lsp-lua-workspace-max-preload 300 nil :type (quote number))
-        (defcustom lsp-lua-workspace-preload-file-size 100 nil :type (quote number))
-        (defcustom lsp-lua-workspace-use-git-ignore t nil :type (quote boolean))
-        (defcustom lsp-lua-server-binary ( expand-file-name "~/.emacs.d/lua-language-server/bin/Linux/lua-language-server") nil :type (quote string))
-        (defcustom lsp-lua-server-main ( expand-file-name "~/.emacs.d/lua-language-server/main.lua") nil :type (quote string))
-        (lsp-register-custom-settings
-         (quote (("Lua.workspace.useGitIgnore" lsp-lua-workspace-use-git-ignore t)
-                 ("Lua.workspace.preloadFileSize" lsp-lua-workspace-preload-file-size)
-                 ("Lua.workspace.maxPreload" lsp-lua-workspace-max-preload)
-                 ("Lua.workspace.library" lsp-lua-workspace-library)
-                 ("Lua.workspace.ignoreSubmodules" lsp-lua-workspace-ignore-submodules t)
-                 ("Lua.workspace.ignoreDir" lsp-lua-workspace-ignore-dir)
-                 ("Lua.runtime.version" lsp-lua-runtime-version)
-                 ("Lua.runtime.path" lsp-lua-runtime-path)
-                 ("Lua.diagnostics.severity" lsp-lua-diagnostics-severity)
-                 ("Lua.diagnostics.globals" lsp-lua-diagnostics-globals)
-                 ("Lua.diagnostics.enable" lsp-lua-diagnostics-enable t)
-                 ("Lua.diagnostics.disable" lsp-lua-diagnostics-disable)
-                 ("Lua.develop.enable" lsp-lua-develop-enable t)
-                 ("Lua.develop.debuggerWait" lsp-lua-develop-debugger-wait t)
-                 ("Lua.develop.debuggerPort" lsp-lua-develop-debugger-port)
-                 ("Lua.completion.keywordSnippet" lsp-lua-completion-keyword-snippet)
-                 ("Lua.completion.enable" lsp-lua-completion-enable t)
-                 ("Lua.completion.callSnippet" lsp-lua-completion-call-snippet)
-                 ("Lua.awakened.cat" lsp-lua-awakened-cat t))))
-        (lsp-register-client
-         (make-lsp-client :new-connection (lsp-stdio-connection `(,lsp-lua-server-binary "-E" ,lsp-lua-server-main) (lambda() t))
-                          :major-modes '(lua-mode)
-                          :priority 0 
-                          :server-id 'lua-ls))
-        (add-hook 'lua-mode-hook 'lsp)
-        (lsp))
-#+END_SRC
 ** Golang 
 *** Go mode
    #+begin_src emacs-lisp 
