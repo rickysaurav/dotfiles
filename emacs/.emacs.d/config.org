@@ -11,6 +11,7 @@
 *** Install straight.el
     #+BEGIN_SRC emacs-lisp
       (setq straight-repository-branch "develop")
+      ;; (setq straight-check-for-modifications '(watch-files))
       (defvar bootstrap-version)
       (let ((bootstrap-file
              (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -145,6 +146,7 @@
     (interactive)
     (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
    #+END_SRC
+
 * Keybinding management
 ** General
    Keybinding on steroids
@@ -172,7 +174,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package which-key
          :straight t
-         :demand t
+         :defer 3
          :diminish which-key-mode
          :config
          (which-key-mode 1))
@@ -185,7 +187,6 @@
     2. Map [escape] to quit all minibuffers
        #+BEGIN_SRC emacs-lisp
          (use-package evil
-           :after general
            :straight t
            :demand t
            :init
@@ -198,14 +199,13 @@
                  (setq deactivate-mark  t)
                (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
                (abort-recursive-edit)))
+           (setq evil-want-C-u-scroll t)
+           (setq evil-disable-insert-state-bindings t)
+           (setq evil-want-C-i-jump nil)
            :general
            (:states '(insert)
             "C-n" nil
             "C-p" nil)
-           :init
-           (setq evil-want-C-u-scroll t)
-           (setq evil-disable-insert-state-bindings t)
-           (setq evil-want-C-i-jump nil)
            :config
            (evil-mode 1)
            (define-key evil-normal-state-map [escape] 'keyboard-quit)
@@ -272,40 +272,42 @@
     1. map <return> to avy-isearch,for vim-easymotion n-char search(does not work well with evil-search).
     2. bind <SPC-/> to got-char as work-around for previous.(unbind SPC befor binding <SPC-/>)
        #+BEGIN_SRC emacs-lisp
-       (use-package avy
-         :straight t
-         :demand t
-         :init
-         (setq avy-all-windows nil)
-         (defvar ricky//avy-isearch-point nil "value for storing last avy-isearch point ")
-         ;; (make-variable-buffer-local ricky//avy-isearch-point)
-         (defun ricky//avy-isearch ()
-           "Jump to one of the current isearch candidates."
-           (interactive)
-           (avy-with avy-isearch
-             (let ((avy-background nil))
-               (avy--process
-                (avy--regex-candidates (if isearch-regexp
-                                           isearch-string
-                                         (regexp-quote isearch-string)))
-                (avy--style-fn avy-style))
-               (setq ricky//avy-isearch-point (point))
-               (isearch-done))))
-         (defun ricky//evil-forward-search-avy-advice (old-fun &rest args)
-           "integrate avy-isearch with evil forward search"
-           (interactive)
-           (setq ricky//avy-isearch-point (point))
-           (apply old-fun args)
-           (when (and (boundp 'ricky//avy-isearch-point) ricky//avy-isearch-point)
-             (goto-char ricky//avy-isearch-point)
-             (setq ricky//avy-isearch-point nil)))
-         :general
-         (:keymaps 'isearch-mode-map
-                   "<return>" 'ricky//avy-isearch)
-         :config
-         (avy-setup-default)
-         (general-add-advice 'evil-search-forward :around #'ricky//evil-forward-search-avy-advice)
-         )
+         (use-package avy
+           :straight t
+           :defer t
+           :commands
+           (ricky//avy-isearch ricky//evil-forward-search-avy-advice)
+           :init
+           (setq avy-all-windows nil)
+           (defvar ricky//avy-isearch-point nil "value for storing last avy-isearch point ")
+           ;; (make-variable-buffer-local ricky//avy-isearch-point)
+           (defun ricky//avy-isearch ()
+             "Jump to one of the current isearch candidates."
+             (interactive)
+             (avy-with avy-isearch
+               (let ((avy-background nil))
+                 (avy--process
+                  (avy--regex-candidates (if isearch-regexp
+                                             isearch-string
+                                           (regexp-quote isearch-string)))
+                  (avy--style-fn avy-style))
+                 (setq ricky//avy-isearch-point (point))
+                 (isearch-done))))
+           (defun ricky//evil-forward-search-avy-advice (old-fun &rest args)
+             "integrate avy-isearch with evil forward search"
+             (interactive)
+             (setq ricky//avy-isearch-point (point))
+             (apply old-fun args)
+             (when (and (boundp 'ricky//avy-isearch-point) ricky//avy-isearch-point)
+               (goto-char ricky//avy-isearch-point)
+               (setq ricky//avy-isearch-point nil)))
+           (general-add-advice 'evil-search-forward :around #'ricky//evil-forward-search-avy-advice)
+           :general
+           (:keymaps 'isearch-mode-map
+                     "<return>" 'ricky//avy-isearch)
+           :config
+           (avy-setup-default)
+           )
        #+END_SRC
 ** Evil-Easymotion
    Vim-easymotion emacs bindings
@@ -422,7 +424,7 @@
     #+BEGIN_SRC emacs-lisp
       (use-package helm
         :straight t
-        :demand t
+        :defer t
         :general
         ("M-x" 'helm-M-x
          "C-x C-f" 'helm-find-files)
@@ -517,6 +519,7 @@
     #+BEGIN_SRC emacs-lisp
       (use-package which-key-posframe
         :straight t
+        :after which-key
         :if (display-graphic-p)
         :config
         (which-key-posframe-mode))
@@ -970,23 +973,28 @@
 *** Config
     1. NewLine and Indent for C/C++ programming
        #+BEGIN_SRC emacs-lisp
-       (use-package smartparens-config
-         :straight smartparens
-         :demand t
-         :diminish smartparens-mode
-         :init
-         (setq sp-escape-quotes-after-insert nil)
-         (defun my-create-newline-and-enter-sexp (&rest _ignored)
-           "Open a new brace or bracket expression, with relevant newlines and indent. "
-           (newline)
-           (indent-according-to-mode)
-           (forward-line -1)
-           (indent-according-to-mode))
-         :config
-         (smartparens-global-mode 1)
-         (show-smartparens-global-mode 1)
-         (sp-local-pair 'c++-mode "{" nil
-                        :post-handlers '((my-create-newline-and-enter-sexp "RET"))))
+         (use-package smartparens-config
+           :straight smartparens
+           :defer t
+           :diminish smartparens-mode
+           :init
+           (setq sp-escape-quotes-after-insert nil)
+           (defun my-create-newline-and-enter-sexp (&rest _ignored)
+             "Open a new brace or bracket expression, with relevant newlines and indent. "
+             (newline)
+             (indent-according-to-mode)
+             (forward-line -1)
+             (indent-according-to-mode))
+           (general-add-hook (list
+                              'evil-insert-state-entry-hook
+                              'evil-emacs-state-entry-hook
+                              'evil-replace-state-entry-hook)
+                             ( lambda ()
+                               (smartparens-global-mode 1)
+                               (show-smartparens-global-mode 1) ))
+           :config
+           (sp-local-pair 'c++-mode "{" nil
+                          :post-handlers '((my-create-newline-and-enter-sexp "RET"))))
        #+END_SRC
 ** Rainbow-delimeters
    Rainbow delimeters
@@ -1346,6 +1354,7 @@
     #+BEGIN_SRC emacs-lisp
       (use-package dap-cpptools
         :straight dap-mode
+        :after (clients/lsp-clangd dap-mode)
         :config
         (dap-cpptools-setup))
       ;; :init
@@ -1394,9 +1403,10 @@
 #+BEGIN_SRC  emacs-lisp
   (use-package lsp-pyright
     :straight t
-    :hook (python-mode . (lambda ()
-                            (require 'lsp-pyright)
-                            (lsp))))  ; or lsp-deferred
+    :defer t
+    :ghook ('python-mode-hook  (lambda ()
+                                 (require 'lsp-pyright)
+                                 (lsp))))  ; or lsp-deferred
 #+END_SRC
 
 *** DAP-python

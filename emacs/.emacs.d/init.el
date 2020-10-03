@@ -9,7 +9,7 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 (setq vc-follow-symlinks nil)
-(setq gc-cons-threshold 134217728
+(setq gc-cons-threshold 268435456
         gc-cons-percentage 0.5)
 ;Hack to load org-mode from git using straight
 (add-to-list 'load-path "~/.emacs.d/straight/build/org/")
