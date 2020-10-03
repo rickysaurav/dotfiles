@@ -12,6 +12,6 @@
 (setq gc-cons-threshold 268435456
         gc-cons-percentage 0.5)
 ;Hack to load org-mode from git using straight
-(add-to-list 'load-path "~/.emacs.d/straight/build/org/")
-(when (file-readable-p "~/.emacs.d/config.org")
+(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "straight/build/org/")))
+(when (file-readable-p (expand-file-name (concat user-emacs-directory "config.org")))
   (org-babel-load-file (expand-file-name (concat user-emacs-directory "config.org"))))
