@@ -160,9 +160,9 @@
 ** Hydra
     Transient keymaps library.
     #+BEGIN_SRC emacs-lisp
-    (use-package hydra
+      (use-package hydra
         :init
-        (setq  hydra-hint-display-type 'posframe)
+        (if (display-graphic-p)(setq  hydra-hint-display-type 'posframe) )
         :straight t
         :defer t)
     #+END_SRC
@@ -494,16 +494,18 @@
 *** Flycheck-posframe
    Dispaly flycheck errors in childframe(requires emacs 26).
    #+BEGIN_SRC emacs-lisp
-   (use-package flycheck-posframe
-     :straight t
-     :after flycheck
-     :ghook
-     ('flycheck-mode-hook #'flycheck-posframe-mode))
+     (use-package flycheck-posframe
+       :if (display-graphic-p)
+       :straight t
+       :after flycheck
+       :ghook
+       ('flycheck-mode-hook #'flycheck-posframe-mode))
    #+END_SRC
 *** Helm-posframe
 #+begin_src emacs-lisp
   (use-package helm-posframe
     :straight t
+    :if (display-graphic-p)
     :after helm
     :init
     (setq helm-posframe-poshandler 'posframe-poshandler-frame-center)
@@ -515,23 +517,15 @@
     #+BEGIN_SRC emacs-lisp
       (use-package which-key-posframe
         :straight t
+        :if (display-graphic-p)
         :config
         (which-key-posframe-mode))
     #+END_SRC
-*** Company-box
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package company-box
-  ;;   :straight t
-  ;;   :general
-  ;;   (
-  ;;    :keymaps 'company-box-mode-map
-  ;;        [remap company-select-next-if-tooltip-visible-or-complete-selection] 'company-box--next-line)
-  ;;   :ghook ('company-mode-hook  #'company-box-mode))
-#+END_SRC
 *** Company-posframe
     #+BEGIN_SRC emacs-lisp
       (use-package company-posframe
         :straight t
+        :if (display-graphic-p)
         :diminish 'company-posframe-mode
         :general
         (
@@ -539,7 +533,6 @@
          [remap company-select-next-if-tooltip-visible-or-complete-selection] 'company-select-next)
         :ghook ('company-mode-hook 'company-posframe-mode))
     #+END_SRC
-
 * Keybindings
 ** Window manipulation
 *** Toggle maximize
