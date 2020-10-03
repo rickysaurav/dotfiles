@@ -137,14 +137,15 @@
     #+END_SRC
 ** Edit & Reload config.org
    #+BEGIN_SRC emacs-lisp
-     (defun config-visit ()
-       "visit emacs config file"
-       (interactive)
-       (find-file "~/.emacs.d/config.org"))
-    (defun config-reload ()
-    "Reloads ~/.emacs.d/config.org at runtime"
-    (interactive)
-    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+     (defvar user-org-config-file-path (expand-file-name (concat user-emacs-directory "config.org")) "org config file location")
+      (defun config-visit ()
+        "visit emacs config file"
+        (interactive)
+        (find-file user-org-config-file-path))
+     (defun config-reload ()
+     "Reloads ~/.emacs.d/config.org at runtime"
+     (interactive)
+     (org-babel-load-file user-org-config-file-path))
    #+END_SRC
 
 * Keybinding management
