@@ -104,6 +104,16 @@ if dein#load_state('~/.cache/dein')
                 \'hook_source':'lua require"config.tree_sitter".setup()',
                 \'on_cmd' :['TSInstall','TSBufEnable','TSEnableAll','TSModuleInfo'],
                 \'on_ft':['cpp','c','python','java','lua','json','markdown','typescript']})
+    call dein#add('nvim-treesitter/nvim-treesitter-refactor',{
+                \'merged':0,
+                \'on_source': 'nvim-treesitter',
+                \})
+
+    call dein#add('nvim-treesitter/nvim-treesitter-textobjects',{
+                \'merged':0,
+                \'on_source': 'nvim-treesitter',
+                \})
+
     "Generic Programming
     call dein#add('preservim/nerdcommenter',
                 \{'on_map': ['<Plug>','<leader>c']})
