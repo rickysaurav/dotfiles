@@ -11,3 +11,4 @@ ranger/.config/ranger/history
 ranger/.config/ranger/tagged
 ..bfg-report
 
+**/packer_compiled.vim

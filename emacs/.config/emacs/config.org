@@ -458,7 +458,6 @@
    #+BEGIN_SRC emacs-lisp
      (use-package helm-swoop
        :straight t
-       :after helm
        :defer t
        :general
        (
@@ -779,7 +778,7 @@
         (:keymaps '(normal motion insert emacs)
                   :prefix "SPC p"
                   :non-normal-prefix "M-SPC p"
-                  "" '(:keymap projectile-command-map :package projectile :which-key "projectile-prefix"))
+                  "" '(:keymap projectile-command-map :package helm-projectile :which-key "projectile-prefix"))
         :config
         (setq projectile-project-root-files-top-down-recurring
               (append '("compile_commands.json"
