@@ -32,13 +32,26 @@ packer.startup(
         use {"wbthomason/packer.nvim", opt = true}
         -- Colorschemes
         use {
-            "Th3Whit3Wolf/onebuddy",
+
+            "Th3Whit3Wolf/one-nvim",
             branch = "main",
-            requires = {{"tjdevries/colorbuddy.nvim", opt = true}},
             event = {"FocusLost *", "CursorHold *"},
             config = function()
-                _packer_load({"colorbuddy.nvim"}, {})
-                require("colorbuddy").colorscheme("onebuddy")
+                vim.cmd [[colorscheme one-nvim]]
+            end
+        }
+        -- SSH Clipboard
+        use {
+            "ojroques/vim-oscyank",
+            event = {"TextYankPost *"},
+            config = function()
+                if (vim.env.SSH_CLIENT or vim.env.SSH_TTY) then
+                    vim.cmd [[augroup IronRepl]]
+                    vim.cmd [[autocmd!]]
+                    vim.cmd("autocmd TextYankPost * OSCYankReg +<CR>")
+                    vim.cmd("OSCYankReg +")
+                    vim.cmd [[augroup END]]
+                end
             end
         }
         -- UI
@@ -47,24 +60,19 @@ packer.startup(
             setup = function()
                 vim.defer_fn(
                     function()
-                        vim.api.nvim_command("doautocmd User LoadIndentGuides")
+                        vim.cmd("doautocmd User LoadIndentGuides")
                     end,
                     1000
                 )
             end,
             event = {"User LoadIndentGuides"},
             config = function()
-                require("indent_guides").options = {
-                    indent_levels = 30,
-                    indent_guide_size = 1,
-                    indent_start_level = 1,
-                    indent_space_guides = true,
-                    indent_tab_guides = true,
-                    indent_pretty_guides = false,
-                    indent_soft_pattern = "\\s",
-                    exclude_filetypes = {"help", "dashboard", "terminal"}
-                }
-                vim.api.nvim_command("IndentGuidesEnable")
+                require("indent_guides").setup(
+                    {
+                        indent_tab_guides = true
+                    }
+                )
+                vim.cmd("IndentGuidesEnable")
             end
         }
         use {
@@ -87,10 +95,10 @@ packer.startup(
             requires = {{"kyazdani42/nvim-web-devicons", opt = true}},
             -- your statusline
             config = function()
-                _packer_load({"nvim-web-devicons"}, {})
+                require("packer.load")({"nvim-web-devicons"}, {},_G.packer_plugins)
                 local gl = require("galaxyline")
                 local gls = gl.section
-                gl.short_line_list = {"LuaTree", "vista", "dbui"}
+                gl.short_line_list = {"NvimTree", "vista", "dbui"}
                 local function is_treesitter_active()
                     return pcall(vim.treesitter.get_parser)
                 end
@@ -121,84 +129,11 @@ packer.startup(
                     return false
                 end
 
-                gls.left[1] = {
-                    FirstElement = {
-                        provider = function()
-                            return "▊ "
-                        end,
-                        highlight = {colors.blue, colors.line_bg}
-                    }
-                }
-                gls.left[2] = {
-                    ViMode = {
-                        provider = function()
-                            -- auto change color according the vim mode
-                            local mode_color = {
-                                n = colors.magenta,
-                                i = colors.green,
-                                v = colors.blue,
-                                [""] = colors.blue,
-                                V = colors.blue,
-                                c = colors.red,
-                                no = colors.magenta,
-                                s = colors.orange,
-                                S = colors.orange,
-                                [""] = colors.orange,
-                                ic = colors.yellow,
-                                R = colors.purple,
-                                Rv = colors.purple,
-                                cv = colors.red,
-                                ce = colors.red,
-                                r = colors.cyan,
-                                rm = colors.cyan,
-                                ["r?"] = colors.cyan,
-                                ["!"] = colors.red,
-                                t = colors.red
-                            }
-                            vim.api.nvim_command("hi GalaxyViMode guifg=" .. mode_color[vim.fn.mode()])
-                            return "  "
-                        end,
-                        highlight = {colors.red, colors.line_bg, "bold"}
-                    }
-                }
-                gls.left[3] = {
-                    FileIcon = {
-                        provider = "FileIcon",
-                        condition = buffer_not_empty,
-                        highlight = {require("galaxyline.provider_fileinfo").get_file_icon_color, colors.line_bg}
-                    }
-                }
-                gls.left[4] = {
-                    FileName = {
-                        provider = {"FileName"},
-                        condition = buffer_not_empty,
-                        highlight = {colors.pink, colors.line_bg, "bold"}
-                    }
-                }
-
                 local function find_git_root()
                     local path = vim.fn.expand("%:p:h")
                     local get_git_dir = require("galaxyline.provider_vcs").get_git_dir
                     return get_git_dir(path)
                 end
-
-                gls.left[5] = {
-                    GitIcon = {
-                        provider = function()
-                            return "  "
-                        end,
-                        condition = find_git_root,
-                        highlight = {colors.blue, colors.line_bg}
-                    }
-                }
-                gls.left[6] = {
-                    GitBranch = {
-                        provider = "GitBranch",
-                        condition = find_git_root,
-                        highlight = {colors.lavender, colors.line_bg, "bold"}
-                    }
-                }
-
                 local checkwidth = function()
                     local squeeze_width = vim.fn.winwidth(0) / 2
                     if squeeze_width > 40 then
@@ -206,147 +141,236 @@ packer.startup(
                     end
                     return false
                 end
+                local tabpage_icon_map = {"", "", "", "", "", "", "", "", ""}
+                gls.left = {
+                    {
+                        FirstElement = {
+                            provider = function()
+                                return "▊ "
+                            end,
+                            highlight = {colors.blue, colors.line_bg}
+                        }
+                    },
+                    {
+                        ViMode = {
+                            provider = function()
+                                -- auto change color according the vim mode
+                                local mode_color = {
+                                    n = colors.magenta,
+                                    i = colors.green,
+                                    v = colors.blue,
+                                    [""] = colors.blue,
+                                    V = colors.blue,
+                                    c = colors.red,
+                                    no = colors.magenta,
+                                    s = colors.orange,
+                                    S = colors.orange,
+                                    [""] = colors.orange,
+                                    ic = colors.yellow,
+                                    R = colors.purple,
+                                    Rv = colors.purple,
+                                    cv = colors.red,
+                                    ce = colors.red,
+                                    r = colors.cyan,
+                                    rm = colors.cyan,
+                                    ["r?"] = colors.cyan,
+                                    ["!"] = colors.red,
+                                    t = colors.red
+                                }
+                                vim.cmd("hi GalaxyViMode guifg=" .. mode_color[vim.fn.mode()])
+                                return "  "
+                            end,
+                            highlight = {colors.red, colors.line_bg, "bold"}
+                        }
+                    },
+                    {
+                        FileIcon = {
+                            provider = "FileIcon",
+                            condition = buffer_not_empty,
+                            highlight = {require("galaxyline.provider_fileinfo").get_file_icon_color, colors.line_bg}
+                        }
+                    },
+                    {
+                        FileName = {
+                            provider = {"FileName"},
+                            condition = buffer_not_empty,
+                            highlight = {colors.pink, colors.line_bg, "bold"}
+                        }
+                    },
+                    {
+                        CurrentFunctionIcon = {
+                            provider = function()
+                                return "  "
+                            end,
+                            condition = is_lsp_active,
+                            highlight = {colors.blue, colors.line_bg}
+                        }
+                    },
+                    {
+                        CurrentFunction = {
+                            provider = function()
+                                return vim.b.lsp_current_function or ""
+                            end,
+                            condition = is_lsp_active,
+                            highlight = {colors.pink, colors.line_bg}
+                        }
+                    },
+                    {
+                        LeftEnd = {
+                            provider = function()
+                                return ""
+                            end,
+                            separator = "",
+                            separator_highlight = {colors.bg, colors.line_bg},
+                            highlight = {colors.line_bg, colors.line_bg}
+                        }
+                    },
+                    {
+                        DiagnosticError = {
+                            provider = "DiagnosticError",
+                            icon = "  ",
+                            highlight = {colors.red, colors.bg}
+                        }
+                    },
+                    {
+                        Space = {
+                            provider = function()
+                                return " "
+                            end
+                        }
+                    },
+                    {
+                        DiagnosticWarn = {
+                            provider = "DiagnosticWarn",
+                            icon = "  ",
+                            highlight = {colors.blue, colors.bg}
+                        }
+                    },
+                    {
+                        TreeSitterIcon = {
+                            provider = function()
+                                return " פּ "
+                            end,
+                            condition = is_treesitter_active,
+                            highlight = {colors.blue, colors.bg}
+                        }
+                    },
+                    {
+                        TreeSitter = {
+                            provider = function()
+                                return require "nvim-treesitter".statusline(30)
+                            end,
+                            condition = is_treesitter_active,
+                            highlight = {colors.lavender, colors.bg}
+                        }
+                    }
+                }
+                gls.right = {
+                    {
+                        FileFormat = {
+                            provider = "FileFormat",
+                            separator = " ",
+                            separator_highlight = {colors.bg, colors.line_bg},
+                            highlight = {colors.pink, colors.line_bg}
+                        }
+                    },
+                    {
+                        GitIcon = {
+                            provider = function()
+                                return " "
+                            end,
+                            separator = " ",
+                            condition = find_git_root,
+                            separator_highlight = {colors.blue, colors.line_bg},
+                            highlight = {colors.blue, colors.line_bg}
+                        }
+                    },
+                    {
+                        GitBranch = {
+                            provider = "GitBranch",
+                            condition = find_git_root,
+                            highlight = {colors.lavender, colors.line_bg, "bold"}
+                        }
+                    },
+                    {
+                        DiffAdd = {
+                            provider = "DiffAdd",
+                            condition = checkwidth,
+                            icon = " ",
+                            highlight = {colors.green, colors.line_bg}
+                        }
+                    },
+                    {
+                        DiffModified = {
+                            provider = "DiffModified",
+                            condition = checkwidth,
+                            icon = " ",
+                            highlight = {colors.orange, colors.line_bg}
+                        }
+                    },
+                    {
+                        DiffRemove = {
+                            provider = "DiffRemove",
+                            condition = checkwidth,
+                            icon = " ",
+                            highlight = {colors.red, colors.line_bg}
+                        }
+                    },
+                    {
+                        LineInfo = {
+                            provider = "LineColumn",
+                            separator = "| ",
+                            separator_highlight = {colors.blue, colors.line_bg},
+                            highlight = {colors.pink, colors.line_bg}
+                        }
+                    },
+                    {
+                        Time = {
+                            provider = function()
+                                return vim.fn.strftime("%H:%M") .. " "
+                            end,
+                            icon = "  ",
+                            separator = " ",
+                            separator_highlight = {colors.line_bg, colors.line_bg},
+                            highlight = {colors.lavender, colors.darkblue}
+                        }
+                    },
+                    {
+                        TabPageIcon = {
+                            provider = function()
+                                return (tabpage_icon_map[vim.api.nvim_tabpage_get_number(0)] or "") .. " "
+                            end,
+                            separator = " ",
+                            separator_highlight = {colors.blue, colors.purple},
+                            highlight = {colors.blue, colors.purple}
+                        }
+                    }
+                    --{
+                    --ScrollBar = {
+                    --provider = "ScrollBar",
+                    --highlight = {colors.blue, colors.purple}
+                    --}
+                    --}
+                }
+                gls.short_line_left = {
+                    {
+                        BufferType = {
+                            provider = "FileTypeName",
+                            separator = "",
+                            separator_highlight = {colors.purple, colors.bg},
+                            highlight = {colors.fg, colors.purple}
+                        }
+                    }
+                }
 
-                gls.left[7] = {
-                    DiffAdd = {
-                        provider = "DiffAdd",
-                        condition = checkwidth,
-                        icon = " ",
-                        highlight = {colors.green, colors.line_bg}
-                    }
-                }
-                gls.left[8] = {
-                    DiffModified = {
-                        provider = "DiffModified",
-                        condition = checkwidth,
-                        icon = " ",
-                        highlight = {colors.orange, colors.line_bg}
-                    }
-                }
-                gls.left[9] = {
-                    DiffRemove = {
-                        provider = "DiffRemove",
-                        condition = checkwidth,
-                        icon = " ",
-                        highlight = {colors.red, colors.line_bg}
-                    }
-                }
-                gls.left[10] = {
-                    CurrentFunctionIcon = {
-                        provider = function()
-                            return "  "
-                        end,
-                        condition = is_lsp_active,
-                        highlight = {colors.blue, colors.line_bg}
-                    }
-                }
-                gls.left[11] = {
-                    CurrentFunction = {
-                        provider = function()
-                            return vim.b.lsp_current_function or ""
-                        end,
-                        condition = is_lsp_active,
-                        highlight = {colors.pink, colors.line_bg}
-                    }
-                }
-                gls.left[12] = {
-                    LeftEnd = {
-                        provider = function()
-                            return ""
-                        end,
-                        separator = "",
-                        separator_highlight = {colors.bg, colors.line_bg},
-                        highlight = {colors.line_bg, colors.line_bg}
-                    }
-                }
-                gls.left[13] = {
-                    DiagnosticError = {
-                        provider = "DiagnosticError",
-                        icon = "  ",
-                        highlight = {colors.red, colors.bg}
-                    }
-                }
-                gls.left[14] = {
-                    Space = {
-                        provider = function()
-                            return " "
-                        end
-                    }
-                }
-                gls.left[15] = {
-                    DiagnosticWarn = {
-                        provider = "DiagnosticWarn",
-                        icon = "  ",
-                        highlight = {colors.blue, colors.bg}
-                    }
-                }
-                gls.right[1] = {
-                    TreeSitterIcon = {
-                        provider = function()
-                            return " פּ "
-                        end,
-                        condition = is_treesitter_active,
-                        highlight = {colors.blue, colors.bg}
-                    }
-                }
-                gls.right[2] = {
-                    TreeSitter = {
-                        provider = function()
-                            return require "nvim-treesitter".statusline(60)
-                        end,
-                        condition = is_treesitter_active,
-                        highlight = {colors.fg, colors.bg}
-                    }
-                }
-                gls.right[3] = {
-                    FileFormat = {
-                        provider = "FileFormat",
-                        separator = " ",
-                        separator_highlight = {colors.bg, colors.line_bg},
-                        highlight = {colors.lavender, colors.line_bg}
-                    }
-                }
-                gls.right[4] = {
-                    LineInfo = {
-                        provider = "LineColumn",
-                        separator = " | ",
-                        separator_highlight = {colors.blue, colors.line_bg},
-                        highlight = {colors.pink, colors.line_bg}
-                    }
-                }
-                gls.right[5] = {
-                    Time = {
-                        provider = function()
-                            return vim.fn.strftime("%H:%M")
-                        end,
-                        icon = "  ",
-                        separator = " ",
-                        separator_highlight = {colors.line_bg, colors.line_bg},
-                        highlight = {colors.lavender, colors.darkblue}
-                    }
-                }
-                gls.right[6] = {
-                    ScrollBar = {
-                        provider = "ScrollBar",
-                        highlight = {colors.blue, colors.purple}
-                    }
-                }
-
-                gls.short_line_left[1] = {
-                    BufferType = {
-                        provider = "FileTypeName",
-                        separator = "",
-                        separator_highlight = {colors.purple, colors.bg},
-                        highlight = {colors.fg, colors.purple}
-                    }
-                }
-
-                gls.short_line_right[1] = {
-                    BufferIcon = {
-                        provider = "BufferIcon",
-                        separator = "",
-                        separator_highlight = {colors.purple, colors.bg},
-                        highlight = {colors.fg, colors.purple}
+                gls.short_line_right = {
+                    {
+                        BufferIcon = {
+                            provider = "BufferIcon",
+                            separator = "",
+                            separator_highlight = {colors.purple, colors.bg},
+                            highlight = {colors.fg, colors.purple}
+                        }
                     }
                 }
                 vim.cmd [[doautocmd galaxyline BufEnter]]
@@ -367,7 +391,7 @@ packer.startup(
                 vim.api.nvim_set_var("golden_size_off", 0)
 
                 local ignored_buftypes = {quickfix = true}
-                local ignored_filetypes = {LuaTree = true}
+                local ignored_filetypes = {NvimTree = true}
 
                 local function ignore_by_buftype()
                     local buftype = vim.bo.buftype
@@ -431,24 +455,15 @@ packer.startup(
         }
         use {
             "nvim-lua/telescope.nvim",
-            requires = {{"nvim-lua/popup.nvim", opt = true}, {"nvim-lua/plenary.nvim", opt = true}},
+            requires = {
+                {"nvim-lua/popup.nvim", opt = true},
+                {"nvim-lua/plenary.nvim", opt = true},
+                {"nvim-telescope/telescope-fzy-native.nvim", opt = true}
+            },
             cmd = {"Telescope"},
             setup = function()
-                _packer_load({"plenary.nvim", "popup.nvim"}, {})
+                require("packer.load")({"plenary.nvim", "popup.nvim", "telescope-fzy-native.nvim"}, {},_G.packer_plugins)
                 local utils = require "config.utils"
-                _TelescopeConfigurationValues = {}
-                _TelescopeConfigurationValues["vimgrep_arguments"] = {
-                    "rg",
-                    "--color=never",
-                    "--no-heading",
-                    "--with-filename",
-                    "--line-number",
-                    "--column",
-                    "--smart-case",
-                    "--hidden",
-                    "-g",
-                    "!.git"
-                }
                 --set_keymap({c = {["<C-R>"] = "<Plug>(TelescopeFuzzyCommandSearch)"}})
                 local telescope_keymap = {
                     n = {
@@ -478,30 +493,76 @@ packer.startup(
                         return "<Cmd>Telescope " .. value
                     end
                 )
+            end,
+            config = function()
+                local actions = require("telescope.actions")
+                require("telescope").setup {
+                    defaults = {
+                        vimgrep_arguments = {
+                            "rg",
+                            "--color=never",
+                            "--no-heading",
+                            "--with-filename",
+                            "--line-number",
+                            "--column",
+                            "--smart-case",
+                            "--hidden",
+                            "-g",
+                            "!.git"
+                        },
+                        mappings = {
+                            i = {
+                                ["<C-y>"] = function()
+                                    local current_entry = actions.get_selected_entry().value
+                                    vim.call("setreg", {"+", current_entry})
+                                end
+                            }
+                        }
+                    }
+                }
+                require("telescope").load_extension("fzy_native")
             end
         }
         -- file explorer
         use {
             "kyazdani42/nvim-tree.lua",
             requires = {{"kyazdani42/nvim-web-devicons", opt = true}},
-            cmd = {"LuaTreeToggle", "LuaTreeOpen"},
+            cmd = {"NvimTreeToggle", "NvimTreeOpen"},
             setup = function()
-                vim.g.lua_tree_follow = 1
-                vim.g.lua_tree_disable_keybindings = 1
-                vim.g.lua_tree_icons = {default = ""}
-                vim.g.lua_tree_git_hl = 1
+                vim.g.nvim_tree_follow = 1
+                vim.g.nvim_tree_disable_keybindings = 1
+                vim.g.nvim_tree_icons = {default = ""}
+                vim.g.nvim_tree_git_hl = 1
                 local utils = require "config.utils"
-                utils.set_keymap({n = {x = "<Cmd>LuaTreeToggle"}}, utils.leader_key_mapper)
+                utils.set_keymap({n = {x = "<Cmd>NvimTreeToggle"}}, utils.leader_key_mapper)
             end,
             config = function()
-                _packer_load({"nvim-web-devicons"}, {})
-                require "tree".on_enter()
+                require("packer.load")({"nvim-web-devicons"}, {},_G.packer_plugins)
             end
         }
         --git
         use {
             "tpope/vim-fugitive",
             cmd = {"Git", "Gstatus", "Gwrite", "Glog", "Gcommit", "Gblame", "Ggrep", "Gdiff", "G"}
+        }
+        use {
+            "f-person/git-blame.nvim",
+            cmd = {"GitBlameToggle", "GitBlameEnable", "GitBlameDisable"},
+            setup = function()
+                -- adjust correct inital state for gitblame enabled
+                -- this allows GitBlameToggle enable plugin when lazily loaded
+                -- else when lazily loaded the plugin is activated when GitBlameToggle is called
+                -- and then the GitBlameToggle disables it
+                vim.g.gitblame_enabled = 0
+            end
+        }
+        use {
+            "lewis6991/gitsigns.nvim",
+            cmd = {"GitSignsEnable"},
+            config = function()
+                require('gitsigns').setup()
+                vim.cmd [[ doautocmd BufEnter ]]
+            end
         }
         --syntax
         use {
@@ -510,8 +571,11 @@ packer.startup(
         }
         use {
             "nvim-treesitter/nvim-treesitter",
-            cmd = {"TSInstall", "TSBufEnable", "TSEnableAll", "TSModuleInfo"},
+            cmd = {"TSInstall", "TSBufEnable", "TSEnableAll", "TSModuleInfo", "TSUpdate"},
             ft = {"cpp", "c", "python", "java", "lua", "json", "markdown", "typescript", "bash", "zsh"},
+            run = function()
+                vim.cmd("TSUpdate")
+            end,
             config = function()
                 require "nvim-treesitter.configs".setup {
                     highlight = {
@@ -625,7 +689,7 @@ packer.startup(
         --utils
         use {
             "preservim/nerdcommenter",
-            keys = {"<Plug>(nerdcommenter", "<leader>c"}
+            keys = {"<Plug>(nerdcommenter","<leader>c"}
         }
         use {
             "tpope/vim-surround",
@@ -636,11 +700,12 @@ packer.startup(
             keys = {"."}
         }
         use {
-            "jiangmiao/auto-pairs",
+            "cohama/lexima.vim",
             --TODO: Fix double quote autoloading
-            keys = {{"i", "("}, {"i", "["}, {"i", "<"}, {"i", "'"}, {"i", "{"}},
+            keys = {{"i", "("}, {"i", "["}, {"i", "<"}, {"i", "'"}, {"i", "{"},{"i",'"'}},
             config = function()
-                vim.call("AutoPairsTryInit")
+                vim.cmd [[doautocmd lexima-init InsertEnter]]
+                vim.cmd [[doautocmd lexima InsertEnter]]
             end
         }
         -- Terminal UI
@@ -658,18 +723,14 @@ packer.startup(
                         i = "<A-Space>t",
                         t = "<A-Space>t"
                     },
-                    new_window = "enew|term",
-                    new_window_buffer = "single",
-                    quickterm_command = "enew|term",
-                    quickterm_direction = "botright",
-                    quickterm_orientation = "vertical",
+                    new_window = "term",
                     quickterm_scope = "t"
                 }
 
                 -- Nvimux custom bindings
                 nvimux.bindings.bind_all {
-                    {"-", "<Cmd>NvimuxHorizontalSplit", {"n", "v", "i", "t"}},
-                    {"\\|", "<Cmd>NvimuxVerticalSplit", {"n", "v", "i", "t"}}
+                    {"-", "<Cmd>NvimuxHorizontalSplit<CR>", {"n", "v", "i", "t"}},
+                    {"\\|", "<Cmd>NvimuxVerticalSplit<CR>", {"n", "v", "i", "t"}}
                 }
 
                 -- Required so nvimux sets the mappings correctly
@@ -677,7 +738,6 @@ packer.startup(
             end
         }
 
-        --TODO : Figure out plug mappings
         use {
             "Vigemus/iron.nvim",
             cmd = {
@@ -745,10 +805,9 @@ packer.startup(
             end
         }
         -- navigation
-        -- TODO : Figure out plug mappings
         use {
             "easymotion/vim-easymotion",
-            keys = {"<leader>m", "/"},
+            keys = {"<Plug>(easymotion"},
             setup = function()
                 local utils = require "config.utils"
                 local easymotion_keymap = {
@@ -773,7 +832,7 @@ packer.startup(
                 {"nvim-lua/lsp-status.nvim", opt = true}
             },
             config = function()
-                _packer_load({"lsp-status.nvim"}, {})
+                require("packer.load")({"lsp-status.nvim"}, {},_G.packer_plugins)
                 local api = vim.api
                 local luv = vim.loop
                 local lsp = vim.lsp
@@ -841,16 +900,24 @@ packer.startup(
                     return function(fname)
                         return lspconfig.util.find_git_ancestor(fname) or
                             lspconfig.util.root_pattern(root_patterns)(fname) or
-                            vim.api.nvim_call_function("getcwd") or
+                            vim.call("getcwd") or
                             luv.os_homedir()
                     end
+                end
+
+                local function get_client_capabilities()
+                    local capabilities = lsp_status.capabilities
+                    if vim.g.completion_enable_snippet then
+                        capabilities.textDocument.completion.completionItem.snippetSupport = true
+                    end
+                    return capabilities
                 end
 
                 local base_config = {
                     log_level = lsp.protocol.MessageType.Log,
                     message_level = lsp.protocol.MessageType.Log,
                     on_attach = AttachFunctionsLSP,
-                    capabilities = lsp_status.capabilities
+                    capabilities = get_client_capabilities()
                 }
                 local server_configs = {
                     jsonls = {
@@ -878,10 +945,25 @@ packer.startup(
                         }
                     },
                     pyright_ls = {
-                        root_patterns = {"Pipfile", "poetry.toml", "setup.py", "requirements.txt"}
+                        root_patterns = {"Pipfile", "poetry.toml", "setup.py", "requirements.txt"},
+                        handlers = {
+                            -- pyright ignores dynamicRegistration settings
+                            ["client/registerCapability"] = function(_, _, _, _)
+                                return {
+                                    result = nil,
+                                    error = nil
+                                }
+                            end
+                        },
+                        settings = {
+                            python = {
+                                analysis = {autoSearchPaths = true},
+                                pyright = {useLibraryCodeForTypes = true}
+                            }
+                        }
                     },
                     clangd = {
-                        root_patterns = {"compile_commands.json", ".ccls","compile_flags.txt"},
+                        root_patterns = {"compile_commands.json", ".ccls", "compile_flags.txt"},
                         handlers = lsp_status.extensions.clangd.setup(),
                         cmd = {"clangd"},
                         args = {"--background-index", "-header-insertion=never", "--clang-tidy", "--cross-file-rename"},
@@ -897,7 +979,7 @@ packer.startup(
                             Lua = {
                                 diagnostics = {
                                     globals = {
-                                        "vim"
+                                        "vim",
                                     }
                                 },
                                 runtime = {
@@ -915,7 +997,7 @@ packer.startup(
                         }
                     },
                     efm = {
-                        filetypes = {"lua","markdown"}
+                        filetypes = {"lua", "markdown"}
                     }
                 }
 
@@ -971,7 +1053,7 @@ packer.startup(
                             },
                             -- Use a function to dynamically turn signs off
                             -- and on, using buffer local variables
-                            signs = function(bufnr, client_id)
+                            signs = function(bufnr)
                                 local ok, result = pcall(vim.api.nvim_buf_get_var, bufnr, "show_signs")
                                 -- No buffer local variable set, so just enable by default
                                 if not ok then
@@ -1009,7 +1091,7 @@ packer.startup(
             ft = {"java"},
             requires = {{"rickysaurav/nvim-lsp", opt = true}},
             config = function()
-                _packer_load({"nvim-lsp"}, {})
+                require("packer.load")({"nvim-lsp"}, {},_G.packer_plugins)
                 local utils = require "config.utils"
                 local java_lsp_keymap = {
                     n = {
@@ -1033,13 +1115,25 @@ packer.startup(
                             return "<Cmd>lua require'jdtls'." .. value
                         end
                     )
+                    require('jdtls').setup_dap()
                     require("jdtls.setup").add_commands()
                 end
                 local function get_config()
                     local document_config = require "lspconfig".jdtls.document_config
                     local config = document_config.default_config
                     document_config.on_new_config(config)
-                    return {cmd = config.cmd, on_attach = lsp_java_attach_function}
+                    local capabilities = vim.lsp.protocol.make_client_capabilities()
+                    if vim.g.completion_enable_snippet then
+                        capabilities.textDocument.completion.completionItem.snippetSupport = true
+                    end
+                    return {
+                        cmd = config.cmd,
+                        handlers = config.handlers,
+                        on_attach = lsp_java_attach_function,
+                        capabilities = capabilities,
+                        --TODO: Automate Installation of jdtls bundles
+                        bundles = vim.split(vim.fn.glob("~/lsp_servers/jdt-language-server-latest/bundles/*.jar"), "\n")
+                    }
                 end
                 function JavaLspSetup()
                     local config = get_config()
@@ -1058,17 +1152,20 @@ packer.startup(
             "nvim-lua/completion-nvim",
             event = {"InsertEnter *"},
             setup = function()
-                vim.g.completion_auto_change_source = 1
                 vim.g.completion_enable_snippet = "vim-vsnip"
+                vim.g.completion_auto_change_source = 1
             end,
             config = function()
                 local chain_complete_list = {
                     default = {
-                        {complete_items = {"lsp", "snippet"}},
-                        {complete_items = {"buffer"}}
-                    },
-                    string = {
-                        {complete_items = {"path"}}
+                        default = {
+                            {complete_items = {"lsp", "snippet"}},
+                            {complete_items = {"buffers"}}
+                        },
+                        string = {
+                            {complete_items = {"path"}},
+                            {complete_items = {"buffers"}}
+                        }
                     }
                 }
 
@@ -1077,22 +1174,35 @@ packer.startup(
                 function CompletionAttachFunction()
                     local ft = vim.bo.filetype
                     if not disabled_file_types[ft] then
-                        require "completion".on_attach(
-                            {
-                                chain_complete_list = chain_complete_list
-                            }
-                        )
+                        local completion_options_table = {
+                            chain_complete_list = chain_complete_list,
+                            enable_auto_paren = true,
+                            matching_strategy_list = {"exact", "substring", "fuzzy"}
+                        }
+                        if pcall(vim.treesitter.get_parser) then
+                            completion_options_table.syntax_at_point = function()
+                                local node = require("nvim-treesitter/ts_utils").get_node_at_cursor()
+                                return node:type()
+                            end
+                        end
+                        require "completion".on_attach(completion_options_table)
                     end
                 end
                 vim.api.nvim_set_keymap("i", "<C-k>", "<Plug>(completion_prev_source)", {})
                 vim.api.nvim_set_keymap("i", "<C-j>", "<Plug>(completion_next_source)", {})
-                vim.cmd [[ autocmd BufEnter * call v:lua.CompletionAttachFunction()]]
+                vim.cmd [[augroup CompletionAttach]]
+                vim.cmd [[autocmd!]]
+                vim.cmd [[autocmd BufEnter * call v:lua.CompletionAttachFunction()]]
+                vim.cmd [[augroup end]]
                 vim.cmd [[ doautocmd BufEnter ]]
             end
         }
         use {
             "steelsojka/completion-buffers",
-            after = {"completion-nvim"}
+            after = {"completion-nvim"},
+            config = function()
+                require "completion_buffers".add_sources()
+            end
         }
         use {
             "hrsh7th/vim-vsnip",

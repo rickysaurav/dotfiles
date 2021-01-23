@@ -33,7 +33,7 @@ local options = {
     mouse = "a",
     termguicolors = true,
     showmatch = true,
-    swapfile = true,
+    swapfile = false,
     autowriteall = true,
     background = "dark",
     splitright = true,
@@ -45,7 +45,8 @@ local options = {
     smartcase = true,
     smarttab = true,
     list = true,
-    listchars = "tab:»·,nbsp:+,trail:·,extends:→,precedes:←"
+    listchars = "tab:»·,nbsp:+,trail:·,extends:→,precedes:←",
+    showtabline = 0
 }
 
 local bw_local = {
@@ -114,6 +115,14 @@ vim.cmd [[au FocusLost,WinLeave * :silent! wa]]
 vim.cmd [[au FocusGained,BufEnter * :silent! !]]
 
 -- autocmd for packer compilation
+vim.cmd [[augroup PackerAutocmd]]
+vim.cmd [[autocmd!]]
 vim.cmd [[autocmd BufWritePost plugins.lua PackerCompile]]
+vim.cmd [[augroup END]]
+
+vim.cmd [[augroup custom_term]]
+vim.cmd [[autocmd!]]
+vim.cmd [[autocmd TermOpen * setlocal bufhidden=hide]]
+vim.cmd [[augroup END]]
 
 require "plugins"

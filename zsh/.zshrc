@@ -53,6 +53,17 @@ zinit load "b4b4r07/enhancd"
 zinit ice lucid wait pick:"fzf-tab.zsh"
 zinit load "Aloxaf/fzf-tab"
 
+zinit ice lucid wait \
+    as:"command" \
+    pick:"bin/pyenv" \
+    atinit:'export PYENV_ROOT="$PWD"' \
+    atclone:'PYENV_ROOT="$PWD" ./libexec/pyenv init - > zpyenv.zsh' \
+    atpull:"%atclone" \
+    src:"zpyenv.zsh" \
+    nocompile:"!"
+zinit load "pyenv/pyenv"
+
+
 # Lazy compinit
 zinit id-as'compinit' wait:'0c' nocd lucid \
     atinit'zpcompinit' for \
