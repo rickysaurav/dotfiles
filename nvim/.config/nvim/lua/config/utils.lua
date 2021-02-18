@@ -68,4 +68,16 @@ function M.set_buf_keymap(keymap, key_mapper, value_mapper, should_add_new_line,
         end
     end
 end
+
+
+function M.concat_lists(t, ...)
+    local new = {unpack(t)}
+    for _,v in ipairs({...}) do
+        for _,vv in ipairs(v) do
+            new[#new+1] = vv
+        end
+    end
+    return new
+end
+
 return M
