@@ -1,9 +1,9 @@
 local nvim_jdtls = {
     "mfussenegger/nvim-jdtls",
     ft = {"java"},
-    requires = {{"rickysaurav/nvim-lsp", opt = true}},
+    requires = {{"neovim/nvim-lspconfig", opt = true}},
     config = function()
-        require("packer.load")({"nvim-lsp"}, {}, _G.packer_plugins)
+        require("packer.load")({"nvim-lspconfig"}, {}, _G.packer_plugins)
         local utils = require "config.utils"
         local java_lsp_keymap = {
             n = {

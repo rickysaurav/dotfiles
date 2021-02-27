@@ -1,12 +1,11 @@
 local nvim_lsp = {
-    "rickysaurav/nvim-lsp",
+    "neovim/nvim-lspconfig",
     ft = {
         "cpp", "c", "python", "lua", "vim", "json", "typescript", "rust", "yaml"
     },
     requires = {{"nvim-lua/lsp-status.nvim", opt = true}},
     config = function()
         require("packer.load")({"lsp-status.nvim"}, {}, _G.packer_plugins)
-        local api = vim.api
         local luv = vim.loop
         local lsp = vim.lsp
         local lspconfig = require "lspconfig"
@@ -74,32 +73,18 @@ local nvim_lsp = {
         end
 
         local base_config = {
-            log_level = lsp.protocol.MessageType.Log,
+            log_level = 0,
             message_level = lsp.protocol.MessageType.Log,
             on_attach = AttachFunctionsLSP,
             capabilities = get_client_capabilities()
         }
         local server_configs = {
-            jsonls = {init_options = {provideFormatter = true}},
-            yamlls = {settings = {yaml = {format = {enable = true}}}},
-            pyls_ms = {
-                root_patterns = {
-                    "Pipfile", "poetry.toml", "setup.py", "requirements.txt"
-                },
-                handlers = lsp_status.extensions.pyls_ms.setup(),
-                settings = {
-                    python = {
-                        workspaceSymbols = {enabled = true},
-                        analysis = {
-                            memory = {
-                                keepLibraryAst = true,
-                                keepLibraryLocalVariables = true
-                            }
-                        }
-                    }
-                }
+            jsonls = {
+                cmd = {"json-languageserver", "--stdio"},
+                init_options = {provideFormatter = true}
             },
-            pyright_ls = {
+            yamlls = {settings = {yaml = {format = {enable = true}}}},
+            pyright = {
                 root_patterns = {
                     "Pipfile", "poetry.toml", "setup.py", "requirements.txt"
                 },
@@ -111,7 +96,7 @@ local nvim_lsp = {
                 },
                 settings = {
                     python = {
-                        analysis = {autoSearchPaths = true},
+                        analysis = {autoSearchPaths = true, logLevel = "Trace"},
                         pyright = {useLibraryCodeForTypes = true}
                     }
                 }
@@ -121,9 +106,8 @@ local nvim_lsp = {
                     "compile_commands.json", ".ccls", "compile_flags.txt"
                 },
                 handlers = lsp_status.extensions.clangd.setup(),
-                cmd = {"clangd"},
-                args = {
-                    "--background-index", "-header-insertion=never",
+                cmd = {
+                    "clangd", "--background-index", "-header-insertion=never",
                     "--clang-tidy", "--cross-file-rename"
                 },
                 init_options = {clangdFileStatus = true}
@@ -132,6 +116,7 @@ local nvim_lsp = {
                 root_patterns = {"Cargo.toml", "rust-project.json"}
             },
             sumneko_lua = {
+                cmd = {"lua-language-server"},
                 settings = {
                     Lua = {
                         diagnostics = {globals = {"vim"}},
@@ -147,10 +132,16 @@ local nvim_lsp = {
                     }
                 }
             },
-            efm = {filetypes = {"lua", "markdown"}}
+            efm = {
+                cmd = {
+                    "efm-langserver", "-c",
+                    vim.fn.glob("~/.config/efm-langserver/config.yaml")
+                },
+                filetypes = {"lua", "markdown"}
+            }
         }
 
-        local function ensure_installed(servers)
+        --[[ local function ensure_installed(servers)
             for _, server in ipairs(servers) do
                 local server_module = lspconfig[server]
                 if server_module then
@@ -166,17 +157,11 @@ local nvim_lsp = {
                     error("invalid server name " .. server)
                 end
             end
-        end
+        end ]]
 
         local function setup_server(server)
-            local config = {}
-            for key, value in pairs(base_config) do
-                config[key] = value
-            end
             local server_config = server_configs[server] or {}
-            for key, value in pairs(server_config) do
-                config[key] = value
-            end
+            local config = vim.tbl_extend('force', base_config, server_config)
             config.root_dir = root_function_generator(
                                   server_config["root_patterns"] or {})
             lspconfig[server].setup(config)
@@ -213,13 +198,13 @@ local nvim_lsp = {
                 })
         end
         setup_diagnostics()
-        ensure_installed({
-            "pyright_ls", "vimls", "clangd", "sumneko_lua", "jsonls",
+        --[[ ensure_installed({
+            "pyright", "vimls", "sumneko_lua", "jsonls",
             "tsserver", "jdtls", "yamlls"
-        })
+        }) ]]
         setup_servers({
-            "pyright_ls", "vimls", "clangd", "sumneko_lua", "jsonls",
-            "tsserver", "rust_analyzer", "yamlls", "efm"
+            "pyright", "vimls", "clangd", "sumneko_lua", "jsonls", "tsserver",
+            "rust_analyzer", "yamlls", "efm"
         })
     end
 }

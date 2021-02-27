@@ -11,6 +11,11 @@ local kommentary = {
             value) return "<Plug>kommentary_" .. value .. "_default" end, false,
                          {})
     end,
-    keys = {"<Plug>kommentary_"}
+    keys = {"<Plug>kommentary_"},
+    config = function()
+        require('kommentary.config').configure_language("default", {
+            prefer_single_line_comments = true
+        })
+    end
 }
 return {kommentary}
