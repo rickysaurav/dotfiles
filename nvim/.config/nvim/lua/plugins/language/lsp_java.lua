@@ -28,21 +28,35 @@ local nvim_jdtls = {
             require("jdtls.setup").add_commands()
         end
         local function get_config()
-            local document_config = require"lspconfig".jdtls.document_config
-            local config = document_config.default_config
-            document_config.on_new_config(config)
+            local config = require"lspconfig".jdtls.document_config
+                               .default_config
             local capabilities = vim.lsp.protocol.make_client_capabilities()
             capabilities.textDocument.completion.completionItem.snippetSupport =
                 true
             return {
-                cmd = config.cmd,
+                cmd = {"jdtls","-data",vim.fn.expand("~/.cache/nvim/jdtls_ws")},
                 handlers = config.handlers,
                 on_attach = lsp_java_attach_function,
                 capabilities = capabilities,
                 -- TODO: Automate Installation of jdtls bundles
-                bundles = vim.split(vim.fn.glob(
-                                        "~/lsp_servers/jdt-language-server-latest/bundles/*.jar"),
-                                    "\n")
+                init_options = {
+                    bundles = vim.split(vim.fn.glob(
+                                            "~/lsp_servers/jdt-language-server-latest/bundles/*.jar"),
+                                        "\n")
+                },
+                settings = {
+                    java = {
+                        signatureHelp = {enabled = true},
+                        contentProvider = {preferred = "fernflower"},
+                        completion = {favoriteStaticMembers = {}},
+                        sources = {
+                            organizeImports = {
+                                starThreshold = 9999,
+                                staticStarThreshold = 9999
+                            }
+                        }
+                    }
+                }
             }
         end
         function JavaLspSetup()

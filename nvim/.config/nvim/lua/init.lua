@@ -41,6 +41,7 @@ local options = {
     inccommand = "nosplit",
     updatetime = 300,
     completeopt = "menuone,noinsert,noselect",
+    ignorecase = true,
     smartcase = true,
     smarttab = true,
     list = true,

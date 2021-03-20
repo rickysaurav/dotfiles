@@ -1,17 +1,18 @@
-local easymotion = {
-    "easymotion/vim-easymotion",
-    keys = {"<Plug>(easymotion"},
+local hop = {
+    "phaazon/hop.nvim",
+    cmd = {"HopWord", "HopLine", "HopChar1", "HopChar2", "HopPattern"},
     setup = function()
         local utils = require "config.utils"
-        local easymotion_keymap = {
-            n = {
-                ["<leader>m"] = "<Plug>(easymotion-prefix)",
-                ["/"] = "<Plug>(easymotion-sn)"
-            },
-            o = {["/"] = "<Plug>(easymotion-tn)"}
+        local hop_keymap = {
+            [""] = {
+                ["\\w"] = "<cmd>HopWord<CR>",
+                ["\\f"] = "<cmd>HopChar1<CR>",
+                ["\\/"] = "<cmd>HopPattern<CR>",
+                ["\\j"] = "<cmd>HopLine<CR>"
+            }
         }
-        vim.g.EasyMotion_smartcase = 1
-        utils.set_keymap(easymotion_keymap, nil, nil, false,{})
+        utils.set_keymap(hop_keymap, nil, nil, false, {})
     end
 }
-return {easymotion}
+
+return {hop}

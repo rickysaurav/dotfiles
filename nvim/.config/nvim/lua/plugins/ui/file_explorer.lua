@@ -8,7 +8,7 @@ local nvim_tree =  {
         vim.g.nvim_tree_icons = {default = ""}
         vim.g.nvim_tree_git_hl = 1
         local utils = require "config.utils"
-        utils.set_keymap({n = {x = "<Cmd>NvimTreeToggle"}},
+        utils.set_keymap({n = {ft = "<Cmd>NvimTreeToggle"}},
                          utils.leader_key_mapper)
     end,
     config = function()

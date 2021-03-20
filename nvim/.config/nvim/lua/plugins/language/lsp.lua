@@ -51,8 +51,8 @@ local nvim_lsp = {
                 return "<Cmd>lua " .. value
             end)
             utils.set_buf_keymap(telescope_keymap, utils.leader_key_mapper,
-                                 function(value)
-                return "<Cmd>Telescope " .. value
+            function(value)
+                return "<Cmd>call v:lua.Telescope('" .. value .. "')"
             end)
             lsp_status.on_attach(client)
         end
@@ -60,20 +60,20 @@ local nvim_lsp = {
         local function root_function_generator(root_patterns)
             return function(fname)
                 return lspconfig.util.find_git_ancestor(fname) or
-                           lspconfig.util.root_pattern(root_patterns)(fname) or
-                           vim.call("getcwd") or luv.os_homedir()
+                lspconfig.util.root_pattern(root_patterns)(fname) or
+                vim.call("getcwd") or luv.os_homedir()
             end
         end
 
         local function get_client_capabilities()
             local capabilities = lsp_status.capabilities
             capabilities.textDocument.completion.completionItem.snippetSupport =
-                true
+            true
             return capabilities
         end
 
         local base_config = {
-            log_level = 0,
+            -- log_level = 0,
             message_level = lsp.protocol.MessageType.Log,
             on_attach = AttachFunctionsLSP,
             capabilities = get_client_capabilities()
@@ -127,43 +127,38 @@ local nvim_lsp = {
                                     "?.lua", "?/init.lua", "?/?.lua",
                                     vim.env.VIMRUNTIME .. "/lua/?.lua"
                                 }
+                            },
+                            workspace = {
+                                -- Make the server aware of Neovim runtime files
+                                library = {
+                                    [vim.fn.expand('$VIMRUNTIME/lua')] = true
+                                }
                             }
                         }
                     }
                 }
             },
             efm = {
-                cmd = {
-                    "efm-langserver", "-c",
-                    vim.fn.glob("~/.config/efm-langserver/config.yaml")
-                },
-                filetypes = {"lua", "markdown"}
+                init_options = {documentFormatting = true},
+                filetypes = {"lua"},
+                settings = {
+                    languages = {
+                        lua = {
+                            {
+                                formatCommand = "lua-format -i",
+                                formatStdin = true
+                            }
+                        }
+                    }
+                }
             }
         }
-
-        --[[ local function ensure_installed(servers)
-            for _, server in ipairs(servers) do
-                local server_module = lspconfig[server]
-                if server_module then
-                    if server_module.install_info then
-                        local install_info = server_module.install_info()
-                        if not install_info.is_installed then
-                            print(server ..
-                                      " not installed . Starting installation. ")
-                            api.nvim_command("LspInstall " .. server)
-                        end
-                    end
-                else
-                    error("invalid server name " .. server)
-                end
-            end
-        end ]]
 
         local function setup_server(server)
             local server_config = server_configs[server] or {}
             local config = vim.tbl_extend('force', base_config, server_config)
             config.root_dir = root_function_generator(
-                                  server_config["root_patterns"] or {})
+            server_config["root_patterns"] or {})
             lspconfig[server].setup(config)
         end
 
@@ -178,24 +173,24 @@ local nvim_lsp = {
         end
         local function setup_diagnostics()
             vim.lsp.handlers["textDocument/publishDiagnostics"] =
-                vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-                    -- Enable underline, use default values
-                    underline = true,
-                    -- Enable virtual text, override spacing to 4
-                    virtual_text = {spacing = 5},
-                    -- Use a function to dynamically turn signs off
-                    -- and on, using buffer local variables
-                    signs = function(bufnr)
-                        local ok, result =
-                            pcall(vim.api.nvim_buf_get_var, bufnr, "show_signs")
-                        -- No buffer local variable set, so just enable by default
-                        if not ok then return true end
+            vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+                -- Enable underline, use default values
+                underline = true,
+                -- Enable virtual text, override spacing to 4
+                virtual_text = {spacing = 5},
+                -- Use a function to dynamically turn signs off
+                -- and on, using buffer local variables
+                signs = function(bufnr)
+                    local ok, result =
+                    pcall(vim.api.nvim_buf_get_var, bufnr, "show_signs")
+                    -- No buffer local variable set, so just enable by default
+                    if not ok then return true end
 
-                        return result
-                    end,
-                    -- Disable a feature
-                    update_in_insert = false
-                })
+                    return result
+                end,
+                -- Disable a feature
+                update_in_insert = false
+            })
         end
         setup_diagnostics()
         --[[ ensure_installed({

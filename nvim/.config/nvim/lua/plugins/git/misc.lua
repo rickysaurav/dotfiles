@@ -11,8 +11,10 @@ local blame = {
 }
 local git_signs = {
     "lewis6991/gitsigns.nvim",
-    cmd = {"GitSignsEnable"},
+    module = {"gitsigns"},
+    requires = {{"nvim-lua/plenary.nvim", opt = true}},
     config = function()
+        require("packer.load")({"plenary.nvim"}, {}, _G.packer_plugins)
         require('gitsigns').setup()
         vim.cmd [[ doautocmd BufEnter ]]
     end

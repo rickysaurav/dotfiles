@@ -4,12 +4,11 @@ local kommentary = {
         vim.g.kommentary_create_default_mappings = false
         local utils = require "config.utils"
         local kommentary_keymap = {
-            n = {ci = "line", cc = "motion"},
-            v = {ci = "visual"}
+            n = {ci = "<Plug>kommentary_motion_default_",  cc = "<Plug>kommentary_motion_default"},
+            v = {ci = "<Plug>kommentary_visual_default"}
         }
-        utils.set_keymap(kommentary_keymap, utils.leader_key_mapper, function(
-            value) return "<Plug>kommentary_" .. value .. "_default" end, false,
-                         {})
+        utils.set_keymap(kommentary_keymap, utils.leader_key_mapper, nil, false,
+        {})
     end,
     keys = {"<Plug>kommentary_"},
     config = function()
