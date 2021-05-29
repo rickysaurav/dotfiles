@@ -1,5 +1,6 @@
 local treesitter = {
     "nvim-treesitter/nvim-treesitter",
+    module = {"nvim-treesitter"},
     cmd = {
         "TSInstall", "TSBufEnable", "TSEnableAll", "TSModuleInfo", "TSUpdate"
     },
@@ -115,4 +116,11 @@ local treesitter_textobjects = {
     "nvim-treesitter/nvim-treesitter-textobjects",
     after = {"nvim-treesitter"}
 }
-return {treesitter, treesitter_refactor, treesitter_textobjects}
+
+local spellsitter = {
+    "lewis6991/spellsitter.nvim",
+    after = {"nvim-treesitter"},
+    config = function() require('spellsitter').setup() end
+}
+
+return {treesitter, treesitter_refactor, treesitter_textobjects, spellsitter}

@@ -3,16 +3,6 @@ local compe = {
     event = {"InsertEnter *"},
     config = function()
         local utils = require "config.utils"
-        --- handle after plugins for nvim-compe
-
-        local base_install_dir = require"packer".config.git.default_base_dir
-        local plugin_install_path = base_install_dir .. '/opt/nvim-compe'
-        for _, file_path in ipairs(vim.fn.globpath(plugin_install_path,
-                                                   "after/plugin/**/*.vim", 0, 1)) do
-            vim.cmd("source " .. file_path)
-        end
-
-        --- handle after plugins for nvim-compe
         require'compe'.setup {
             enabled = true,
             autocomplete = true,

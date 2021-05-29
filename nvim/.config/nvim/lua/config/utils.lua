@@ -2,7 +2,7 @@ local vim = vim
 local M = {}
 
 function M.set_globals(globals)
-    for key, value in pairs(globals) do
+   for key, value in pairs(globals) do
         vim.g[key] = value
     end
 end

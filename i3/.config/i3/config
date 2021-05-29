@@ -301,7 +301,7 @@ bindsym $mod+p exec rofi-power
 bindsym $mod+d exec "rofi -combi-modi window,run -show combi -modi combi -matching fuzzy"
 bindsym $mod+shift+d exec rofi -show run -matching fuzzy
 bindsym $mod+m exec bash $HOME/scripts/rofi_layouts.sh
-bindsym $mod+c exec rofi -rofi -modi "clipboard:greenclip print" -show clipboard
+bindsym $mod+shift+v exec rofi -rofi -modi "clipboard:greenclip print" -show clipboard
 bindsym $mod+equal exec rofi -show calc -modi calc -no-show-match -no-sort -calc-command "echo '{result}' | xclip -sel clip" 
 bindsym $mod+t split toggle
 bindsym Print	exec --no-startup-id scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'mv $f ~/shots/'

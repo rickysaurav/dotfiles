@@ -19,4 +19,14 @@ local git_signs = {
         vim.cmd [[ doautocmd BufEnter ]]
     end
 }
-return {blame, git_signs}
+
+local diffview = {
+    "sindrets/diffview.nvim",
+    cmd = {"DiffviewOpen"},
+    requires = {{"kyazdani42/nvim-web-devicons", opt = true}},
+    config = function()
+        require("packer.load")({"nvim-web-devicons"}, {}, _G.packer_plugins)
+        require'diffview'.setup()
+    end
+}
+return {blame, git_signs, diffview}

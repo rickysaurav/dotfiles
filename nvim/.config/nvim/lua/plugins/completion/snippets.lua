@@ -17,4 +17,9 @@ local vim_vsnip = {
                                 {expr = true})
     end
 }
-return {vim_vsnip}
+
+local friendly_snippets = {
+    "rafamadriz/friendly-snippets",
+    after = {"vim-vsnip"}
+}
+return {vim_vsnip, friendly_snippets}
