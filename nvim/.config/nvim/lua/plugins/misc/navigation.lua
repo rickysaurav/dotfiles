@@ -12,7 +12,8 @@ local hop = {
             }
         }
         utils.set_keymap(hop_keymap, nil, nil, false, {})
-    end
+    end,
+    config = function() require'hop'.setup {} end
 }
 
 return {hop}

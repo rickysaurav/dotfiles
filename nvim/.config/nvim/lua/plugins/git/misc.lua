@@ -11,10 +11,11 @@ local blame = {
 }
 local git_signs = {
     "lewis6991/gitsigns.nvim",
+    cmd = {"Gitsigns"},
     module = {"gitsigns"},
     requires = {{"nvim-lua/plenary.nvim", opt = true}},
+    wants = {"plenary.nvim"},
     config = function()
-        require("packer.load")({"plenary.nvim"}, {}, _G.packer_plugins)
         require('gitsigns').setup()
         vim.cmd [[ doautocmd BufEnter ]]
     end
@@ -24,8 +25,8 @@ local diffview = {
     "sindrets/diffview.nvim",
     cmd = {"DiffviewOpen"},
     requires = {{"kyazdani42/nvim-web-devicons", opt = true}},
+    wants = {"nvim-web-devicons"},
     config = function()
-        require("packer.load")({"nvim-web-devicons"}, {}, _G.packer_plugins)
         require'diffview'.setup()
     end
 }

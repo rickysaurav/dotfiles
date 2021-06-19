@@ -82,12 +82,6 @@ local nvim_lsp = {
                 root_patterns = {
                     "Pipfile", "poetry.toml", "setup.py", "requirements.txt"
                 },
-                handlers = {
-                    -- pyright ignores dynamicRegistration settings
-                    ["client/registerCapability"] = function(_, _, _, _)
-                        return {result = nil, error = nil}
-                    end
-                },
                 settings = {
                     python = {
                         analysis = {autoSearchPaths = true, logLevel = "Trace"},

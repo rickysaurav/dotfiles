@@ -65,7 +65,6 @@ local leader_key_mappings = {
         fy = ":let @+ = expand('%')",
         fv = ":edit $MYVIMRC",
         fr = ":source $MYVIMRC",
-        T = "call custom_utils#toggleHiddenAll()"
     }
 }
 

@@ -4,9 +4,9 @@ local galaxyline = {
     event = {"User ColorSchemeLoaded"},
     -- some optional icons
     requires = {{"kyazdani42/nvim-web-devicons", opt = true}},
+    wants = {"nvim-web-devicons"},
     -- your statusline
     config = function()
-        require("packer.load")({"nvim-web-devicons"}, {}, _G.packer_plugins)
         local gl = require("galaxyline")
         local colors = require("galaxyline.theme").default
         local condition = require("galaxyline.condition")

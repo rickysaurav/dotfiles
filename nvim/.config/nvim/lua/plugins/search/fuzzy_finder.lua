@@ -5,6 +5,7 @@ local telescope = {
         {"nvim-lua/plenary.nvim", opt = true},
         {"nvim-telescope/telescope-fzy-native.nvim", opt = true}
     },
+    wants = {"popup.nvim", "plenary.nvim", "telescope-fzy-native.nvim"},
     cmd = {"Telescope"},
     module = {"telescope"},
     setup = function()
@@ -55,7 +56,6 @@ local telescope = {
         end
 
         function Telescope(source)
-            require("packer.load")({"telescope.nvim"}, {}, _G.packer_plugins)
             local telescope_source = require("telescope.builtin")[source]
             if (telescope_source == nil) then
                 print("Invalid source " .. source)
@@ -91,10 +91,6 @@ local telescope = {
             value) return "<Cmd>call v:lua.Telescope('" .. value .. "')" end)
     end,
     config = function()
-        require("packer.load")({
-            "plenary.nvim", "popup.nvim", "telescope-fzy-native.nvim"
-        }, {}, _G.packer_plugins)
-
         local actions = require("telescope.actions")
         require("telescope").setup {
             defaults = {

@@ -16,7 +16,7 @@
         "body": [
             "#include<bits/stdc++.h>",
             "using namespace std;",
-            "typedef long long ll",
+            "typedef long long ll;",
             "typedef pair<ll,ll> pll;",
             "#define fillm(a,val) memset(a,val,sizeof(a))",
             "#define NL \"\\n\"",

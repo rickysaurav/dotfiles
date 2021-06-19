@@ -36,7 +36,6 @@ local compe = {
                 ["<C-d>"] = "compe#scroll({ 'delta': -4 })"
             }
         }
-        vim.cmd [[au User LeximaLoaded ++once inoremap <silent><expr> <CR> compe#confirm(lexima#expand('<LT>CR>','i'))]]
         utils.set_keymap(compe_keymap, nil, nil, false,
                          {expr = true, silent = true, noremap = true})
     end

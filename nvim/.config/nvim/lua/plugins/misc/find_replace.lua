@@ -7,14 +7,11 @@ local spectre = {
         {"nvim-lua/popup.nvim", opt = true},
         {"nvim-lua/plenary.nvim", opt = true}
     },
+    wants = {"popup.nvim","plenary.nvim"},
     setup = function()
         vim.api.nvim_set_keymap("n", "<leader>S",
                                 "<cmd>lua require('spectre').open()<CR>",
                                 {noremap = true})
-    end,
-    config = function()
-        require("packer.load")({"plenary.nvim", "popup.nvim"}, {},
-                               _G.packer_plugins)
     end
 }
 
