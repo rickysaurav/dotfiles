@@ -32,8 +32,6 @@ local compe = {
                 ["<C-/>"] = "compe#complete()",
                 ["<CR>"] = "compe#confirm('<CR>')",
                 ["<C-e>"] = "compe#close('<C-e>')",
-                ["<C-f>"] = "compe#scroll({ 'delta': +4 })",
-                ["<C-d>"] = "compe#scroll({ 'delta': -4 })"
             }
         }
         utils.set_keymap(compe_keymap, nil, nil, false,

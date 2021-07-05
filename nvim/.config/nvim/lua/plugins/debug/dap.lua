@@ -22,6 +22,9 @@ local nvim_dap = {
         utils.set_keymap(dap_keymap, utils.leader_key_mapper, function(value)
             return "<Cmd>lua require 'dap'." .. value .. "()"
         end)
+
+    end,
+    config = function()
         require("dap")["adapters"] = {
             cpp = {
                 type = 'executable',
@@ -56,7 +59,7 @@ local nvim_dap = {
                 }
             }
         }
-    end,
+    end
 }
 -- local nvim_dap_virtual_text = {
 --     "theHamsta/nvim-dap-virtual-text",

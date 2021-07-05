@@ -12,3 +12,4 @@ ranger/.config/ranger/tagged
 ..bfg-report
 
 **/packer_compiled.vim
+**/packer_compiled.lua

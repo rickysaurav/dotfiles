@@ -86,6 +86,6 @@ xnoremap u <Undo>
 " VSCode easymotion-sn hack, without this easymotion-sn triggers a new line
 nmap <CR> <nop>
 vmap <CR> <nop>
-nnoremap <space> <CMD>call VSCodeNotify('whichkey.show')<CR>
-xnoremap <space> <Cmd>call <SID>openVSCodeCommandsInVisualMode('whichkey.show')<CR>
+nnoremap <space> <CMD>call VSCodeNotify('vspacecode.space')<CR>
+xnoremap <space> <Cmd>call <SID>openVSCodeCommandsInVisualMode('vspacecode.space')<CR>
 nnoremap <C-W>o <Cmd>call VSCodeNotify('workbench.action.closeEditorsInOtherGroups')<CR>

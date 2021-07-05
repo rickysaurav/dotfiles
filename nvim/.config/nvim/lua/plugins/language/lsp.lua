@@ -49,13 +49,14 @@ local nvim_lsp = {
                                  function(value)
                 return "<Cmd>call v:lua.Telescope('" .. value .. "')"
             end)
+            require"lsp_signature".on_attach()
         end
 
         local function root_function_generator(root_patterns)
             return function(fname)
                 return lspconfig.util.find_git_ancestor(fname) or
                            lspconfig.util.root_pattern(root_patterns)(fname) or
-                           vim.call("getcwd") or luv.os_homedir()
+                           vim.fn.getcwd() or luv.os_homedir()
             end
         end
 
@@ -95,7 +96,7 @@ local nvim_lsp = {
                 },
                 cmd = {
                     "clangd", "--background-index", "--header-insertion=never",
-                    "--clang-tidy", "--cross-file-rename"
+                    "--clang-tidy","--function-arg-placeholders=false"
                 },
                 init_options = {clangdFileStatus = true}
             },
@@ -103,8 +104,9 @@ local nvim_lsp = {
                 root_patterns = {"Cargo.toml", "rust-project.json"}
             },
             sumneko_lua = function()
-                return require("lua-dev").setup(
-                           {lspconfig = {cmd = {"lua-language-server"}}})
+                return require("lua-dev").setup({
+                    lspconfig = {cmd = {"lua-language-server"}}
+                })
             end,
             efm = {
                 init_options = {documentFormatting = true},
@@ -143,8 +145,11 @@ local nvim_lsp = {
             end
         end
         local function setup_diagnostics()
-            vim.lsp.handlers["textDocument/publishDiagnostics"] =
-                vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+            vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+                                                                      vim.lsp
+                                                                          .diagnostic
+                                                                          .on_publish_diagnostics,
+                                                                      {
                     -- Enable underline, use default values
                     underline = true,
                     -- Enable virtual text, override spacing to 4
@@ -156,7 +161,6 @@ local nvim_lsp = {
                             pcall(vim.api.nvim_buf_get_var, bufnr, "show_signs")
                         -- No buffer local variable set, so just enable by default
                         if not ok then return true end
-
                         return result
                     end,
                     -- Disable a feature
@@ -175,4 +179,5 @@ local nvim_lsp = {
     end
 }
 local luadev = {"folke/lua-dev.nvim", module = {"lua-dev"}}
-return {nvim_lsp, luadev}
+local lsp_signature = {"ray-x/lsp_signature.nvim", module = {"lsp_signature"}}
+return {nvim_lsp, luadev, lsp_signature}

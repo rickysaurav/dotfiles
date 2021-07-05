@@ -19,11 +19,25 @@ local treesitter = {
                 keymaps = {
                     -- mappings for incremental selection (visual mappings)
                     init_selection = "gni", -- maps in normal mode to init the node/scope selection
-                    node_incremental = "gnn", -- increment to the upper named parent
-                    scope_incremental = "gns", -- increment to the upper scope (as defined in locals.scm)
-                    node_decremental = "gnp" -- decrement to the previous node
+                    node_incremental = "gn", -- increment to the upper named parent
+                    scope_incremental = "gs", -- increment to the upper scope (as defined in locals.scm)
+                    node_decremental = "gp" -- decrement to the previous node
                 }
             },
+            indent = {enable = true},
+            ensure_installed = {
+                "bash", "c", "cpp", "dockerfile", "go", "html", "java", "json",
+                "jsonc", "lua", "python", "rust", "teal", "toml", "tsx",
+                "typescript", "yaml"
+            } -- one of 'all', 'language', or a list of languages
+        }
+    end
+}
+local treesitter_refactor = {
+    "nvim-treesitter/nvim-treesitter-refactor",
+    after = {"nvim-treesitter"},
+    config = function()
+        require"nvim-treesitter.configs".setup {
             refactor = {
                 highlight_definitions = {enable = true},
                 -- highlight_current_scope = {
@@ -42,7 +56,15 @@ local treesitter = {
                         list_definitions = "gnD" -- mapping to list all definitions in current file
                     }
                 }
-            },
+            }
+        }
+    end
+}
+local treesitter_textobjects = {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    after = {"nvim-treesitter"},
+    config = function()
+        require"nvim-treesitter.configs".setup {
             textobjects = {
                 -- syntax-aware textobjects
                 select = {
@@ -84,43 +106,54 @@ local treesitter = {
                 move = {
                     enable = true,
                     goto_previous_start = {
+                        ["[b"] = "@block.outer",
                         ["[m"] = "@function.outer",
                         ["[["] = "@class.outer"
                     },
                     goto_previous_end = {
+                        ["[B"] = "@block.outer",
                         ["[M"] = "@function.outer",
                         ["[]"] = "@class.outer"
                     },
                     goto_next_start = {
+                        ["]b"] = "@block.outer",
                         ["]m"] = "@function.outer",
                         ["]]"] = "@class.outer"
                     },
                     goto_next_end = {
+                        ["]B"] = "@block.outer",
                         ["]M"] = "@function.outer",
                         ["]["] = "@class.outer"
                     }
                 }
-            },
-            ensure_installed = {
-                "lua", "c", "cpp", "json", "java", "python", "bash",
-                "typescript"
-            } -- one of 'all', 'language', or a list of languages
+            }
         }
     end
-}
-local treesitter_refactor = {
-    "nvim-treesitter/nvim-treesitter-refactor",
-    after = {"nvim-treesitter"}
-}
-local treesitter_textobjects = {
-    "nvim-treesitter/nvim-treesitter-textobjects",
-    after = {"nvim-treesitter"}
 }
 
 local spellsitter = {
     "lewis6991/spellsitter.nvim",
     after = {"nvim-treesitter"},
-    config = function() require('spellsitter').setup() end
+    config = function() require('spellsitter').setup {hl = 'error'} end
 }
 
-return {treesitter, treesitter_refactor, treesitter_textobjects, spellsitter}
+local treesitter_subjects = {
+    "RRethy/nvim-treesitter-textsubjects",
+    after = {"nvim-treesitter"},
+    config = function()
+        require'nvim-treesitter.configs'.setup {
+            textsubjects = {
+                enable = true,
+                keymaps = {
+                    ['.'] = 'textsubjects-smart',
+                    [';'] = 'textsubjects-big'
+                }
+            }
+        }
+    end
+}
+
+return {
+    treesitter, treesitter_refactor, treesitter_textobjects, spellsitter,
+    treesitter_subjects
+}

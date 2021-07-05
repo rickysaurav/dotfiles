@@ -18,6 +18,8 @@
             "using namespace std;",
             "typedef long long ll;",
             "typedef pair<ll,ll> pll;",
+            "typedef vector<ll> vl;",
+            "typedef vector<vector<ll>> vll;",
             "#define fillm(a,val) memset(a,val,sizeof(a))",
             "#define NL \"\\n\"",
             "const ll mod = 1000000007;",

@@ -57,7 +57,7 @@ zinit ice lucid wait \
     as:"command" \
     pick:"bin/pyenv" \
     atinit:'export PYENV_ROOT="$PWD"' \
-    atclone:'PYENV_ROOT="$PWD" ./libexec/pyenv init - > zpyenv.zsh' \
+    atclone:'PYENV_ROOT="$PWD" ./libexec/pyenv init &> zpyenv.zsh' \
     atpull:"%atclone" \
     src:"zpyenv.zsh" \
     nocompile:"!"

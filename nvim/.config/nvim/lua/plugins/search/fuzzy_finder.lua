@@ -3,9 +3,8 @@ local telescope = {
     requires = {
         {"nvim-lua/popup.nvim", opt = true},
         {"nvim-lua/plenary.nvim", opt = true},
-        {"nvim-telescope/telescope-fzy-native.nvim", opt = true}
     },
-    wants = {"popup.nvim", "plenary.nvim", "telescope-fzy-native.nvim"},
+    wants = {"popup.nvim", "plenary.nvim"},
     cmd = {"Telescope"},
     module = {"telescope"},
     setup = function()
@@ -104,13 +103,17 @@ local telescope = {
                         ["<C-y>"] = function()
                             local current_entry =
                                 actions.get_selected_entry().value
-                            vim.call("setreg", {"+", current_entry})
+                            vim.fn.setreg("+",current_entry)
                         end
                     }
                 }
             }
         }
-        require("telescope").load_extension("fzy_native")
     end
 }
-return {telescope}
+local telescope_fzy_native = {
+    "nvim-telescope/telescope-fzy-native.nvim",
+    after = {"telescope.nvim"},
+    config = function() require("telescope").load_extension("fzy_native") end
+}
+return {telescope, telescope_fzy_native}

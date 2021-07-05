@@ -1,7 +1,7 @@
 ####EXPORT PATH####
 export TERMCMD=alacritty
 export GOPATH=~/go
-export EDITOR="emacsclient -c -a \"\""
+export EDITOR=nvim
 export VISUAL=$EDITOR
 export ALTERNATE_EDITOR=nvim
 export PATH=$HOME/.cargo/bin:$GOPATH/bin:$HOME/.local/bin:$PATH

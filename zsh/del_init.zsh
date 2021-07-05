@@ -28,6 +28,9 @@ setopt share_history          # share command history data
 ##HIDDEN FILES##
 setopt globdots
 
+##FORCE READLINE MODE##
+set -o emacs
+
 ####PYWAL COLORSCHEME####
 #cat $HOME/.cache/wal/sequences
 
