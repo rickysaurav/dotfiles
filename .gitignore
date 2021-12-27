@@ -13,3 +13,4 @@ ranger/.config/ranger/tagged
 **/packer_compiled.vim
 **/packer_compiled.lua
 .DS_Store
+result
