@@ -2,7 +2,7 @@
 # Check if zinit is installed
 if [[ ! -d ~/.zinit ]]; then
   # mkdir ~/.zinit
-  git clone https://github.com/zdharma/zinit.git ~/.zinit/bin
+  git clone https://github.com/zdharma-continuum/zinit.git ~/.zinit/bin
 fi
 
 ####source zinit####
@@ -18,14 +18,14 @@ zinit id-as'fancy-prompt' nocd lucid \
     unload'[[ ! -v fancy ]]' \
     load'![[ -v fancy ]]' \
     atload'!source ~/.p10k-fancy.zsh; _p9k_precmd' for \
-        zdharma/null
+        zdharma-continuum/null
 
 # Load ~/.p10k.zsh when in any other directory
 zinit id-as'normal-prompt' nocd lucid \
     unload'[[ -v fancy ]]' \
     load'![[ ! -v fancy ]]' \
     atload'!source ~/.p10k.zsh; _p9k_precmd' for \
-        zdharma/null
+        zdharma-continuum/null
 
 # Lazy Load personal config
 zinit ice lucid wait
@@ -34,7 +34,7 @@ zinit snippet $HOME/del_init.zsh
 ###SYNTAX###
 zinit wait lucid for \
  atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
-    zdharma/fast-syntax-highlighting \
+    zdharma-continuum/fast-syntax-highlighting \
  blockf \
     zsh-users/zsh-completions
 
@@ -67,4 +67,4 @@ zinit load "pyenv/pyenv"
 # Lazy compinit
 zinit id-as'compinit' wait:'0c' nocd lucid \
     atinit'zpcompinit' for \
-        zdharma/null
+        zdharma-continuum/null

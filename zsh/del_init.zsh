@@ -9,7 +9,7 @@
 # #export TERM=xterm-256color
 # #export TERM=eterm-color
 # export FZF_TMUX=1
-ulimit -s 524144
+# ulimit -s 524144
 
 
 ####HISTORY####

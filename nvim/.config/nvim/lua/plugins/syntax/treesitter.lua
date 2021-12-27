@@ -27,7 +27,7 @@ local treesitter = {
             indent = {enable = true},
             ensure_installed = {
                 "bash", "c", "cpp", "dockerfile", "go", "html", "java", "json",
-                "jsonc", "lua", "python", "rust", "teal", "toml", "tsx",
+                "jsonc", "lua", "python", "rust", "toml", "tsx",
                 "typescript", "yaml"
             } -- one of 'all', 'language', or a list of languages
         }
