@@ -28,6 +28,7 @@
           inherit system;
           modules = [
             home-manager.darwinModule
+            ./modules/darwin
             ./modules/common.nix
           ];
           specialArgs = { inherit inputs myLib nixpkgs system; };
