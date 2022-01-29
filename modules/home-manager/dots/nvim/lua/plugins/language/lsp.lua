@@ -24,9 +24,9 @@ local nvim_lsp = {
                 ["<leader>lF"] = "vim.lsp.buf.range_formatting()",
                 ["<leader>lf"] = "vim.lsp.buf.formatting()",
                 ["<leader>l."] = "vim.lsp.buf.code_action()",
-                ["<leader>el"] = "vim.lsp.diagnostic.set_loclist()",
-                ["<leader>en"] = "vim.lsp.diagnostic.goto_next({wrap=true, severity_limit = 'Error'})",
-                ["<leader>ep"] = "vim.lsp.diagnostic.goto_prev({wrap=true, severity_limit = 'Error'})"
+                ["<leader>el"] = "vim.diagnostic.setloclist()",
+                ["<leader>en"] = "vim.diagnostic.goto_next({wrap=true, severity_limit = 'Error'})",
+                ["<leader>ep"] = "vim.diagnostic.goto_prev({wrap=true, severity_limit = 'Error'})"
             },
             v = {["<leader>lf"] = "vim.lsp.buf.range_formatting()"},
             i = {["<c-k>"] = "vim.lsp.buf.signature_help()"}
@@ -145,34 +145,30 @@ local nvim_lsp = {
                 setup_server(server)
             end
         end
-        local function setup_diagnostics()
-            vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-                                                                      vim.lsp
-                                                                          .diagnostic
-                                                                          .on_publish_diagnostics,
-                                                                      {
-                    -- Enable underline, use default values
-                    underline = true,
-                    -- Enable virtual text, override spacing to 4
-                    virtual_text = {spacing = 5},
-                    -- Use a function to dynamically turn signs off
-                    -- and on, using buffer local variables
-                    signs = function(bufnr)
-                        local ok, result =
-                            pcall(vim.api.nvim_buf_get_var, bufnr, "show_signs")
-                        -- No buffer local variable set, so just enable by default
-                        if not ok then return true end
-                        return result
-                    end,
-                    -- Disable a feature
-                    update_in_insert = false
-                })
-        end
-        setup_diagnostics()
-        --[[ ensure_installed({
-            "pyright", "vimls", "sumneko_lua", "jsonls",
-            "tsserver", "jdtls", "yamlls"
-        }) ]]
+        -- local function setup_diagnostics()
+        --     vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+        --                                                               vim.lsp
+        --                                                                   .diagnostic
+        --                                                                   .on_publish_diagnostics,
+        --                                                               {
+        --             -- Enable underline, use default values
+        --             underline = true,
+        --             -- Enable virtual text, override spacing to 4
+        --             virtual_text = {spacing = 5},
+        --             -- Use a function to dynamically turn signs off
+        --             -- and on, using buffer local variables
+        --             signs = function(bufnr)
+        --                 local ok, result =
+        --                     pcall(vim.api.nvim_buf_get_var, bufnr, "show_signs")
+        --                 -- No buffer local variable set, so just enable by default
+        --                 if not ok then return true end
+        --                 return result
+        --             end,
+        --             -- Disable a feature
+        --             update_in_insert = false
+        --         })
+        -- end
+        -- setup_diagnostics()
         setup_servers({
             "pyright", "vimls", "clangd", "sumneko_lua", "jsonls", "tsserver",
             "rust_analyzer", "yamlls", "efm"

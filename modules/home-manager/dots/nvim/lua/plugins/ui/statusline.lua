@@ -1,5 +1,5 @@
 local galaxyline = {
-    "glepnir/galaxyline.nvim",
+    "NTBBloodbath/galaxyline.nvim",
     branch = "main",
     event = {"User ColorSchemeLoaded"},
     -- some optional icons
@@ -8,7 +8,7 @@ local galaxyline = {
     -- your statusline
     config = function()
         local gl = require("galaxyline")
-        local colors = require("galaxyline.theme").default
+        local colors = require("galaxyline.themes.colors").default
         local condition = require("galaxyline.condition")
         vim.cmd("highlight StatusLine guibg=" .. colors.bg)
         vim.cmd("highlight StatusLineNC guibg=" .. colors.bg)
@@ -55,7 +55,7 @@ local galaxyline = {
                                 mode_color[vim.fn.mode()])
                         return "  "
                     end,
-                    highlight = {colors.red, colors.bg, "bold"}
+                   highlight = {colors.red, colors.bg, "bold"}
                 }
             }, {
                 FileSize = {
@@ -68,7 +68,7 @@ local galaxyline = {
                     provider = "FileIcon",
                     condition = condition.buffer_not_empty,
                     highlight = {
-                        require("galaxyline.provider_fileinfo").get_file_icon_color,
+                        require("galaxyline.providers.fileinfo").get_file_icon_color,
                         colors.bg
                     }
                 }

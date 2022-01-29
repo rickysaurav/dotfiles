@@ -71,13 +71,13 @@ local treesitter_textobjects = {
                     enable = true,
                     disable = {},
                     keymaps = {
-                        ["iL"] = {
-                            -- you can define your own textobjects directly here
-                            python = "(function_definition) @function",
-                            cpp = "(function_definition) @function",
-                            c = "(function_definition) @function",
-                            java = "(method_declaration) @function"
-                        },
+                        -- ["iL"] = {
+                        --     -- you can define your own textobjects directly here
+                        --     python = "(function_definition) @function",
+                        --     cpp = "(function_definition) @function",
+                        --     c = "(function_definition) @function",
+                        --     java = "(method_declaration) @function"
+                        -- },
                         -- or you use the queries from supported languages with textobjects.scm
                         ["af"] = "@function.outer",
                         ["if"] = "@function.inner",

@@ -4,26 +4,17 @@ local nvimux = {
     keys = {"<leader>t"},
     config = function()
         local nvimux = require("nvimux")
-        nvimux.config.set_all {
+        nvimux.setup{
+          config = {
             prefix = "<leader>t",
-            local_prefix = {
-                n = "<leader>t",
-                v = "<leader>t",
-                i = "<A-Space>t",
-                t = "<A-Space>t"
-            },
             new_window = "term",
             quickterm_scope = "t"
+          },
+          bindings = {
+            {{"n", "v", "i", "t"}, "-", nvimux.commands.horizontal_split},
+            {{"n", "v", "i", "t"}, "\\|", nvimux.commands.vertical_split},
+          }
         }
-
-        -- Nvimux custom bindings
-        nvimux.bindings.bind_all {
-            {"-", "<Cmd>NvimuxHorizontalSplit<CR>", {"n", "v", "i", "t"}},
-            {"\\|", "<Cmd>NvimuxVerticalSplit<CR>", {"n", "v", "i", "t"}}
-        }
-
-        -- Required so nvimux sets the mappings correctly
-        nvimux.bootstrap()
     end
 }
 
