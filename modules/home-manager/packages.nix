@@ -1,13 +1,17 @@
 {config, pkgs, ...} : {
   home.packages = with pkgs; [
+    # editors
+    vscode
+    # language-tools
     efm-langserver
-    tree
-    jq
-    nixpkgs-fmt
     rnix-lsp
-    sumneko-lua-language-server
+    nixpkgs-fmt
     clang-tools
+    sumneko-lua-language-server
     cmake
     ninja
+    # cli
+    tree
+    jq
   ];
 }

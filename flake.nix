@@ -13,12 +13,17 @@
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "unstable";
     };
+    firefox-darwin.url = "github:bandithedoge/nixpkgs-firefox-darwin";
   };
 
   outputs = { self, nixpkgs, darwin, home-manager, ... }@inputs:
     let
       myLib = import ./lib nixpkgs.lib;
       aarch64-darwin = "aarch64-darwin";
+      darwin-overlays = [
+          (import ./modules/overlays/darwin-packages.nix)
+          inputs.firefox-darwin.overlay
+      ];
     in
     {
       darwinConfigurations."saurav-macbook" =
@@ -31,7 +36,7 @@
             ./modules/darwin
             ./modules/common.nix
           ];
-          specialArgs = { inherit inputs myLib nixpkgs system; };
+          specialArgs = { overlays = darwin-overlays; inherit inputs myLib nixpkgs system; };
         };
     };
 }

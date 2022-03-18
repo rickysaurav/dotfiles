@@ -1,4 +1,4 @@
-{ config, pkgs, myLib, system, ... }:
+{ config, pkgs, myLib, system,inputs,overlays, ... }:
 let
   inherit (myLib) mkUser;
   inherit (pkgs.lib) mkOption types;
@@ -18,6 +18,7 @@ in
       services.nix-daemon.enable = true;
       nixpkgs = {
         config.allowUnfree = true;
+        inherit overlays;
       };
       nix = {
         package = pkgs.nix;

@@ -1,7 +1,8 @@
 { config, pkgs, ... }: {
   imports = [
     ./link_apps.nix
-    ./dev_tools.nix
+    ./packages.nix
+    ./darwin_apps.nix
     ./fonts.nix
     # ./dots/alacritty
     ./dots/tmux

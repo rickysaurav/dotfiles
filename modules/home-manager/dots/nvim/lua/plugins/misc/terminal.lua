@@ -7,12 +7,11 @@ local nvimux = {
         nvimux.setup{
           config = {
             prefix = "<leader>t",
-            new_window = "term",
-            quickterm_scope = "t"
+            -- quickterm_scope = "t"
           },
-          bindings = {
+            bindings = {
             {{"n", "v", "i", "t"}, "-", nvimux.commands.horizontal_split},
-            {{"n", "v", "i", "t"}, "\\|", nvimux.commands.vertical_split},
+            {{"n", "v", "i", "t"}, "|", nvimux.commands.vertical_split},
           }
         }
     end
