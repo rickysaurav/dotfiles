@@ -11,6 +11,7 @@
     ./dots/zsh
     ./dots/emacs
     ./dots/bat
+    ./dots/karabiner
   ];
   programs.home-manager.enable = true;
 }
