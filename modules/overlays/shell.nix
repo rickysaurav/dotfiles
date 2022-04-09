@@ -1,6 +1,5 @@
 let
-  myOverlay = import ./darwin-packages.nix;
-  pkgs = import <nixpkgs> { overlays = [ myOverlay ]; };
+  pkgs = import <nixpkgs> { overlays = [ (import ./darwin-packages.nix)]; };
 in
 pkgs.mkShell {
   buildInputs = with pkgs; [GoogleDrive];
