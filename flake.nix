@@ -22,7 +22,6 @@
       aarch64-darwin = "aarch64-darwin";
       darwin-overlays = [
         inputs.firefox-darwin.overlay
-        (import ./modules/overlays/darwin-packages.nix)
       ];
     in
     {
@@ -38,16 +37,12 @@
           ];
           specialArgs = { overlays = darwin-overlays; inherit inputs myLib nixpkgs system; };
         };
-      devShell.aarch64-darwin =
-        let
-          pkgs = import nixpkgs {
-            system=aarch64-darwin;
-            overlays = darwin-overlays;
-          }; in
-        with pkgs;
-        mkShell {
-          nativeBuildInputs = [ unpkg undmg ];
-        }
-      ;
+      # #TODO: Fix this later
+      # devShell.aarch64-darwin =
+      #   with pkgs;
+      #   mkShell {
+      #     nativeBuildInputs = [ unpkg undmg ];
+      #   }
+      # ;
     };
 }

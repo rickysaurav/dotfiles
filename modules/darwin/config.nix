@@ -15,10 +15,13 @@
       "whatsapp"
       "karabiner-elements"
       "displaylink"
+      "firefox"
+      "logi-options-plus"
+      "scroll-reverser"
     ];
-    masApps =  {
+    masApps = {
       unsplash-wallpapers = 1284863847;
-     };
+    };
   };
   security.pam.enableSudoTouchIdAuth = true;
   system.defaults = {
@@ -35,17 +38,19 @@
     };
     trackpad = {
       Clicking = true;
-      TrackpadThreeFingerDrag = true;
+      # TrackpadThreeFingerDrag = true;
     };
     NSGlobalDomain = {
-      ApplePressAndHoldEnabled = true;
-      InitialKeyRepeat = 10;
+      AppleKeyboardUIMode = 3;
+      ApplePressAndHoldEnabled = false;
+      InitialKeyRepeat = 15;
       KeyRepeat = 2;
       NSAutomaticCapitalizationEnabled = false;
       NSAutomaticDashSubstitutionEnabled = false;
       NSAutomaticPeriodSubstitutionEnabled = false;
       NSAutomaticQuoteSubstitutionEnabled = false;
       NSAutomaticSpellingCorrectionEnabled = false;
+      _HIHideMenuBar = true;
     };
   };
 }
