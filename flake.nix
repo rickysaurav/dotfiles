@@ -23,6 +23,8 @@
       darwin-overlays = [
         inputs.firefox-darwin.overlay
       ];
+      linux-overlays = [];
+      username = "ricky_saurav";
     in
     {
       darwinConfigurations."saurav-macbook" =
@@ -37,6 +39,18 @@
           ];
           specialArgs = { overlays = darwin-overlays; inherit inputs myLib nixpkgs system; };
         };
+        homeConfigurations."${username}-linux-config" = let system = "x86_64-linux";in home-manager.lib.homeManagerConfiguration {
+        # Specify the path to your home configuration here
+        configuration = import ./modules/home-manager;
+        stateVersion = "22.05";
+        inherit system username;
+        homeDirectory = myLib.homeDirectory {
+          inherit system;
+          userName = username;
+        };
+        # Optionally use extraSpecialArgs
+        extraSpecialArgs = { overlays = linux-overlays; inherit inputs myLib nixpkgs system; };
+      };
       # #TODO: Fix this later
       # devShell.aarch64-darwin =
       #   with pkgs;
