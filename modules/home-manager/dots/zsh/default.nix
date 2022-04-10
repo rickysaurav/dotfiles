@@ -1,6 +1,7 @@
 { config, pkgs, ... }: {
   #TODO: Update this to include nix specific stuff.
   home.packages = with pkgs; [
+    zsh
     fzf
     ripgrep
   ];

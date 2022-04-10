@@ -13,5 +13,6 @@
     # cli
     tree
     jq
+    htop
   ];
 }
