@@ -23,8 +23,22 @@
       darwin-overlays = [
         inputs.firefox-darwin.overlay
       ];
-      linux-overlays = [];
+      linux-overlays = [ ];
       username = "ricky_saurav";
+      mkHomeManagerConfig =
+        { system
+        , username
+        , extraSpecialArgs
+        }: home-manager.lib.homeManagerConfiguration {
+          configuration = import ./modules/home-manager;
+          stateVersion = "22.05";
+          inherit system username;
+          homeDirectory = myLib.homeDirectory {
+            inherit system;
+            userName = username;
+          };
+          inherit extraSpecialArgs;
+        };
     in
     {
       darwinConfigurations."saurav-macbook" =
@@ -39,18 +53,18 @@
           ];
           specialArgs = { overlays = darwin-overlays; inherit inputs myLib nixpkgs system; };
         };
-        homeConfigurations."${username}-linux-config" = let system = "x86_64-linux";in home-manager.lib.homeManagerConfiguration {
-        # Specify the path to your home configuration here
-        configuration = import ./modules/home-manager;
-        stateVersion = "22.05";
-        inherit system username;
-        homeDirectory = myLib.homeDirectory {
+      homeConfigurations."${username}-linux-config" = let system = "x86_64-linux"; in
+        mkHomeManagerConfig {
           inherit system;
-          userName = username;
+          username = "ricky_saurav";
+          extraSpecialArgs = { overlays = linux-overlays; inherit inputs myLib nixpkgs system; };
         };
-        # Optionally use extraSpecialArgs
-        extraSpecialArgs = { overlays = linux-overlays; inherit inputs myLib nixpkgs system; };
-      };
+      homeConfigurations."${username}-linux-arm-config" = let system = "aarch64-linux"; in
+        mkHomeManagerConfig {
+          inherit system;
+          username = "ricky_saurav";
+          extraSpecialArgs = { overlays = linux-overlays; inherit inputs myLib nixpkgs system; };
+        };
       # #TODO: Fix this later
       # devShell.aarch64-darwin =
       #   with pkgs;

@@ -3,6 +3,7 @@
     ./link_apps.nix
     ./programs
     ./fonts.nix
+    ./lang.nix
     # ./dots/alacritty
     ./dots/tmux
     ./dots/ranger
