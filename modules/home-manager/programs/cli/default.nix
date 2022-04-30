@@ -1,7 +1,5 @@
 {config, pkgs, ...} : {
   home.packages = with pkgs; [
-    # editors
-    vscode
     # language-tools
     efm-langserver
     rnix-lsp

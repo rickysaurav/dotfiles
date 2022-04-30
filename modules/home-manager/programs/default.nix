@@ -1,6 +1,6 @@
 {config, pkgs, ...} : {
   imports = [
-    ./common.nix
-    ./darwin.nix
+    ./cli
+    ./gui
   ];
 }
