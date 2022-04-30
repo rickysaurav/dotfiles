@@ -1,4 +1,4 @@
-{ config, pkgs, overlays,... }: {
+{ config, pkgs, ... }: {
   imports = [
     ./link_apps.nix
     ./programs
@@ -12,11 +12,7 @@
     ./dots/emacs
     ./dots/bat
     ./dots/karabiner
-    ./dots/nix
   ];
-  nixpkgs = {
-    config.allowUnfree = true;
-    inherit overlays;
-  };
+  home.stateVersion = "22.05";
   programs.home-manager.enable = true;
 }

@@ -1,4 +1,4 @@
-{ config, pkgs, myLib, system,inputs,overlays, ... }:
+{ config, pkgs, myLib, system, inputs, ... }:
 let
   inherit (myLib) mkUser;
   inherit (pkgs.lib) mkOption types;
@@ -16,16 +16,6 @@ in
   config = let userName = config.user.userName; in
     {
       services.nix-daemon.enable = true;
-      nixpkgs = {
-        config.allowUnfree = true;
-        inherit overlays;
-      };
-      nix = {
-        package = pkgs.nix;
-        extraOptions = ''
-          experimental-features = nix-command flakes
-        '';
-      };
       users.users.${userName} = mkUser { inherit system userName; };
       home-manager = {
         useUserPackages = true;
@@ -33,6 +23,6 @@ in
         users.${userName} = import ./home-manager;
         # verbose = true;
       };
-      programs.zsh.enable = true;
+      programs.zsh = { enable = true; variables = { NOSYSZSHRC = "true"; }; };
     };
 }

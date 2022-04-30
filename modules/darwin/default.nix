@@ -1,4 +1,4 @@
 
 { config, lib, pkgs, ... }:{
- imports = [./config.nix ./pam.nix];
+ imports = [./homebrew.nix ./system.nix ./config.nix ./pam.nix];
 }

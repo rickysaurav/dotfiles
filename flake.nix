@@ -19,7 +19,7 @@
   outputs = { self, nixpkgs, darwin, home-manager, ... }@inputs:
     let
       myLib = import ./lib nixpkgs.lib;
-      aarch64-darwin = "aarch64-darwin";
+      constants = import ./constants.nix;
       darwin-overlays = [
         inputs.firefox-darwin.overlay
       ];
@@ -28,8 +28,8 @@
       mkHomeManagerConfig =
         { system
         , username
-        , extraSpecialArgs
-        }: home-manager.lib.homeManagerConfiguration {
+        , ...
+        }@args: home-manager.lib.homeManagerConfiguration (args // {
           configuration = import ./modules/home-manager;
           stateVersion = "22.05";
           inherit system username;
@@ -37,33 +37,61 @@
             inherit system;
             userName = username;
           };
-          inherit extraSpecialArgs;
-        };
+        });
+      config = { allowUnfree = true; };
     in
     {
       darwinConfigurations."saurav-macbook" =
-        let system = aarch64-darwin;
+        let
+          system = constants.aarch64-darwin;
+        in
+        let
+          pkgs = import nixpkgs {
+            inherit config system;
+            overlays = darwin-overlays;
+          };
         in
         darwin.lib.darwinSystem {
-          inherit system;
+          inherit system pkgs;
           modules = [
             home-manager.darwinModule
+            ./modules/nix-opts.nix
             ./modules/darwin
             ./modules/common.nix
           ];
           specialArgs = { overlays = darwin-overlays; inherit inputs myLib nixpkgs system; };
         };
-      homeConfigurations."${username}-linux-config" = let system = "x86_64-linux"; in
+      homeConfigurations."saurav-linux-config" =
+        let
+          system = constants.x86_64-linux;
+        in
+        let
+          username = constants.ricky_saurav;
+          pkgs = import nixpkgs {
+            inherit config system;
+            overlays = linux-overlays;
+          };
+        in
         mkHomeManagerConfig {
-          inherit system;
-          username = "ricky_saurav";
-          extraSpecialArgs = { overlays = linux-overlays; inherit inputs myLib nixpkgs system; };
+          inherit system pkgs username;
+          extraSpecialArgs = { inherit inputs myLib nixpkgs system constants; };
+          extraModules = [./modules/nix-opts.nix];
         };
-      homeConfigurations."${username}-linux-arm-config" = let system = "aarch64-linux"; in
+      homeConfigurations."saurav-linux-arm-config" =
+        let
+          system = constants.aarch64-linux;
+        in
+        let
+          username = constants.ricky_saurav;
+          pkgs = import nixpkgs {
+            inherit config system;
+            overlays = linux-overlays;
+          };
+        in
         mkHomeManagerConfig {
-          inherit system;
-          username = "ricky_saurav";
-          extraSpecialArgs = { overlays = linux-overlays; inherit inputs myLib nixpkgs system; };
+          inherit system pkgs username;
+          extraSpecialArgs = { inherit inputs myLib nixpkgs system constants; };
+          extraModules = [./modules/nix-opts.nix];
         };
       # #TODO: Fix this later
       # devShell.aarch64-darwin =
