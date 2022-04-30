@@ -1,4 +1,4 @@
-lib: { system, userName }: {
-  name = userName;
-  home = lib.homeDirectory { inherit userName system; };
+lib: { system, username }: {
+  name = username;
+  home = lib.homeDirectory { inherit username system; };
 }

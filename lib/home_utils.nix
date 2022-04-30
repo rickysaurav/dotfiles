@@ -5,5 +5,5 @@ let
 in
 {
   inherit isDarwin homePrefix;
-  homeDirectory = { system, userName }: "${homePrefix system}/${userName}";
+  homeDirectory = { system, username }: "${homePrefix system}/${username}";
 }

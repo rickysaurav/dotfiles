@@ -35,7 +35,7 @@
           inherit system username;
           homeDirectory = myLib.homeDirectory {
             inherit system;
-            userName = username;
+            username = username;
           };
         });
       config = { allowUnfree = true; };
@@ -44,6 +44,7 @@
       darwinConfigurations."saurav-macbook" =
         let
           system = constants.aarch64-darwin;
+          username = constants.ricky_saurav;
         in
         let
           pkgs = import nixpkgs {
@@ -59,7 +60,7 @@
             ./modules/darwin
             ./modules/common.nix
           ];
-          specialArgs = { overlays = darwin-overlays; inherit inputs myLib nixpkgs system; };
+          specialArgs = { overlays = darwin-overlays; inherit inputs myLib nixpkgs system username; };
         };
       homeConfigurations."saurav-linux-config" =
         let

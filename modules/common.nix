@@ -1,26 +1,17 @@
-{ config, pkgs, myLib, system, inputs, ... }:
+{ config, pkgs, myLib, system, inputs, username, ... }:
 let
   inherit (myLib) mkUser;
   inherit (pkgs.lib) mkOption types;
 in
 {
-  options = {
-    user = {
-      userName = mkOption {
-        description = "userName";
-        type = types.str;
-        default = "ricky_saurav";
-      };
-    };
-  };
-  config = let userName = config.user.userName; in
+  config =
     {
       services.nix-daemon.enable = true;
-      users.users.${userName} = mkUser { inherit system userName; };
+      users.users.${username} = mkUser { inherit system username; };
       home-manager = {
         useUserPackages = true;
         useGlobalPkgs = true;
-        users.${userName} = import ./home-manager;
+        users.${username} = import ./home-manager;
         # verbose = true;
       };
       programs.zsh = { enable = true; variables = { NOSYSZSHRC = "true"; }; };
