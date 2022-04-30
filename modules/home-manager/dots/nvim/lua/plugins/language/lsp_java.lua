@@ -1,4 +1,4 @@
-local nvim_jdtls = {
+local nvim_jdtls = require('config.flags').jdtls and {
     "mfussenegger/nvim-jdtls",
     ft = {"java"},
     requires = {{"neovim/nvim-lspconfig", opt = true}},

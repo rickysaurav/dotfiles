@@ -1,10 +1,12 @@
-local one_nvim = {
-    "Th3Whit3Wolf/one-nvim",
-    branch = "main",
+local one_dark = {
+    "navarasu/onedark.nvim",
     event = {"FocusLost *", "CursorHold *"},
     config = function()
-        vim.cmd [[colorscheme one-nvim]]
+        require('onedark').setup {
+            style = 'dark'
+        }
+        require('onedark').load()
         vim.cmd [[doautocmd User ColorSchemeLoaded]]
     end
 }
-return {one_nvim}
+return {one_dark}

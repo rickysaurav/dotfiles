@@ -4,10 +4,10 @@ local nvim_lsp = {
         "cpp", "c", "python", "lua", "vim", "json", "typescript", "rust", "yaml"
     },
     config = function()
+        local flags = require('config.flags');
         local luv = vim.loop
         local lsp = vim.lsp
         local lspconfig = require "lspconfig"
-
         local lsp_keymap = {
             n = {
                 ["<c-]>"] = "vim.lsp.buf.definition()",
@@ -28,8 +28,8 @@ local nvim_lsp = {
                 ["<leader>en"] = "vim.diagnostic.goto_next({wrap=true, severity_limit = 'Error'})",
                 ["<leader>ep"] = "vim.diagnostic.goto_prev({wrap=true, severity_limit = 'Error'})"
             },
-            v = {["<leader>lf"] = "vim.lsp.buf.range_formatting()"},
-            i = {["<c-k>"] = "vim.lsp.buf.signature_help()"}
+            v = { ["<leader>lf"] = "vim.lsp.buf.range_formatting()" },
+            i = { ["<c-k>"] = "vim.lsp.buf.signature_help()" }
         }
 
         local telescope_keymap = {
@@ -46,24 +46,23 @@ local nvim_lsp = {
                 return "<Cmd>lua " .. value
             end)
             utils.set_buf_keymap(telescope_keymap, utils.leader_key_mapper,
-                                 function(value)
+                function(value)
                 return "<Cmd>call v:lua.Telescope('" .. value .. "')"
             end)
-            require"lsp_signature".on_attach()
+            require "lsp_signature".on_attach()
         end
 
         local function root_function_generator(root_patterns)
             return function(fname)
                 return lspconfig.util.find_git_ancestor(fname) or
-                           lspconfig.util.root_pattern(root_patterns)(fname) or
-                           vim.fn.getcwd() or luv.os_homedir()
+                    lspconfig.util.root_pattern(root_patterns)(fname) or
+                    vim.fn.getcwd() or luv.os_homedir()
             end
         end
 
         local function get_client_capabilities()
             local capabilities = vim.lsp.protocol.make_client_capabilities()
-            capabilities.textDocument.completion.completionItem.snippetSupport =
-                true
+            capabilities.textDocument.completion.completionItem.snippetSupport = true
             return capabilities
         end
 
@@ -75,18 +74,18 @@ local nvim_lsp = {
         }
         local server_configs = {
             jsonls = {
-                cmd = {"json-languageserver", "--stdio"},
-                init_options = {provideFormatter = true}
+                cmd = { "json-languageserver", "--stdio" },
+                init_options = { provideFormatter = true }
             },
-            yamlls = {settings = {yaml = {format = {enable = true}}}},
+            yamlls = { settings = { yaml = { format = { enable = true } } } },
             pyright = {
                 root_patterns = {
                     "Pipfile", "poetry.toml", "setup.py", "requirements.txt"
                 },
                 settings = {
                     python = {
-                        analysis = {autoSearchPaths = true, logLevel = "Trace"},
-                        pyright = {useLibraryCodeForTypes = true}
+                        analysis = { autoSearchPaths = true, logLevel = "Trace" },
+                        pyright = { useLibraryCodeForTypes = true }
                     }
                 }
             },
@@ -96,22 +95,22 @@ local nvim_lsp = {
                 },
                 cmd = {
                     "clangd", "--background-index", "--header-insertion=never",
-                    "--clang-tidy","--function-arg-placeholders=false" , "--all-scopes-completion",
+                    "--clang-tidy", "--function-arg-placeholders=false", "--all-scopes-completion",
                     "--inlay-hints"
                 },
-                init_options = {clangdFileStatus = true}
+                init_options = { clangdFileStatus = true }
             },
             rust_analyzer = {
-                root_patterns = {"Cargo.toml", "rust-project.json"}
+                root_patterns = { "Cargo.toml", "rust-project.json" }
             },
             sumneko_lua = function()
                 return require("lua-dev").setup({
-                    lspconfig = {cmd = {"lua-language-server"}}
+                    lspconfig = { cmd = { "lua-language-server" } }
                 })
             end,
             efm = {
-                init_options = {documentFormatting = true},
-                filetypes = {"lua"},
+                init_options = { documentFormatting = true },
+                filetypes = { "lua" },
                 settings = {
                     languages = {
                         lua = {
@@ -126,25 +125,24 @@ local nvim_lsp = {
         }
 
         local function setup_server(server)
+            print("Setting up server ", vim.inspect(server))
             local server_config = server_configs[server] or {}
             if vim.is_callable(server_config) then
                 server_config = server_config()
             end
             local config = vim.tbl_extend('force', base_config, server_config)
             config.root_dir = root_function_generator(
-                                  server_config["root_patterns"] or {})
+                server_config["root_patterns"] or {})
             lspconfig[server].setup(config)
         end
-
         local function setup_servers(servers)
             for _, server in ipairs(servers) do
-                local server_module = lspconfig[server]
-                if not server_module then
-                    error("invalid server name " .. server)
+                if flags[server] and lspconfig[server] then
+                    setup_server(server)
                 end
-                setup_server(server)
             end
         end
+
         -- local function setup_diagnostics()
         --     vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
         --                                                               vim.lsp
@@ -175,6 +173,6 @@ local nvim_lsp = {
         })
     end
 }
-local luadev = {"folke/lua-dev.nvim", module = {"lua-dev"}}
-local lsp_signature = {"ray-x/lsp_signature.nvim", module = {"lsp_signature"}}
-return {nvim_lsp, luadev, lsp_signature}
+local luadev = { "folke/lua-dev.nvim", module = { "lua-dev" } }
+local lsp_signature = { "ray-x/lsp_signature.nvim", module = { "lsp_signature" } }
+return { nvim_lsp, luadev, lsp_signature }

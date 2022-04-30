@@ -1,5 +1,5 @@
 local surround = {
-    "blackCauldron7/surround.nvim",
+    "ur4ltz/surround.nvim",
     keys = {{"n", "cs"}, {"n", "ds"}, {"n", "ys"}, {"x", "S"}},
     config = function() require"surround".setup {mappings_style = "surround"} end
 }
