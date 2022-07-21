@@ -2,7 +2,9 @@
 { pkgs, lib, ... }: {
   homebrew = {
     enable = true;
-    cleanup = "zap";
+    onActivation = {
+      cleanup = "zap";
+    };
     taps = [
       "homebrew/cask-drivers"
       "homebrew/cask"
@@ -19,7 +21,8 @@
       "firefox"
       "logi-options-plus"
       "scroll-reverser"
-      "wezterm"
+      "linearmouse"
+      "hammerspoon"
     ];
     masApps = {
       unsplash-wallpapers = 1284863847;

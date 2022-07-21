@@ -11,12 +11,13 @@
     efm-langserver
     rnix-lsp
     nixpkgs-fmt
-    clang-tools
-    cmake
-    ninja
     # cli
     tree
     jq
     htop
+    # compilers
+    gcc12
+    cmake
+    ninja
   ];
 }

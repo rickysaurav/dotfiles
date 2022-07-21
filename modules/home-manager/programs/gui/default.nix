@@ -3,5 +3,6 @@
   home.packages = with pkgs; [
     # editors
     vscode
+    wezterm
   ];
 }

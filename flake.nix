@@ -3,6 +3,7 @@
 
   inputs = {
     # All packages should follow latest nixpkgs
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # core
     darwin = {
@@ -13,16 +14,13 @@
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "unstable";
     };
-    firefox-darwin.url = "github:bandithedoge/nixpkgs-firefox-darwin";
   };
 
   outputs = { self, nixpkgs, darwin, home-manager, ... }@inputs:
     let
       myLib = import ./lib nixpkgs.lib;
       constants = import ./constants.nix;
-      darwin-overlays = [
-        inputs.firefox-darwin.overlay
-      ];
+      darwin-overlays = [ ];
       linux-overlays = [ ];
       username = "ricky_saurav";
       mkHomeManagerConfig =
@@ -76,7 +74,7 @@
         mkHomeManagerConfig {
           inherit system pkgs username;
           extraSpecialArgs = { inherit inputs myLib nixpkgs system constants; };
-          extraModules = [./modules/nix-opts.nix];
+          extraModules = [ ./modules/nix-opts.nix ];
         };
       homeConfigurations."saurav-linux-arm-config" =
         let
@@ -92,7 +90,7 @@
         mkHomeManagerConfig {
           inherit system pkgs username;
           extraSpecialArgs = { inherit inputs myLib nixpkgs system constants; };
-          extraModules = [./modules/nix-opts.nix];
+          extraModules = [ ./modules/nix-opts.nix ];
         };
       # #TODO: Fix this later
       # devShell.aarch64-darwin =

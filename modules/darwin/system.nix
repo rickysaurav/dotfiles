@@ -1,4 +1,5 @@
 { pkgs, lib, ... }: {
+  security.pam.enableSudoTouchIdAuth = true;
   system.defaults = {
     dock = {
       autohide = true;
@@ -6,6 +7,7 @@
       orientation = "left";
       showhidden = true;
     };
+    screencapture.location = "~/Pictures/Screenshots";
     finder = {
       AppleShowAllExtensions = true;
       _FXShowPosixPathInTitle = true;
@@ -18,6 +20,7 @@
     NSGlobalDomain = {
       AppleKeyboardUIMode = 3;
       ApplePressAndHoldEnabled = false;
+      "com.apple.keyboard.fnState" =true;
       InitialKeyRepeat = 15;
       KeyRepeat = 2;
       NSAutomaticCapitalizationEnabled = false;

@@ -12,6 +12,8 @@
     ./dots/emacs
     ./dots/bat
     ./dots/karabiner
+    ./dots/wezterm
+    ./dots/hammerspoon
   ];
   home.stateVersion = "22.05";
   programs.home-manager.enable = true;

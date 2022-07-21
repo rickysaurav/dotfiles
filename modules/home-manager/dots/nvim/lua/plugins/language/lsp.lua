@@ -96,7 +96,7 @@ local nvim_lsp = {
                 cmd = {
                     "clangd", "--background-index", "--header-insertion=never",
                     "--clang-tidy", "--function-arg-placeholders=false", "--all-scopes-completion",
-                    "--inlay-hints"
+                    "--log=verbose", "--query-driver=/**/*"
                 },
                 init_options = { clangdFileStatus = true }
             },
