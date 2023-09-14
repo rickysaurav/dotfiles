@@ -134,7 +134,8 @@ spoon.SpoonInstall:andUse("AppLauncher", {
     ['2'] = "Visual Studio Code",
     ['4'] = "Whatsapp",
     ['5'] = "WezTerm",
-    ['0'] = "Spotify"
+    ['0'] = "Spotify",
+    ['9'] = "Google Chrome"
   }
 })
 
@@ -219,7 +220,10 @@ spoon.SpoonInstall:andUse("WinWin", { fn = function(win_win)
   end)
 end })
 spoon.SpoonInstall:andUse("ArrangeDesktop")
-
+-- spoon.SpoonInstall:andUse("LayoutLaddle",{
+--   start=true,
+--   config={centerMouse=false}
+-- })
 -- spoon.SpoonInstall:andUse("Seal", { hotkeys = { toggle = { mac_cmd , "space" } },
 --     fn = function(s)
 --             s:loadPlugins({"apps", "calc", "safari_bookmarks"})

@@ -4,5 +4,7 @@
     # editors
     vscode
     wezterm
+    discord
+    zoom-us
   ];
 }

@@ -34,6 +34,10 @@ set -o emacs
 ####PYWAL COLORSCHEME####
 #cat $HOME/.cache/wal/sequences
 
+####EDIT COMMAND####
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey "^X^E" edit-command-line
 
 ####FZF CONFIG####
 # export FZF_DEFAULT_COMMAND='rg --files --no-ignore --ignore-case --hidden --follow --glob "!.git/*" --glob "!.cache/*"'

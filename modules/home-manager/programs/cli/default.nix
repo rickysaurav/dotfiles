@@ -1,4 +1,5 @@
 {config, pkgs, ...} : {
+  imports = [./darwin.nix];
   home.packages = with pkgs; [
     # language-tools
     sumneko-lua-language-server
@@ -16,8 +17,13 @@
     jq
     htop
     # compilers
-    gcc12
+    gcc
     cmake
     ninja
+    # latex
+    texlive.combined.scheme-full
+    # containers
+    podman
+    podman-compose
   ];
 }

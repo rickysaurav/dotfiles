@@ -8,21 +8,21 @@
     taps = [
       "homebrew/cask-drivers"
       "homebrew/cask"
+      "homebrew/cask-versions"
     ];
     casks = [
-      "docker"
+      "firefox"
+      "microsoft-edge"
       "google-chrome"
       "google-drive"
       "raycast"
       "spotify"
-      "whatsapp"
       "karabiner-elements"
       "displaylink"
-      "firefox"
       "logi-options-plus"
-      "scroll-reverser"
       "linearmouse"
       "hammerspoon"
+      "whatsapp-alpha"
     ];
     masApps = {
       unsplash-wallpapers = 1284863847;
