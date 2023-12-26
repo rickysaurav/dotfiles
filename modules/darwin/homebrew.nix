@@ -12,17 +12,14 @@
     ];
     casks = [
       "firefox"
-      "microsoft-edge"
       "google-chrome"
       "google-drive"
       "raycast"
-      "spotify"
-      "karabiner-elements"
       "displaylink"
       "logi-options-plus"
       "linearmouse"
       "hammerspoon"
-      "whatsapp-alpha"
+      "whatsapp-beta"
     ];
     masApps = {
       unsplash-wallpapers = 1284863847;

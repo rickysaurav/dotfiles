@@ -6,5 +6,6 @@
     wezterm
     discord
     zoom-us
+    spotify
   ];
 }

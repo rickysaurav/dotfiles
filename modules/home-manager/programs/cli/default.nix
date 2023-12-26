@@ -25,5 +25,7 @@
     # containers
     podman
     podman-compose
+    # adb
+    android-tools
   ];
 }
