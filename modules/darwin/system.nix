@@ -1,5 +1,9 @@
 { pkgs, lib, ... }: {
   security.pam.enableSudoTouchIdAuth = true;
+  system.stateVersion = 5;
+  environment = {
+    pathsToLink = [ "/share/qemu" ];
+  };
   system.defaults = {
     dock = {
       autohide = true;

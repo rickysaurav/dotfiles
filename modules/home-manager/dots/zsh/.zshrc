@@ -32,9 +32,6 @@ zinit ice lucid wait \
         multisrc:"shell/{key-bindings,completion}.zsh"
 zinit load "junegunn/fzf"
 
-zinit ice lucid wait pick:"init.sh"
-zinit load "b4b4r07/enhancd"
-
 zinit ice lucid wait pick:"fzf-tab.zsh"
 zinit load "Aloxaf/fzf-tab"
 

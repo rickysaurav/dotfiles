@@ -3,14 +3,15 @@
   home.packages = with pkgs; [
     # language-tools
     sumneko-lua-language-server
-    nodePackages.pyright
+    pyright
     nodePackages.typescript-language-server
     nodePackages.vim-language-server
     nodePackages.vscode-json-languageserver
     nodePackages.yaml-language-server
     rust-analyzer
     efm-langserver
-    rnix-lsp
+    # comment because unmaintained
+    # rnix-lsp
     nixpkgs-fmt
     # cli
     tree
@@ -27,5 +28,8 @@
     podman-compose
     # adb
     android-tools
+    # python
+    python3
+    poetry
   ];
 }

@@ -7,7 +7,6 @@
     };
     taps = [
       "homebrew/cask-drivers"
-      "homebrew/cask"
       "homebrew/cask-versions"
     ];
     casks = [
@@ -17,9 +16,8 @@
       "raycast"
       "displaylink"
       "logi-options-plus"
-      "linearmouse"
       "hammerspoon"
-      "whatsapp-beta"
+      "whatsapp@beta"
     ];
     masApps = {
       unsplash-wallpapers = 1284863847;
